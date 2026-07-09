@@ -30,8 +30,6 @@ jobs:
 
       - name: Build
         run: npm run build
-        env:
-          VITEPRESS_BASE: /navi-docs/
 
       - uses: actions/upload-pages-artifact@v3
         with:
