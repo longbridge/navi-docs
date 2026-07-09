@@ -126,9 +126,9 @@ result = switch x
 ```navi
 // Navi
 let result = switch x {
-    1 => "one";
-    2 => "two";
-    => "other";
+    1 => "one",
+    2 => "two",
+    => "other",
 };
 ```
 

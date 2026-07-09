@@ -58,7 +58,7 @@ export default defineConfig({
           ),
         ),
         name: "navi",
-        aliases: ["nv"],
+        aliases: ["nv", "pine"],
       },
     ],
   },

@@ -190,12 +190,12 @@ let finalText: string = for number in randomArray {
 
 ```navi
 let dayName = switch day_of_week {
-    DayOfWeek.Monday => "Mon";
-    DayOfWeek.Tuesday => "Tue";
-    DayOfWeek.Wednesday => "Wed";
-    DayOfWeek.Thursday => "Thu";
-    DayOfWeek.Friday => "Fri";
-    => "Weekend";
+    DayOfWeek.Monday => "Mon",
+    DayOfWeek.Tuesday => "Tue",
+    DayOfWeek.Wednesday => "Wed",
+    DayOfWeek.Thursday => "Thu",
+    DayOfWeek.Friday => "Fri",
+    => "Weekend",
 };
 ```
 
@@ -212,10 +212,10 @@ let i_maType: string = input.string(
 );
 
 let ma: float = switch i_maType {
-    "EMA" => ta.ema(close, 10);
-    "SMA" => ta.sma(close, 10);
-    "RMA" => ta.rma(close, 10);
-    => ta.wma(close, 10);
+    "EMA" => ta.ema(close, 10),
+    "SMA" => ta.sma(close, 10),
+    "RMA" => ta.rma(close, 10),
+    => ta.wma(close, 10),
 };
 plot(ma);
 ```
@@ -226,9 +226,9 @@ plot(ma);
 
 ```navi
 let direction = switch {
-    close > open => "up";
-    close < open => "down";
-    => "flat";
+    close > open => "up",
+    close < open => "down",
+    => "flat",
 }; // 默认值
 ```
 
@@ -236,8 +236,8 @@ let direction = switch {
 
 ```navi
 let (v1, v2) = switch {
-    close > open => (high, close);
-    => (close, low);
+    close > open => (high, close),
+    => (close, low),
 };
 ```
 
