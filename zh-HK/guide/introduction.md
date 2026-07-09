@@ -1,46 +1,25 @@
 # 簡介
 
-**Navi** 是一個用 Rust 編寫的開源 Navi 執行引擎。它提供完整的解析、類型檢查、編譯和逐 K 線執行流水線，可嵌入你自己的應用和服務中執行指標和策略腳本。
+**Navi** 是一種用於編寫技術分析指標和交易策略的腳本語言，相容 Pine Script V6，透過 Longbridge 平台的 `lb` CLI 執行。
 
-## Navi 語言
+## 你可以構建什麼
 
-Navi 是一種用於編寫技術分析指標和交易策略的領域專用語言。它被設計為簡單而強大，採用逐 K 線執行模型，腳本每次處理一根 K 線。
+- **指標** — 在圖表上繪製序列、形狀、標籤、線條和表格
+- **策略** — 定義進出場規則，對歷史數據進行回測
+- **庫** — 編寫可複用的函數和類型，供其他腳本導入
 
-## Navi 引擎
+## 執行模型
 
-Navi 引擎是 Navi 語言獨立的、可嵌入的執行時。你可以：
+腳本**逐 K 線**執行：引擎對每根 K 線執行一次腳本，從最早的歷史 K 線到最新的 K 線。這與 Pine Script 的執行模型相同——`close`、`open`、`high`、`low` 等所有序列值均代表當前 K 線。
 
-- **運行 Navi 腳本** — 使用你自己的 K 線數據，收集輸出（繪圖、警報、策略訂單）
-- **嵌入引擎** — 在 Rust、C 或 C++ 應用程式中使用
-- **使用 LSP** — 獲得編輯器支援，包括診斷、補全、懸停提示、跳轉到定義等
-- **擴展** — 添加自訂原生函數和庫載入器
+使用 `close[1]` 回溯上一根 K 線的值，用 `var` 跨 K 線保持狀態，用 `barstate.is_last` 在最後一根 K 線執行邏輯。
 
-## 架構
+## Pine Script 相容性
 
-處理流水線如下：
-
-  <img class="light-only" src="/architecture-pipeline.svg" alt="Navi 處理流水線" style="width:100%;max-width:660px;">
-<img class="dark-only" src="/architecture-pipeline-dark.svg" alt="Navi 處理流水線" style="width:100%;max-width:660px;">
-
-每個階段對應一個獨立的 crate：
-
-| Crate | 作用 |
-|---|---|
-| `navi-parser` | 基於 nom 的解析器，生成帶 span 標註的 AST |
-| `navi-visitor` | 語義分析、類型檢查、名稱解析 |
-| `navi-compiler` | AST 到 VM 指令，包含 3 個優化遍 |
-| `navi-vm` | 逐 K 線運行時引擎 |
-| `navi-loader` | 模組解析（imports、prelude、stdlib） |
-| `navi-builtins` | 內嵌的 prelude 和 stdlib Navi 源檔案 |
-| `navi-lsp` | 語言伺服器協議實現 |
-
-## 當前狀態
-
-- **語言版本**：Navi
-- **目標**：運行 Navi 腳本，生成繪圖/警報/策略事件，支援常用標準庫函數
-- **狀態**：正在積極開發中；部分功能尚未完成，可能會有所調整
+Navi 支援 Pine Script V6 語法。如果你有現成的 Pine Script 指標，只需少量修改即可在 Navi 上執行。詳見[從 Pine Script 遷移](/zh-HK/guide/pine-migration)。
 
 ## 下一步
 
-- [快速開始](/zh-HK/guide/quick-start) — 構建並運行你的第一個腳本
+- [快速開始](/zh-HK/guide/quick-start) — 使用 CLI 編寫並執行第一個指標
 - [語言基礎](/zh-HK/guide/language-basics) — 學習 Navi 語法
+- [從 Pine Script 遷移](/zh-HK/guide/pine-migration) — 轉換現有腳本

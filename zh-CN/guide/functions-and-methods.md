@@ -188,7 +188,7 @@ fn sum(first: int, rest: int...) {
 
 可变参数必须是参数列表中的最后一个。
 
-## Property 函数
+## 属性（property）
 
 `property` 关键字声明一个不能有参数且不带括号调用的函数，使其看起来像一个属性：
 

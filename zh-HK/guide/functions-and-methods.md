@@ -188,7 +188,7 @@ fn sum(first: int, rest: int...) {
 
 可變參數必須是參數列表中的最後一個。
 
-## Property 函式
+## 屬性（property）
 
 `property` 關鍵字宣告一個不能有參數且不帶括號呼叫的函式，使其看起來像一個屬性：
 

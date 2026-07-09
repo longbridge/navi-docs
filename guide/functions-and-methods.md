@@ -196,7 +196,7 @@ fn sum(first: int, rest: int...) {
 
 The variadic parameter must be the last one in the parameter list.
 
-## Property Functions
+## Properties
 
 The `property` keyword declares a function that cannot have parameters and is called without parentheses, making it look like a variable or property access:
 
