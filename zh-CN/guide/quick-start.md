@@ -50,6 +50,16 @@ plot(slow, "Slow EMA");
 lb quant run AAPL.US --start 2023-01-01 --end 2024-12-31 --script macross.nvs
 ```
 
+## Running Pine Script Files
+
+You can also run existing Pine Script files (`.pine`) directly:
+
+```bash
+lb quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script my_indicator.pine --dialect pine
+```
+
+> **Note:** `--dialect pine` support is coming soon. Once available, `.pine` files will run without any code changes.
+
 ## Next Steps
 
 - [Language Basics](/zh-CN/guide/language-basics)
