@@ -22,8 +22,8 @@ features:
     details: 原生支持实时 K 线更新。var/varip 模型与回滚机制确保已确认 K 线和形成中 K 线的状态始终一致。
   - title: 丰富的标准库
     details: 内置 ta、math、str、array、map、matrix 等模块，常用函数开箱即用。
-  - title: 跨标的与多时间框架
-    details: 使用 request.security 在同一脚本中获取其他标的或时间框架的数据并加以组合。
+  - title: 兼容 Pine Script V6
+    details: Navi 支持 Pine Script V6 语法，方便迁移已有脚本或复用熟悉的编写模式。
   - title: 编辑器支持
     details: VS Code 扩展提供补全、悬停文档、跳转到定义、重命名、诊断、语义高亮和内联提示。
 ---

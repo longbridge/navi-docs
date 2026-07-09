@@ -22,8 +22,8 @@ features:
     details: 原生支援即時 K 線更新。var/varip 模型與回滾機制確保已確認 K 線和形成中 K 線的狀態始終一致。
   - title: 豐富的標準庫
     details: 內置 ta、math、str、array、map、matrix 等模組，常用函數開箱即用。
-  - title: 跨標的與多時間框架
-    details: 使用 request.security 在同一腳本中獲取其他標的或時間框架的數據並加以組合。
+  - title: 兼容 Pine Script V6
+    details: Navi 支援 Pine Script V6 語法，方便遷移已有腳本或複用熟悉的編寫模式。
   - title: 編輯器支援
     details: VS Code 擴展提供補全、懸停文件、跳轉到定義、重新命名、診斷、語義高亮和內聯提示。
 ---

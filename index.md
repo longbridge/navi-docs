@@ -22,8 +22,8 @@ features:
     details: First-class support for realtime bar updates. The var/varip model and rollback mechanism keep state consistent across confirmed and forming bars.
   - title: Rich Standard Library
     details: Built-in ta, math, str, array, map, matrix modules with everything you need for technical analysis and data manipulation.
-  - title: Cross-Symbol & Multi-Timeframe
-    details: Use request.security to fetch data from other symbols or timeframes and combine them in a single script.
+  - title: Pine Script V6 Compatible
+    details: Navi supports Pine Script V6 syntax, making it easy to migrate existing scripts or reuse familiar patterns.
   - title: Editor Support
     details: VS Code extension with completions, hover docs, go-to-definition, rename, diagnostics, semantic tokens, and inlay hints.
 ---
