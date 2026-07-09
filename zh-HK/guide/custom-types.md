@@ -172,7 +172,7 @@ export enum Side {
 
 ```navi
 indicator("My Indicator");
-use MyLib.nvs as lib;
+use MyLib.nv as lib;
 
 let config = lib.Config.new(length: 20, multiplier: 2.0);
 let sma = lib.calcSMA(close, config.length);
@@ -182,7 +182,7 @@ plot(sma);
 透過模組名稱存取匯出的成員：
 
 ```navi
-use utils.nvs;
+use utils.nv;
 utils.add(1, 2);                  // 呼叫匯出的函式
 let obj: utils.MyType = na;       // 使用匯出的類型
 let value = utils.MyEnum.A;       // 存取匯出的枚舉變體
@@ -208,7 +208,7 @@ let x: SpecialInt = 42; // OK
 標準函式庫廣泛使用新類型來為繪圖物件和繪圖樣式建立不同的類型：
 
 ```navi
-// prelude/draw.1.nvs
+// prelude/draw.1.nv
 export type plot_style = int;
 export type hline = int;
 export type label = int;

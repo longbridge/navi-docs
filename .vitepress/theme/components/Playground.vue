@@ -671,7 +671,7 @@ function analyze(source: string) {
   const analyzer = engine.value?.analyzer
   if (!analyzer) return
 
-  analyzer.analyze('script.nvs', source)
+  analyzer.analyze('script.nv', source)
   const diags = (analyzer.diagnostics() as Diagnostic[] | null) ?? []
 
   // Pick the first error, or first warning if no errors
@@ -682,7 +682,7 @@ function analyze(source: string) {
 
   // Convert LSP Diagnostic format (range.start.line) to DiagnosticData
   // format (startLine) expected by PlaygroundEditor.
-  // In the playground there is only one user-editable file ("script.nvs").
+  // In the playground there is only one user-editable file ("script.nv").
   // The WASM analyzer assigns a fileId to every file including the main script,
   // so we cannot use fileId to distinguish main vs stdlib. Instead we pass all
   // diagnostics and let PlaygroundEditor show them; stdlib files are correct and
@@ -780,7 +780,7 @@ function addToChart(tag: string) {
       scriptTag: tag,
       locations: [{
         message: firstDiagnostic.value.message,
-        filePath: firstDiagnostic.value.filePath ?? 'playground.nvs',
+        filePath: firstDiagnostic.value.filePath ?? 'playground.nv',
         line: firstDiagnostic.value.line,
         column: firstDiagnostic.value.column,
         endLine: firstDiagnostic.value.line,
@@ -1370,7 +1370,7 @@ function gotoDiagnostic() {
   if (!diag) return
   // Only jump to the position when the diagnostic is from the main file.
   // External-file positions don't correspond to the editor content.
-  if (!diag.filePath || diag.filePath === 'playground.nvs') {
+  if (!diag.filePath || diag.filePath === 'playground.nv') {
     editorComponent.value?.revealPosition(diag.line, diag.column)
   }
 }
@@ -1425,7 +1425,7 @@ function handleChartEvent(event: unknown) {
         scriptTag: tag,
         locations: diags.map(d => ({
           message: d.message,
-          filePath: d.filePath ?? 'script.nvs',
+          filePath: d.filePath ?? 'script.nv',
           line: d.startLine + 1,
           column: d.startCharacter + 1,
           endLine: d.endLine + 1,

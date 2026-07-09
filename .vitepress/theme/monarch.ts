@@ -110,7 +110,7 @@ const naviMonarchLanguage: languages.IMonarchLanguage = {
 }
 
 export function registerNaviLanguage(monaco: typeof import('monaco-editor')) {
-  monaco.languages.register({ id: NAVI_LANG_ID, extensions: ['.nvs'] })
+  monaco.languages.register({ id: NAVI_LANG_ID, extensions: ['.nv'] })
   monaco.languages.setMonarchTokensProvider(NAVI_LANG_ID, naviMonarchLanguage)
   monaco.languages.setLanguageConfiguration(NAVI_LANG_ID, naviLanguageConfiguration)
 }

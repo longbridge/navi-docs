@@ -56,7 +56,7 @@ const inputValue = ref('')
 const open = computed(() => props.mode !== 'none')
 const scriptErrorLocations = computed(() => props.scriptError?.locations ?? [])
 function isMainScriptPath(filePath: string) {
-  return !filePath || filePath === 'playground.nvs' || filePath === '<main>'
+  return !filePath || filePath === 'playground.nv' || filePath === '<main>'
 }
 const groupedScriptErrors = computed(() => {
   const groups = new Map<string, CompileLocation[]>()

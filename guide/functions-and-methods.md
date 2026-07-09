@@ -215,7 +215,7 @@ let value = size(); // error: function `size` not defined
 **Examples from the standard library:**
 
 ```navi
-// Candlestick data (prelude/candlestick.1.nvs)
+// Candlestick data (prelude/candlestick.1.nv)
 export property open(): series float {
     @native.candlestick(1)
 }
@@ -226,7 +226,7 @@ export property hl2(): series float {
     (high + low) / 2
 }
 
-// Constants (stdlib/math.1.nvs)
+// Constants (stdlib/math.1.nv)
 export property pi(): const float {
     3.1415926535897932
 }
@@ -256,7 +256,7 @@ Static methods can only be defined for **struct or newtype** types, not for enum
 **Examples from the standard library:**
 
 ```navi
-// Factory methods for chart.Point (stdlib/chart.1.nvs)
+// Factory methods for chart.Point (stdlib/chart.1.nv)
 export struct Point {
     int index,
     int time,

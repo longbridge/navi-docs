@@ -34,7 +34,7 @@ Skill 包含四個按需載入的參考文件：
 
 ## 使用
 
-安裝後，Claude Code 在處理 `.nvs` 文件或你詢問 Navi 相關問題時會自動使用該 skill。也可以顯式調用：
+安裝後，Claude Code 在處理 `.nv` 文件或你詢問 Navi 相關問題時會自動使用該 skill。也可以顯式調用：
 
 ```
 /navi-authoring 寫一個帶上下軌輸入參數的 VWAP 指標

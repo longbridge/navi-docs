@@ -172,7 +172,7 @@ export enum Side {
 
 ```navi
 indicator("My Indicator");
-use MyLib.nvs as lib;
+use MyLib.nv as lib;
 
 let config = lib.Config.new(length: 20, multiplier: 2.0);
 let sma = lib.calcSMA(close, config.length);
@@ -182,7 +182,7 @@ plot(sma);
 通过模块名称访问导出的成员：
 
 ```navi
-use utils.nvs;
+use utils.nv;
 utils.add(1, 2);                  // 调用导出的函数
 let obj: utils.MyType = na;       // 使用导出的类型
 let value = utils.MyEnum.A;       // 访问导出的枚举变体
@@ -208,7 +208,7 @@ let x: SpecialInt = 42; // OK
 标准库广泛使用新类型来为绘图对象和绘图样式创建不同的类型：
 
 ```navi
-// prelude/draw.1.nvs
+// prelude/draw.1.nv
 export type plot_style = int;
 export type hline = int;
 export type label = int;

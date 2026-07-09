@@ -1,13 +1,13 @@
 /** Built-in example scripts bundled with the app (read-only). */
 
-// Vite glob import: eagerly load all .nvs files as raw text
-const indicatorModules = import.meta.glob('/naviscripts/indicators/*.nvs', {
+// Vite glob import: eagerly load all .nv files as raw text
+const indicatorModules = import.meta.glob('/naviscripts/indicators/*.nv', {
   eager: true,
   query: '?raw',
   import: 'default',
 }) as Record<string, string>
 
-const strategyModules = import.meta.glob('/naviscripts/strategies/*.nvs', {
+const strategyModules = import.meta.glob('/naviscripts/strategies/*.nv', {
   eager: true,
   query: '?raw',
   import: 'default',
@@ -24,7 +24,7 @@ export interface BuiltinScript {
 
 function nameFromPath(path: string): string {
   const file = path.split('/').pop() ?? path
-  return file.replace(/\.nvs$/, '')
+  return file.replace(/\.nv$/, '')
 }
 
 /**

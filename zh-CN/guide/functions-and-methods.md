@@ -207,7 +207,7 @@ let value = size(); // error: function `size` not defined
 **标准库中的示例：**
 
 ```navi
-// 烛形数据（prelude/candlestick.1.nvs）
+// 烛形数据（prelude/candlestick.1.nv）
 export property open(): series float {
     @native.candlestick(1)
 }
@@ -218,7 +218,7 @@ export property hl2(): series float {
     (high + low) / 2
 }
 
-// 常数（stdlib/math.1.nvs）
+// 常数（stdlib/math.1.nv）
 export property pi(): const float {
     3.1415926535897932
 }
@@ -244,7 +244,7 @@ let result = AB.add(20, 5); // 25
 **标准库中的示例：**
 
 ```navi
-// chart.point 的工厂方法（stdlib/chart.1.nvs）
+// chart.point 的工厂方法（stdlib/chart.1.nv）
 export struct point {
     int index,
     int time,

@@ -8,7 +8,7 @@ See the [installation guide](https://open.longbridge.com/docs/cli/install) to ge
 
 ## Write Your First Indicator
 
-Create `sma.nvs`:
+Create `sma.nv`:
 
 ```navi
 indicator("SMA", overlay: true);
@@ -20,13 +20,13 @@ plot(ta.sma(close, len), "SMA", color: color.ORANGE);
 ## Run Against Historical Data
 
 ```bash
-longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script sma.nvs
+longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script sma.nv
 ```
 
 Or pipe the script directly:
 
 ```bash
-cat sma.nvs | longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31
+cat sma.nv | longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31
 ```
 
 Output defaults to a table with bar-by-bar values. Use `--format json` for structured output.
@@ -47,7 +47,7 @@ plot(slow, "Slow EMA");
 ```
 
 ```bash
-longbridge quant run AAPL.US --start 2023-01-01 --end 2024-12-31 --script macross.nvs
+longbridge quant run AAPL.US --start 2023-01-01 --end 2024-12-31 --script macross.nv
 ```
 
 ## Running Pine Script Files
@@ -62,10 +62,10 @@ The `--dialect` parameter selects the script language:
 
 | Value | Language |
 |---|---|
-| `navi` | Navi (default for `.nvs` files) |
+| `navi` | Navi (default for `.nv` files) |
 | `pine` | Pine Script V6 (default for `.pine` files) |
 
-If your file uses the correct extension (`.nvs` or `.pine`), the dialect is detected automatically and `--dialect` can be omitted.
+If your file uses the correct extension (`.nv` or `.pine`), the dialect is detected automatically and `--dialect` can be omitted.
 
 ## Next Steps
 

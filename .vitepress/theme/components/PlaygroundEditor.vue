@@ -190,7 +190,7 @@ watch(() => props.readonly, (ro) => {
 function ensureSourceSynced(engine: PlaygroundEngine, model: import('monaco-editor').editor.ITextModel) {
   const currentText = model.getValue()
   if (currentText !== lastSyncedSource) {
-    engine.analyzer.analyze('script.nvs', currentText)
+    engine.analyzer.analyze('script.nv', currentText)
     lastSyncedSource = currentText
   }
 }
@@ -314,7 +314,7 @@ function registerLspProviders(monaco: typeof import('monaco-editor')) {
         // When the definition points back to the cursor position itself
         // (e.g. hovering over `abc` in `abc() => 1`), return null so
         // Monaco doesn't show a misleading Ctrl+Click underline.
-        if (result.uri === 'script.nvs') {
+        if (result.uri === 'script.nv') {
           const r = result.range
           const line0 = position.lineNumber - 1
           const col0 = position.column - 1
@@ -330,7 +330,7 @@ function registerLspProviders(monaco: typeof import('monaco-editor')) {
         // model populated with the actual builtin source so that peek
         // definition shows real content.
         let targetUri: import('monaco-editor').Uri
-        if (result.uri === 'script.nvs') {
+        if (result.uri === 'script.nv') {
           targetUri = model.uri
         } else {
           const naviUri = monaco.Uri.parse(result.uri)
@@ -543,7 +543,7 @@ function setDiagnostics(diagnostics: DiagnosticData) {
 /** Set (or clear) a single runtime diagnostic marker with its own owner key.
  *
  *  Pass null to clear the runtime marker.  If the diagnostic originates
- *  from an external file (not "playground.nvs"), no Monaco marker is set
+ *  from an external file (not "playground.nv"), no Monaco marker is set
  *  because the line/column would be meaningless in the main editor. */
 function setRuntimeDiagnostic(diag: DiagnosticData[0] | null) {
   const monaco = monacoRef.value
@@ -558,7 +558,7 @@ function setRuntimeDiagnostic(diag: DiagnosticData[0] | null) {
   }
 
   // Skip marker for external-file diagnostics (positions don't match the editor).
-  if (diag.filePath && diag.filePath !== 'script.nvs') {
+  if (diag.filePath && diag.filePath !== 'script.nv') {
     monaco.editor.setModelMarkers(model, RUNTIME_MARKER_OWNER, [])
     return
   }
@@ -595,7 +595,7 @@ function setRuntimeDiagnostic(diag: DiagnosticData[0] | null) {
 
 /** Apply cached diagnostics via Monaco's native setModelMarkers API.
  *
- *  Only diagnostics from the main file ("playground.nvs") are applied as
+ *  Only diagnostics from the main file ("playground.nv") are applied as
  *  Monaco markers.  Diagnostics from imported/external files are skipped
  *  because their line/column numbers refer to a different source text. */
 function applyMarkers() {
@@ -608,7 +608,7 @@ function applyMarkers() {
 
   // Only create markers for main-file diagnostics (those without an external filePath).
   const mainFileDiags = lastDiagnostics.filter(
-    d => !d.filePath || d.filePath === 'script.nvs',
+    d => !d.filePath || d.filePath === 'script.nv',
   )
 
   const markers: import('monaco-editor').editor.IMarkerData[] = mainFileDiags.map((d) => {

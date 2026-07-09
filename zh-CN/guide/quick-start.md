@@ -8,7 +8,7 @@ Navi 脚本通过 `longbridge` CLI 在 Longbridge 平台上运行。
 
 ## 编写第一个指标
 
-创建 `sma.nvs`：
+创建 `sma.nv`：
 
 ```navi
 indicator("SMA", overlay: true);
@@ -20,13 +20,13 @@ plot(ta.sma(close, len), "SMA", color: color.ORANGE);
 ## 对历史数据运行
 
 ```bash
-longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script sma.nvs
+longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script sma.nv
 ```
 
 也可以直接通过管道传入脚本：
 
 ```bash
-cat sma.nvs | longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31
+cat sma.nv | longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31
 ```
 
 默认以表格形式输出每根 K 线的值。使用 `--format json` 可获取结构化输出。
@@ -47,7 +47,7 @@ plot(slow, "Slow EMA");
 ```
 
 ```bash
-longbridge quant run AAPL.US --start 2023-01-01 --end 2024-12-31 --script macross.nvs
+longbridge quant run AAPL.US --start 2023-01-01 --end 2024-12-31 --script macross.nv
 ```
 
 ## 运行 Pine Script 文件
@@ -62,10 +62,10 @@ longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script my_ind
 
 | 值 | 语言 |
 |---|---|
-| `navi` | Navi（`.nvs` 文件的默认值） |
+| `navi` | Navi（`.nv` 文件的默认值） |
 | `pine` | Pine Script V6（`.pine` 文件的默认值） |
 
-如果文件使用了正确的扩展名（`.nvs` 或 `.pine`），语言会自动识别，无需手动指定 `--dialect`。
+如果文件使用了正确的扩展名（`.nv` 或 `.pine`），语言会自动识别，无需手动指定 `--dialect`。
 
 ## 下一步
 

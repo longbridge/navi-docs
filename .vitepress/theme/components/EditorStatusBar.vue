@@ -22,7 +22,7 @@ const statusIcon = computed(() => {
 /** True when the diagnostic originates from an imported/external module. */
 const isExternalFile = computed(() => {
   const fp = props.firstDiagnostic?.filePath
-  return !!fp && fp !== 'playground.nvs'
+  return !!fp && fp !== 'playground.nv'
 })
 </script>
 

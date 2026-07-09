@@ -4,8 +4,8 @@
 
 **No migration required to run existing scripts.** Pine Script V6 files (`.pine`) run directly on the Longbridge platform without any changes.
 
-However, you may want to migrate to Navi (`.nvs`) if you want:
-- **Editor support** — the VS Code extension (completions, diagnostics, hover, go-to-definition) only works with `.nvs` files
+However, you may want to migrate to Navi (`.nv`) if you want:
+- **Editor support** — the VS Code extension (completions, diagnostics, hover, go-to-definition) only works with `.nv` files
 - **New scripts** — Navi is the primary language with full tooling support
 
 If you're writing new scripts or want editor support, this guide covers every syntax change needed to convert Pine Script to Navi.

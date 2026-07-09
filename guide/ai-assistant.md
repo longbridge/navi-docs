@@ -34,7 +34,7 @@ The skill contains four reference files loaded on demand:
 
 ## Usage
 
-Once installed, Claude Code uses the skill automatically when working with `.nvs` files or when you ask about Navi. You can also invoke it explicitly:
+Once installed, Claude Code uses the skill automatically when working with `.nv` files or when you ask about Navi. You can also invoke it explicitly:
 
 ```
 /navi-authoring Write a VWAP indicator with upper/lower band inputs

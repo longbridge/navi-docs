@@ -58,7 +58,7 @@ export default defineConfig({
           ),
         ),
         name: "navi",
-        aliases: ["nvs"],
+        aliases: ["nv"],
       },
     ],
   },
@@ -126,7 +126,7 @@ export default defineConfig({
       "",
       `1. Download: ${SITE_URL}/navi-authoring-skill.zip`,
       "2. Extract into your project's `.claude/skills/navi-authoring/` directory",
-      "3. The skill loads automatically when working with `.nvs` files",
+      "3. The skill loads automatically when working with `.nv` files",
     ].join("\n");
 
     // ── llms.txt ──────────────────────────────────────────────────────────────
@@ -165,7 +165,7 @@ export default defineConfig({
       "",
       `1. Download: ${SITE_URL}/navi-authoring-skill.zip`,
       "2. Extract into your project's `.claude/skills/navi-authoring/` directory",
-      "3. The skill loads automatically when working with `.nvs` files",
+      "3. The skill loads automatically when working with `.nv` files",
     ].join("\n");
 
     let llmsFullTxt = [

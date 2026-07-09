@@ -209,7 +209,7 @@ let x: SpecialInt = 42; // OK
 The standard library uses newtypes extensively to create distinct types for drawing objects and plot styles:
 
 ```navi
-// prelude/draw.1.nvs
+// prelude/draw.1.nv
 export type plot_style = int;
 export type hline = int;
 export type label = int;
