@@ -30,7 +30,7 @@ Use `@function`, `@param`, and `@returns` to document function declarations:
 //@param labelText (series string) The text to display on the label.
 //@returns The drawn label ID.
 export fn drawLabel(labelText: string) {
-    label.new(bar_index, high, text:  labelText)
+    label.new(bar_index, high, text:  labelText);
 }
 ```
 
@@ -60,7 +60,7 @@ Continuation lines (starting with `//` but without `@`) extend the previous tag'
 //@param price The end price.
 //@returns The signed deviation percentage.
 export fn calcDeviation(basePrice: float, price: float) {
-    100 * (price - basePrice) / basePrice
+    100 * (price - basePrice) / basePrice;
 }
 ```
 
@@ -129,7 +129,7 @@ Use `@example` / `@endexample` pairs to attach runnable code examples to a funct
 // plot(deviation, title: "Deviation %");
 //@endexample
 export fn calcDeviation(base: float, price: float) {
-    100 * (price - base) / base
+    100 * (price - base) / base;
 }
 ```
 

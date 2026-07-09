@@ -2,7 +2,7 @@
 
 ## User-Defined Types (UDTs)
 
-Define custom types with the `type` keyword. Fields must have explicit types and can have optional default values:
+Define custom types with the `struct` keyword. Fields must have explicit types and can have optional default values:
 
 ```navi
 struct Order {

@@ -85,7 +85,7 @@ This strategy enters long when price closes above the upper band and exits when 
 
 ```navi
 // ① Declare this script as a strategy.
-// - default_qty_type : use a fixed number of contracts/shares per trade -
+// - default_qty_type : use a fixed number of contracts/shares per trade
 // default_qty_value : trade 1 unit by default
 strategy(
     "Bollinger Bands Breakout",
