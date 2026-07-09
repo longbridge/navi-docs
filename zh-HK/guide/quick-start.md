@@ -1,81 +1,56 @@
-# 快速開始
+# Quick Start
 
-## 前提條件
+Navi scripts run on the Longbridge platform via the `lb` CLI.
 
-- **Rust**（stable）及 Cargo
+## Install the Longbridge CLI
 
-## 從源碼構建
+See the [CLI documentation](https://open.longbridge.com/docs/cli/quant) for installation instructions.
 
-克隆倉庫並構建：
+## Write Your First Indicator
+
+Create `sma.nvs`:
+
+```navi
+indicator("SMA", overlay: true);
+
+let len = input.int(14, "Length", minval: 1);
+plot(ta.sma(close, len), "SMA", color: color.ORANGE);
+```
+
+## Run Against Historical Data
 
 ```bash
-git clone https://github.com/longbridge/navi.git
-cd navi
-cargo build
+lb quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script sma.nvs
 ```
 
-## 運行測試
+Or pipe the script directly:
 
 ```bash
-# 所有測試
-cargo test --all-features
-
-# 特定 crate
-cargo test -p navi-parser
-cargo test -p navi-visitor
-cargo test -p navi-vm
-cargo test -p navi-lsp
+cat sma.nvs | lb quant run AAPL.US --start 2024-01-01 --end 2024-12-31
 ```
 
-## 你的第一個腳本
+Output defaults to a table with bar-by-bar values. Use `--format json` for structured output.
 
-在 `Cargo.toml` 中添加 `navi-vm`：
+## Write a Strategy
 
-```toml
-[dependencies]
-navi-vm = { path = "crates/vm" }
+```navi
+strategy("MA Cross", overlay: true);
+
+let fast = ta.ema(close, input.int(10, "Fast"));
+let slow = ta.ema(close, input.int(20, "Slow"));
+
+if ta.crossover(fast, slow) { strategy.entry("Long", Direction.Long); }
+if ta.crossunder(fast, slow) { strategy.entry("Short", Direction.Short); }
+
+plot(fast, "Fast EMA");
+plot(slow, "Slow EMA");
 ```
 
-然後編寫一個簡單的程式：
-
-```rust
-use navi_vm::{Candlestick, Instance, TimeFrame};
-
-#[tokio::main]
-async fn main() -> Result<(), navi_vm::Error> {
-    let source = r#"
-indicator("Hello Navi")
-plot(close)
-plot(ta.sma(close, 5), "SMA 5")
-"#;
-
-    let timeframe = TimeFrame::days(1);
-    let symbol = "NASDAQ:AAPL";
-
-    let bars = vec![
-        Candlestick::new(1700000000000, 150.0, 155.0, 149.0, 153.0, 1000.0, 0.0, Default::default()),
-        Candlestick::new(1700086400000, 153.0, 158.0, 152.0, 157.0, 1200.0, 0.0, Default::default()),
-        Candlestick::new(1700172800000, 157.0, 160.0, 155.0, 159.0, 900.0, 0.0, Default::default()),
-    ];
-
-    let instance = Instance::builder(bars, source, timeframe, symbol)
-        .build().await?
-        .run_to_end(symbol, timeframe).await?;
-
-    // 讀取輸出
-    for (_id, graph) in instance.chart().series_graphs() {
-        if let Some(plot) = graph.as_plot() {
-            println!("Plot: {}", plot.title.as_deref().unwrap_or("unnamed"));
-            for i in 0..plot.series.len() {
-                println!("  bar {}: {:?}", i, plot.series[i]);
-            }
-        }
-    }
-
-    Ok(())
-}
+```bash
+lb quant run AAPL.US --start 2023-01-01 --end 2024-12-31 --script macross.nvs
 ```
 
-## 下一步
+## Next Steps
 
-- [語言基礎](/zh-HK/guide/language-basics) — 學習 Navi 語法
+- [Language Basics](/zh-HK/guide/language-basics)
+- [Standard Library](/zh-HK/api/stdlib/)
