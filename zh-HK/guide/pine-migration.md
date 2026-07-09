@@ -155,30 +155,6 @@ enum Direction {
 }
 ```
 
-## 完整示例
-
-```pine
-// Pine Script
-indicator("Bollinger Bands", overlay=true)
-length = input.int(20, "Length")
-mult   = input.float(2.0, "Multiplier")
-[basis, upper, lower] = ta.bb(close, length, mult)
-plot(basis, "Basis", color.blue)
-plot(upper, "Upper", color.red)
-plot(lower, "Lower", color.green)
-```
-
-```navi
-// Navi
-indicator("Bollinger Bands", overlay: true);
-let length = input.int(20, "Length");
-let mult   = input.float(2.0, "Multiplier");
-let (basis, upper, lower) = ta.bb(close, length, mult);
-plot(basis, "Basis", color.BLUE);
-plot(upper, "Upper", color.RED);
-plot(lower, "Lower", color.GREEN);
-```
-
 ## 命名參數（關鍵字參數）
 
 Pine Script 使用 `=` 傳遞命名參數，Navi 使用 `:`。
@@ -258,6 +234,30 @@ indicator("My Script")
 ```navi
 // Navi — 不需要版本頭
 indicator("My Script");
+```
+
+## 完整示例
+
+```pine
+// Pine Script
+indicator("Bollinger Bands", overlay=true)
+length = input.int(20, "Length")
+mult   = input.float(2.0, "Multiplier")
+[basis, upper, lower] = ta.bb(close, length, mult)
+plot(basis, "Basis", color.blue)
+plot(upper, "Upper", color.red)
+plot(lower, "Lower", color.green)
+```
+
+```navi
+// Navi
+indicator("Bollinger Bands", overlay: true);
+let length = input.int(20, "Length");
+let mult   = input.float(2.0, "Multiplier");
+let (basis, upper, lower) = ta.bb(close, length, mult);
+plot(basis, "Basis", color.BLUE);
+plot(upper, "Upper", color.RED);
+plot(lower, "Lower", color.GREEN);
 ```
 
 ## 不變的部分

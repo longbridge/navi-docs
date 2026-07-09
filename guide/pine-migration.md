@@ -257,40 +257,6 @@ let len: const int = 14;
 let src: series float = close;
 ```
 
-## Complete Example
-
-A simple Bollinger Bands indicator converted from Pine Script to Navi:
-
-```pine
-// Pine Script
-indicator("Bollinger Bands", overlay=true)
-
-length = input.int(20, "Length")
-mult   = input.float(2.0, "Multiplier")
-
-[basis, upper, lower] = ta.bb(close, length, mult)
-
-plot(basis, "Basis", color.blue)
-plot(upper, "Upper", color.red)
-plot(lower, "Lower", color.green)
-fill(upper, lower, color.new(color.blue, 90))
-```
-
-```navi
-// Navi
-indicator("Bollinger Bands", overlay: true);
-
-let length = input.int(20, "Length");
-let mult   = input.float(2.0, "Multiplier");
-
-let (basis, upper, lower) = ta.bb(close, length, mult);
-
-plot(basis, "Basis", color.BLUE);
-plot(upper, "Upper", color.RED);
-plot(lower, "Lower", color.GREEN);
-fill(upper, lower, color.new(color.BLUE, 90));
-```
-
 ## Named / Keyword Arguments
 
 Pine Script uses `=` for named arguments in function calls. Navi uses `:`.
@@ -374,6 +340,40 @@ indicator("My Script")
 ```navi
 // Navi — no version header needed
 indicator("My Script");
+```
+
+## Complete Example
+
+A simple Bollinger Bands indicator converted from Pine Script to Navi:
+
+```pine
+// Pine Script
+indicator("Bollinger Bands", overlay=true)
+
+length = input.int(20, "Length")
+mult   = input.float(2.0, "Multiplier")
+
+[basis, upper, lower] = ta.bb(close, length, mult)
+
+plot(basis, "Basis", color.blue)
+plot(upper, "Upper", color.red)
+plot(lower, "Lower", color.green)
+fill(upper, lower, color.new(color.blue, 90))
+```
+
+```navi
+// Navi
+indicator("Bollinger Bands", overlay: true);
+
+let length = input.int(20, "Length");
+let mult   = input.float(2.0, "Multiplier");
+
+let (basis, upper, lower) = ta.bb(close, length, mult);
+
+plot(basis, "Basis", color.BLUE);
+plot(upper, "Upper", color.RED);
+plot(lower, "Lower", color.GREEN);
+fill(upper, lower, color.new(color.BLUE, 90));
 ```
 
 ## What Stays the Same

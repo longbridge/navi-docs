@@ -1,6 +1,6 @@
 # Quick Start
 
-Navi scripts run on the Longbridge platform via the `lb` CLI.
+Navi scripts run on the Longbridge platform via the `longbridge` CLI.
 
 ## Install the Longbridge CLI
 
@@ -20,13 +20,13 @@ plot(ta.sma(close, len), "SMA", color: color.ORANGE);
 ## Run Against Historical Data
 
 ```bash
-lb quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script sma.nvs
+longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script sma.nvs
 ```
 
 Or pipe the script directly:
 
 ```bash
-cat sma.nvs | lb quant run AAPL.US --start 2024-01-01 --end 2024-12-31
+cat sma.nvs | longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31
 ```
 
 Output defaults to a table with bar-by-bar values. Use `--format json` for structured output.
@@ -47,7 +47,7 @@ plot(slow, "Slow EMA");
 ```
 
 ```bash
-lb quant run AAPL.US --start 2023-01-01 --end 2024-12-31 --script macross.nvs
+longbridge quant run AAPL.US --start 2023-01-01 --end 2024-12-31 --script macross.nvs
 ```
 
 ## Running Pine Script Files
@@ -55,10 +55,8 @@ lb quant run AAPL.US --start 2023-01-01 --end 2024-12-31 --script macross.nvs
 You can also run existing Pine Script files (`.pine`) directly:
 
 ```bash
-lb quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script my_indicator.pine --dialect pine
+longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script my_indicator.pine --dialect pine
 ```
-
-> **Note:** `--dialect pine` support is coming soon. Once available, `.pine` files will run without any code changes.
 
 ## Next Steps
 

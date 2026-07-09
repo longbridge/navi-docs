@@ -182,38 +182,6 @@ enum Direction {
 }
 ```
 
-## 完整示例
-
-以布林带指标为例，展示 Pine Script → Navi 的完整转换：
-
-```pine
-// Pine Script
-indicator("Bollinger Bands", overlay=true)
-
-length = input.int(20, "Length")
-mult   = input.float(2.0, "Multiplier")
-
-[basis, upper, lower] = ta.bb(close, length, mult)
-
-plot(basis, "Basis", color.blue)
-plot(upper, "Upper", color.red)
-plot(lower, "Lower", color.green)
-```
-
-```navi
-// Navi
-indicator("Bollinger Bands", overlay: true);
-
-let length = input.int(20, "Length");
-let mult   = input.float(2.0, "Multiplier");
-
-let (basis, upper, lower) = ta.bb(close, length, mult);
-
-plot(basis, "Basis", color.BLUE);
-plot(upper, "Upper", color.RED);
-plot(lower, "Lower", color.GREEN);
-```
-
 ## 命名参数（关键字参数）
 
 Pine Script 使用 `=` 传递命名参数，Navi 使用 `:`。
@@ -293,6 +261,38 @@ indicator("My Script")
 ```navi
 // Navi — 不需要版本头
 indicator("My Script");
+```
+
+## 完整示例
+
+以布林带指标为例，展示 Pine Script → Navi 的完整转换：
+
+```pine
+// Pine Script
+indicator("Bollinger Bands", overlay=true)
+
+length = input.int(20, "Length")
+mult   = input.float(2.0, "Multiplier")
+
+[basis, upper, lower] = ta.bb(close, length, mult)
+
+plot(basis, "Basis", color.blue)
+plot(upper, "Upper", color.red)
+plot(lower, "Lower", color.green)
+```
+
+```navi
+// Navi
+indicator("Bollinger Bands", overlay: true);
+
+let length = input.int(20, "Length");
+let mult   = input.float(2.0, "Multiplier");
+
+let (basis, upper, lower) = ta.bb(close, length, mult);
+
+plot(basis, "Basis", color.BLUE);
+plot(upper, "Upper", color.RED);
+plot(lower, "Lower", color.GREEN);
 ```
 
 ## 不变的部分

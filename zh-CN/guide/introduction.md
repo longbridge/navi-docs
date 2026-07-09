@@ -1,6 +1,6 @@
 # 简介
 
-**Navi** 是一种用于编写技术分析指标和交易策略的脚本语言，兼容 Pine Script V6，通过 Longbridge 平台的 `lb` CLI 运行。
+**Navi** 是一种用于编写技术分析指标和交易策略的脚本语言，兼容 Pine Script V6，通过 Longbridge 平台的 `longbridge` CLI 运行。
 
 ## 你可以构建什么
 
