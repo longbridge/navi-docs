@@ -82,11 +82,8 @@ export default defineConfig({
     },
   },
 
-  // Inject .md alternate link on English pages only
+  // Inject .md alternate link for all pages
   transformHead({ pageData }) {
-    if (pageData.relativePath.startsWith("zh-CN/") || pageData.relativePath.startsWith("zh-HK/")) {
-      return [];
-    }
     return [
       ["link", { rel: "alternate", type: "text/markdown", href: `/${pageData.relativePath}` }],
     ];
@@ -96,13 +93,13 @@ export default defineConfig({
   async buildEnd(siteConfig) {
     const { pages, outDir, srcDir } = siteConfig;
 
-    // English pages only
+    // English pages only (for llms generation)
     const enPages = pages.filter(
       (p) => !p.startsWith("zh-CN/") && !p.startsWith("zh-HK/")
     );
 
-    // Copy .md source files to dist so they're directly accessible
-    for (const page of enPages) {
+    // Copy ALL .md source files to dist (all locales) so they're directly accessible
+    for (const page of pages) {
       const src = join(srcDir, page);
       const dest = join(outDir, page);
       mkdirSync(dirname(dest), { recursive: true });
