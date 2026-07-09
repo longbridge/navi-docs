@@ -1,4 +1,4 @@
-# 从 Pine Script 迁移到 Navi
+# 从 Pine Script V6 迁移到 Navi
 
 ## 需要迁移吗？
 

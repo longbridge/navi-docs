@@ -1,4 +1,4 @@
-# Migrating from Pine Script to Navi
+# Migrating from Pine Script V6 to Navi
 
 ## Do You Need to Migrate?
 

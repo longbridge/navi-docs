@@ -21,7 +21,7 @@ export const zhCN: LocaleSpecificConfig<DefaultTheme.Config> & { label: string; 
           items: [
             { text: "简介", link: "/zh-CN/guide/introduction" },
             { text: "快速开始", link: "/zh-CN/guide/quick-start" },
-            { text: "从 Pine Script 迁移", link: "/zh-CN/guide/pine-migration" },
+            { text: "从 Pine Script V6 迁移", link: "/zh-CN/guide/pine-migration" },
             { text: "AI 助手", link: "/zh-CN/guide/ai-assistant" },
           ],
         },
