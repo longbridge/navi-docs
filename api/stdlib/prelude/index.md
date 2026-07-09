@@ -1719,7 +1719,7 @@ Resolves the closing timestamp of the bar bucket selected by `timeframe` and `se
 
 Maps the current chart bar to another timeframe and returns that target bar's closing timestamp.
 
-It uses the same two-stage offset model as <a class="stdlib-ref" data-key="prelude::time" href="/api/stdlib/prelude/#fn-time">time</a>, but reports the bar end instead of the bar start.
+It uses the same two-stage offset model as <a class="stdlib-ref" data-key="prelude::time" href="/api/stdlib/prelude/#prop-time">time</a>, but reports the bar end instead of the bar start.
 
 **Parameters**
 
