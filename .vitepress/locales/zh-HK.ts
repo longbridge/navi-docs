@@ -29,6 +29,8 @@ export const zhHK: LocaleSpecificConfig<DefaultTheme.Config> & { label: string; 
           text: "語言",
           items: [
             { text: "語言基礎", link: "/zh-HK/guide/language-basics" },
+            { text: "歷史引用", link: "/zh-HK/guide/history-reference" },
+            { text: "集合類型", link: "/zh-HK/guide/collections" },
             { text: "類型與變量", link: "/zh-HK/guide/types-and-variables" },
             { text: "控制結構", link: "/zh-HK/guide/control-structures" },
             { text: "函數與方法", link: "/zh-HK/guide/functions-and-methods" },

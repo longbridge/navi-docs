@@ -52,11 +52,11 @@ struct Position {
 
 method pnl(self: Position, currentPrice: float) {
     let diff = currentPrice - self.entry;
-    self.isLong ? diff * self.size : -diff * self.size
+    self.isLong ? diff * self.size : -diff * self.size;
 }
 
 method isProfit(self: Position, currentPrice: float) {
-    self.pnl(currentPrice) > 0
+    self.pnl(currentPrice) > 0;
 }
 
 let pos = Position.new(entry: 100.0, size: 10.0);
@@ -109,7 +109,7 @@ method push<T>(self: Stack<T>, value: T) {
 
 method pop<T>(self: Stack<T>): T {
     self.count -= 1;
-    self.items.pop()
+    self.items.pop();
 }
 
 var s: Stack<float> = Stack.new();
@@ -160,7 +160,7 @@ export struct Config {
 }
 
 export fn calcSMA(src: series float, length: simple int) {
-    ta.sma(src, length)
+    ta.sma(src, length);
 }
 
 export enum Side {

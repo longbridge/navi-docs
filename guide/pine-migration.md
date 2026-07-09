@@ -89,8 +89,8 @@ float add(float a, float b) => a + b
 
 ```navi
 // Navi
-fn f(a, b) { a + b }
-fn add(a: float, b: float): float { a + b }
+fn f(a, b) { a + b; }
+fn add(a: float, b: float): float { a + b; }
 ```
 
 Multi-line functions:
@@ -108,7 +108,7 @@ maFast(src, len) =>
 fn maFast(src, len) {
     let ema = ta.ema(src, len);
     let sma = ta.sma(src, len);
-    (ema + sma) / 2
+    (ema + sma) / 2;
 }
 ```
 
@@ -189,7 +189,7 @@ Tuple return types:
 ```navi
 // Navi
 fn minmax(xs: array<float>): (float, float) {
-    (array.min(xs), array.max(xs))
+    (array.min(xs), array.max(xs));
 }
 ```
 

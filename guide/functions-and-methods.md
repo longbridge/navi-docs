@@ -2,28 +2,19 @@
 
 ## Function Definitions
 
-### Single-Line Functions
+All functions use brace blocks. The last expression in the body is the return value — there is no `return` keyword:
 
 ```navi
 fn double(x) {
-    x * 2
+    x * 2;
 }
-fn add(a, b) {
-    a + b
-}
-```
 
-### Multi-Line Functions
-
-The last expression in the body is the return value. There is no `return` keyword:
-
-```navi
 fn smaCustom(src, length) {
     let sum = 0.0;
     for i = 0 to length - 1 {
-        sum += src[i]
+        sum += src[i];
     }
-    sum / length
+    sum / length;
 }
 ```
 
@@ -33,7 +24,7 @@ fn smaCustom(src, length) {
 fn calcBands(src, length, mult) {
     let basis = ta.sma(src, length);
     let dev = mult * ta.stdev(src, length);
-    (basis, basis + dev, basis - dev)
+    (basis, basis + dev, basis - dev);
 }
 
 let (mid, upper, lower) = calcBands(close, 20, 2.0);
@@ -47,7 +38,7 @@ let (mid, upper, lower) = calcBands(close, 20, 2.0);
 fn myPlot(src, length = 14, title = "Default") {
     let sma = ta.sma(src, length);
     plot(sma, title);
-    sma
+    sma;
 }
 ```
 
@@ -56,7 +47,7 @@ fn myPlot(src, length = 14, title = "Default") {
 When calling functions, you can use named arguments:
 
 ```navi
-plot(close, title: "Close", color: color.BLUE, linewidth: 2)
+plot(close, title: "Close", color: color.BLUE, linewidth: 2);
 ```
 
 ## Function Overloading
@@ -65,13 +56,13 @@ Multiple functions can share the same name if they have different parameter type
 
 ```navi
 fn format(x: int) {
-    str.tostring(x)
+    str.tostring(x);
 }
 fn format(x: float) {
-    str.tostring(x, "#.##")
+    str.tostring(x, "#.##");
 }
 fn format(x: string) {
-    x
+    x;
 }
 ```
 
@@ -81,7 +72,7 @@ Methods are functions whose first parameter is the receiver (`self`). They suppo
 
 ```navi
 method double(self: int) {
-    self * 2
+    self * 2;
 }
 
 let x = 5;
@@ -100,16 +91,16 @@ struct Position {
 }
 
 method pnl(self: Position, currentPrice: float) {
-    (currentPrice - self.entry) * self.size
+    (currentPrice - self.entry) * self.size;
 }
 
 method isProfit(self: Position, currentPrice: float) {
-    self.pnl(currentPrice) > 0
+    self.pnl(currentPrice) > 0;
 }
 
 let pos = Position.new(entry: 100.0, size: 10.0);
 if pos.isProfit(close) {
-    label.new(bar_index, high, str.tostring(pos.pnl(close), "#.##"))
+    label.new(bar_index, high, str.tostring(pos.pnl(close), "#.##"));
 }
 ```
 
@@ -120,15 +111,15 @@ Navi **does not allow recursion**. A function cannot call itself, either directl
 ```navi
 // ERROR — direct recursion is not allowed
 fn factorial(n) {
-    n <= 1 ? 1 : n * factorial(n - 1)
+    n <= 1 ? 1 : n * factorial(n - 1);
 }
 
 // ERROR — indirect recursion is also rejected
 fn isEven(n) {
-    n == 0 ? true : isOdd(n - 1)
+    n == 0 ? true : isOdd(n - 1);
 }
 fn isOdd(n) {
-    n == 0 ? false : isEven(n - 1)
+    n == 0 ? false : isEven(n - 1);
 }
 ```
 
@@ -138,9 +129,9 @@ This is a fundamental language constraint, not an implementation limitation. Use
 fn factorial(n) {
     let result = 1;
     for i = 2 to n {
-        result *= i
+        result *= i;
     }
-    result
+    result;
 }
 ```
 
@@ -150,11 +141,11 @@ Navi supports annotating a return type before the function name for stricter typ
 
 ```navi
 fn greet(name: string): string {
-    "Hello, " + name
+    "Hello, " + name;
 }
 
 fn average(a: float, b: float): float {
-    (a + b) / 2.0
+    (a + b) / 2.0;
 }
 ```
 
@@ -162,7 +153,7 @@ This also works with methods:
 
 ```navi
 method isPositive(self: float): bool {
-    self > 0
+    self > 0;
 }
 ```
 
@@ -172,13 +163,13 @@ Navi allows type parameters declared with `<...>` after the function name:
 
 ```navi
 fn identity<T>(value: T) {
-    value
+    value;
 }
 fn first<T>(arr: array<T>) {
-    array.get(arr, 0)
+    array.get(arr, 0);
 }
 method contains<T>(self: array<T>, value: T) {
-    array.indexof(self, value) >= 0
+    array.indexof(self, value) >= 0;
 }
 ```
 
@@ -190,7 +181,7 @@ Navi allows the last parameter to be variadic with `...`:
 
 ```navi
 fn sum(first: int, rest: int...) {
-    first + rest
+    first + rest;
 }
 ```
 
@@ -202,7 +193,7 @@ The `property` keyword declares a function that cannot have parameters and is ca
 
 ```navi
 property size() {
-    42
+    42;
 }
 
 // Access as a variable — no parentheses:
@@ -217,18 +208,18 @@ let value = size(); // error: function `size` not defined
 ```navi
 // Candlestick data (prelude/candlestick.1.nv)
 export property open(): series float {
-    @native.candlestick(1)
+    @native.candlestick(1);
 }
 export property close(): series float {
-    @native.candlestick(4)
+    @native.candlestick(4);
 }
 export property hl2(): series float {
-    (high + low) / 2
+    (high + low) / 2;
 }
 
 // Constants (stdlib/math.1.nv)
 export property pi(): const float {
-    3.1415926535897932
+    3.1415926535897932;
 }
 ```
 
@@ -244,7 +235,7 @@ struct AB {
 }
 
 staticmethod(AB) add(a: int, b: int): int {
-    a + b
+    a + b;
 }
 
 // Call on the type name:
@@ -264,11 +255,11 @@ export struct Point {
 }
 
 export staticmethod(Point) now(price: float = close): Point {
-    Point.new(bar_index, time_now, price)
+    Point.new(bar_index, time_now, price);
 }
 
 export staticmethod(Point) from_time(time: int, price: float): Point {
-    Point.new(na, time, price)
+    Point.new(na, time, price);
 }
 ```
 
@@ -284,7 +275,7 @@ struct Counter {
 }
 
 staticproperty(Counter) zero(): Counter {
-    Counter.new()
+    Counter.new();
 }
 
 // Access without ():
@@ -309,11 +300,11 @@ struct Vec2 {
 }
 
 operator+(a: Vec2, b: Vec2): Vec2 {
-    Vec2.new(a.x + b.x, a.y + b.y)
+    Vec2.new(a.x + b.x, a.y + b.y);
 }
 
 operator-(a: Vec2, b: Vec2): Vec2 {
-    Vec2.new(a.x - b.x, a.y - b.y)
+    Vec2.new(a.x - b.x, a.y - b.y);
 }
 
 // Now you can use the operators naturally:
@@ -330,9 +321,9 @@ Navi provides many built-in functions:
 
 ```navi
 // Plotting
-plot(close, "Close", color.BLUE)
-plot_shape(close > open, style: Shape.TriangleUp)
-bg_color(close > open ? color.new(color.GREEN, 90) : na)
+plot(close, "Close", color.BLUE);
+plot_shape(close > open, style: Shape.TriangleUp);
+bg_color(close > open ? color.new(color.GREEN, 90) : na);
 
 // Technical Analysis
 let sma = ta.sma(close, 20);

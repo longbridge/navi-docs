@@ -28,6 +28,8 @@ export const en: LocaleSpecificConfig<DefaultTheme.Config> & { label: string; la
           text: "Language",
           items: [
             { text: "Language Basics", link: "/guide/language-basics" },
+            { text: "History Reference", link: "/guide/history-reference" },
+            { text: "Collections", link: "/guide/collections" },
             { text: "Types & Variables", link: "/guide/types-and-variables" },
             { text: "Control Structures", link: "/guide/control-structures" },
             { text: "Functions & Methods", link: "/guide/functions-and-methods" },

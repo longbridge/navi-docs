@@ -6,11 +6,11 @@ Navi 中所有控制結構都是**運算式** — 它們會產生一個值。在
 
 ```navi
 if close > open {
-    label.new(bar_index, high, "Bullish")
+    label.new(bar_index, high, "Bullish");
 } else if close < open {
-    label.new(bar_index, low, "Bearish")
+    label.new(bar_index, low, "Bearish");
 } else {
-    label.new(bar_index, close, "Doji")
+    label.new(bar_index, close, "Doji");
 }
 ```
 
@@ -20,9 +20,9 @@ if close > open {
 
 ```navi
 let x = if close > open {
-    close
+    close;
 } else {
-    open
+    open;
 };
 
 plot(x);
@@ -32,11 +32,11 @@ plot(x);
 
 ```navi
 let x = if open > close {
-    5
+    5;
 } else if high > low {
-    close
+    close;
 } else {
-    open
+    open;
 };
 ```
 
@@ -44,7 +44,7 @@ let x = if open > close {
 
 ```navi
 let x = if close > open {
-    close
+    close;
 };
 // 當 close <= open 時 x 為 na
 ```
@@ -55,9 +55,9 @@ let x = if close > open {
 
 ```navi
 let (v1, v2) = if close > open {
-    (high, close)
+    (high, close);
 } else {
-    (close, low)
+    (close, low);
 };
 ```
 
@@ -68,7 +68,7 @@ let (v1, v2) = if close > open {
 ```navi
 let sum = 0.0;
 for i = 0 to 9 {
-    sum += close[i]
+    sum += close[i];
 }
 let averageClose = sum / 10;
 ```
@@ -84,7 +84,7 @@ for i = 0 to 20 by 2 {}
 
 ```navi
 for i = 10 to 0 by -1 {
-    array.push(arr, i)
+    array.push(arr, i);
 }
 // i = 10, 9, 8, ..., 0
 ```
@@ -98,12 +98,12 @@ var prices = array.from(100.0, 200.0, 300.0);
 
 // 僅取得值
 for value in prices {
-    log.info(str.tostring(value))
+    log.info(str.tostring(value));
 }
 
 // 索引和值（解構）
 for (index, value) in prices {
-    log.info(str.tostring(index) + ": " + str.tostring(value))
+    log.info(str.tostring(index) + ": " + str.tostring(value));
 }
 ```
 
@@ -118,9 +118,9 @@ fn qtyGreaterThan(value, array) {
     let result: int = 0;
     for currentElement in array {
         if currentElement > value {
-            result += 1
+            result += 1;
         }
-        result
+        result;
     }
 }
 plot(qtyGreaterThan(ta.sma(close, 20), ohlcValues));
@@ -133,7 +133,7 @@ let i = 0;
 let sum = 0.0;
 while i < 10 {
     sum += close[i];
-    i += 1
+    i += 1;
 }
 ```
 
@@ -145,7 +145,7 @@ while i < 10 {
 let i: int = 0;
 let result: int = while i < 10 {
     i += 1;
-    i * 2
+    i * 2;
 };
 // result 為 20（最後一次迭代：i = 10, 10 * 2 = 20）
 ```
@@ -158,10 +158,10 @@ let result: int = while i < 10 {
 ```navi
 for i = 0 to 99 {
     if close[i] < 0 {
-        break // 退出迴圈
+        break; // 退出迴圈
     } // 退出迴圈
     if na(close[i]) {
-        continue // 跳過此迭代
+        continue; // 跳過此迭代
     } // 跳過此迭代
 }
 // 處理 close[i]
@@ -173,11 +173,11 @@ for i = 0 to 99 {
 let tempString: string = "";
 let finalText: string = for number in randomArray {
     if number == 8 {
-        break // 退出迴圈；返回最後計算的運算式
+        break; // 退出迴圈；返回最後計算的運算式
     } else if number % 2 == 0 {
-        continue // 跳過偶數
+        continue; // 跳過偶數
     } // 跳過偶數
-    tempString = tempString + str.tostring(number) + ", "
+    tempString = tempString + str.tostring(number) + ", ";
 };
 // finalText 儲存迴圈終止後的返回值
 ```

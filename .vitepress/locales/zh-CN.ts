@@ -29,6 +29,8 @@ export const zhCN: LocaleSpecificConfig<DefaultTheme.Config> & { label: string; 
           text: "语言",
           items: [
             { text: "语言基础", link: "/zh-CN/guide/language-basics" },
+            { text: "历史引用", link: "/zh-CN/guide/history-reference" },
+            { text: "集合类型", link: "/zh-CN/guide/collections" },
             { text: "类型与变量", link: "/zh-CN/guide/types-and-variables" },
             { text: "控制结构", link: "/zh-CN/guide/control-structures" },
             { text: "函数与方法", link: "/zh-CN/guide/functions-and-methods" },
