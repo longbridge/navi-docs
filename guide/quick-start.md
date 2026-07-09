@@ -52,11 +52,20 @@ longbridge quant run AAPL.US --start 2023-01-01 --end 2024-12-31 --script macros
 
 ## Running Pine Script Files
 
-You can also run existing Pine Script files (`.pine`) directly:
+Use `--dialect pine` to run an existing Pine Script file without any code changes:
 
 ```bash
 longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script my_indicator.pine --dialect pine
 ```
+
+The `--dialect` parameter selects the script language:
+
+| Value | Language |
+|---|---|
+| `navi` | Navi (default for `.nvs` files) |
+| `pine` | Pine Script V6 (default for `.pine` files) |
+
+If your file uses the correct extension (`.nvs` or `.pine`), the dialect is detected automatically and `--dialect` can be omitted.
 
 ## Next Steps
 
