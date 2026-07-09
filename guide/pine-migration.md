@@ -29,6 +29,10 @@ Navi and Pine Script V6 share the same standard library, built-ins, and executio
 | Tuple | `[a, b]` | `(a, b)` |
 | Struct | `type T` + indented | `struct T { … }` |
 | Enum | `enum E` + indented | `enum E { … }` |
+| Named argument | `f(length=14)` | `f(length: 14)` |
+| Enum constant | `strategy.long` | `Direction.Long` |
+| Color constant | `color.blue` | `color.BLUE` |
+| Script version | `// @version=6` (required) | not needed |
 
 ## Statements and Blocks
 
@@ -285,6 +289,91 @@ plot(basis, "Basis", color.BLUE);
 plot(upper, "Upper", color.RED);
 plot(lower, "Lower", color.GREEN);
 fill(upper, lower, color.new(color.BLUE, 90));
+```
+
+## Named / Keyword Arguments
+
+Pine Script uses `=` for named arguments in function calls. Navi uses `:`.
+
+```pine
+// Pine
+indicator("My Script", overlay=true, format=format.price)
+ta.sma(source=close, length=14)
+plot(fast, title="Fast", color=color.blue, linewidth=2)
+```
+
+```navi
+// Navi
+indicator("My Script", overlay: true, format: Format.Price);
+ta.sma(source: close, length: 14);
+plot(fast, title: "Fast", color: color.BLUE, linewidth: 2);
+```
+
+This affects every built-in function call that uses named parameters — `indicator()`, `strategy()`, `input.*`, `plot()`, `plot_shape()`, `strategy.entry()`, etc.
+
+## Enum Constants
+
+Pine Script uses lowercase dot-notation for built-in constants. Navi uses PascalCase enum types.
+
+| Pine Script | Navi |
+|---|---|
+| `strategy.long` | `Direction.Long` |
+| `strategy.short` | `Direction.Short` |
+| `strategy.fixed` | `DefaultQtyType.Fixed` |
+| `strategy.percent_of_equity` | `DefaultQtyType.PercentOfEquity` |
+| `shape.triangleup` | `Shape.TriangleUp` |
+| `shape.triangledown` | `Shape.TriangleDown` |
+| `location.belowbar` | `Location.BelowBar` |
+| `location.abovebar` | `Location.AboveBar` |
+| `size.small` | `Size.Small` |
+| `size.normal` | `Size.Normal` |
+| `format.price` | `Format.Price` |
+| `format.volume` | `Format.Volume` |
+| `display.none` | `display.NONE` |
+
+## Color Constants
+
+Pine Script color constants are lowercase (`color.blue`). Navi uses uppercase (`color.BLUE`).
+
+```pine
+// Pine
+color.blue, color.red, color.green, color.orange
+color.white, color.black, color.gray
+```
+
+```navi
+// Navi
+color.BLUE, color.RED, color.GREEN, color.ORANGE
+color.WHITE, color.BLACK, color.GRAY
+```
+
+`color.new(color.BLUE, 80)` (transparency 0–100) works the same in both.
+
+## Built-in Function Names
+
+Some Pine Script functions use camelCase or no underscore; Navi uses `snake_case`.
+
+| Pine Script | Navi |
+|---|---|
+| `plotshape(...)` | `plot_shape(...)` |
+| `plotchar(...)` | `plot_char(...)` |
+| `bgcolor(...)` | `bg_color(...)` |
+| `barcolor(...)` | `bar_color(...)` |
+| `alertcondition(...)` | `alert_condition(...)` |
+
+## Script Version Header
+
+Pine Script files require `// @version=6` at the top. Navi does not use version headers — just start with `indicator()`, `strategy()`, or `library()`.
+
+```pine
+// Pine — version header required
+// @version=6
+indicator("My Script")
+```
+
+```navi
+// Navi — no version header needed
+indicator("My Script");
 ```
 
 ## What Stays the Same
