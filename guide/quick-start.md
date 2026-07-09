@@ -4,7 +4,7 @@ Navi scripts run on the Longbridge platform via the `longbridge` CLI.
 
 ## Install the Longbridge CLI
 
-See the [CLI documentation](https://open.longbridge.com/docs/cli/quant) for installation instructions.
+See the [installation guide](https://open.longbridge.com/docs/cli/install) to get started. The [`longbridge quant` command](https://open.longbridge.com/docs/cli/quant) runs Navi and Pine Script files against historical data.
 
 ## Write Your First Indicator
 

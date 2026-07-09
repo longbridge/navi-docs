@@ -4,7 +4,7 @@ Navi 脚本通过 `longbridge` CLI 在 Longbridge 平台上运行。
 
 ## 安装 Longbridge CLI
 
-安装说明请参阅 [CLI 文档](https://open.longbridge.com/docs/cli/quant)。
+请参阅[安装指南](https://open.longbridge.com/docs/cli/install)。[`longbridge quant` 命令](https://open.longbridge.com/docs/cli/quant)用于对历史数据运行 Navi 或 Pine Script 脚本。
 
 ## 编写第一个指标
 
