@@ -12,7 +12,7 @@ import { zhHK } from "./locales/zh-HK";
 export default defineConfig({
   title: "Navi",
   description: "Navi language documentation and playground",
-  base: "/",
+  base: process.env.VITEPRESS_BASE ?? "/",
   cleanUrls: true,
 
   head: [
