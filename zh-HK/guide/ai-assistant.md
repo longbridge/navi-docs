@@ -1,6 +1,6 @@
 # AI 助手
 
-[Claude Code](https://claude.ai/code) 的 **navi-authoring** skill 為你的 AI 助手注入了 Navi 語言的深度知識——語法、執行模型、標準庫和常用模式——使其無需每次會話重新學習，即可編寫正確、地道的 Navi 腳本。
+**navi** skill 為 AI 編碼助手提供 Navi 語言的專用知識——語法、執行模型、標準庫和常用模式——使其無需每次會話重新學習，即可編寫正確、地道的 `.nv` 指標和策略腳本。
 
 ## 包含內容
 
@@ -10,32 +10,33 @@ Skill 包含四個按需載入的參考文件：
 |---|---|
 | `syntax.md` | 語言語法——聲明、控制流、函數、struct/enum/newtype、導入 |
 | `execution-model.md` | 逐 bar 執行、類型限定符（`const`/`input`/`simple`/`series`）、`var`/`varip`、`na`、歷史引用、避免重繪 |
-| `stdlib.md` | 內置函數——prelude、`ta`/`math`/`str`/`array`/`map`/`matrix`、繪圖、`strategy` |
+| `stdlib.md` | 內置函數——prelude、`ta`/`math`/`str`、`Array`/`Map`/`Matrix`、繪圖、`strategy` |
 | `patterns.md` | 經典模式——indicator/strategy/library 框架、預熱守衛、有狀態累加器、交叉邏輯、常見陷阱 |
 
 ## 安裝
 
-1. 下載 skill 壓縮包：
+使用 Skills CLI 從 `longbridge/navi` 倉庫安裝：
 
-   [下載 navi-authoring-skill.zip](/navi-authoring-skill.zip)
+```bash
+npx skills add longbridge/navi
+```
 
-2. 解壓到項目的 `.claude/skills/` 目錄：
+如需先查看倉庫中可安裝的 skill：
 
-   ```
-   your-project/
-   └── .claude/
-       └── skills/
-           └── navi-authoring/
-               ├── SKILL.md
-               └── references/
-   ```
+```bash
+npx skills add longbridge/navi --list
+```
 
-3. 完成。在編寫或審閱 Navi 腳本時，Claude Code 會自動載入該 skill。
+如果安裝器要求選擇 skill，請選擇 `navi`。也可以顯式安裝：
+
+```bash
+npx skills add longbridge/navi --skill navi
+```
 
 ## 使用
 
-安裝後，Claude Code 在處理 `.nv` 文件或你詢問 Navi 相關問題時會自動使用該 skill。也可以顯式調用：
+安裝後，兼容的 AI 編碼助手在處理 `.nv` 文件或你詢問 Navi 相關問題時即可使用該 skill。
 
 ```
-/navi-authoring 寫一個帶上下軌輸入參數的 VWAP 指標
+用 Navi 寫一個帶上下軌輸入參數的 VWAP 指標。
 ```

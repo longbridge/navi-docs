@@ -16,10 +16,10 @@
 
 ## Pine Script 相容性
 
-Navi 支援 Pine Script V6 語法。如果你有現成的 Pine Script 指標，只需少量修改即可在 Navi 上執行。詳見[從 Pine Script 遷移](/zh-HK/guide/pine-migration)。
+Navi 支援 Pine Script V6 語法。如果你有現成的 Pine Script 指標，只需少量修改即可在 Navi 上執行。可閱讀[語言基礎](/zh-HK/guide/language-basics)和[示例](/zh-HK/guide/examples)了解當前支援的語法與常見腳本模式。
 
 ## 下一步
 
 - [快速開始](/zh-HK/guide/quick-start) — 使用 CLI 編寫並執行第一個指標
 - [語言基礎](/zh-HK/guide/language-basics) — 學習 Navi 語法
-- [從 Pine Script 遷移](/zh-HK/guide/pine-migration) — 轉換現有腳本
+- [示例](/zh-HK/guide/examples) — 閱讀完整指標和策略

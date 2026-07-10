@@ -10,6 +10,7 @@ export const zhCN: LocaleSpecificConfig<DefaultTheme.Config> & { label: string; 
   themeConfig: {
     nav: [
       { text: "文档", link: "/zh-CN/guide/introduction" },
+      { text: "Skill", link: "/zh-CN/skill" },
       { text: "试玩区", link: "/zh-CN/playground" },
       { text: "API 参考", link: "/zh-CN/api/stdlib/" },
     ],

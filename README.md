@@ -2,6 +2,20 @@
 
 Documentation site and interactive playground for the Navi language.
 
+## AI Skill
+
+Install the Navi authoring skill for AI coding agents with:
+
+```bash
+npx skills add longbridge/navi
+```
+
+If the installer lists multiple skills from the repository, select `navi` or run:
+
+```bash
+npx skills add longbridge/navi --skill navi
+```
+
 ## Getting Started
 
 ```bash

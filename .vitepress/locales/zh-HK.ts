@@ -10,6 +10,7 @@ export const zhHK: LocaleSpecificConfig<DefaultTheme.Config> & { label: string; 
   themeConfig: {
     nav: [
       { text: "文檔", link: "/zh-HK/guide/introduction" },
+      { text: "Skill", link: "/zh-HK/skill" },
       { text: "試玩區", link: "/zh-HK/playground" },
       { text: "API 參考", link: "/zh-HK/api/stdlib/" },
     ],

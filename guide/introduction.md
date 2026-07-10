@@ -16,10 +16,10 @@ Use `close[1]` to look back one bar, `var` to persist state across bars, and `ba
 
 ## Pine Script Compatibility
 
-Navi supports Pine Script V6 syntax. If you have existing Pine Script indicators, they run on Navi with minimal changes. See [Migrating from Pine Script](/guide/pine-migration) for a full syntax comparison.
+Navi supports Pine Script V6 syntax. If you have existing Pine Script indicators, they run on Navi with minimal changes. See [Language Basics](/guide/language-basics) and [Examples](/guide/examples) for the supported syntax and common script patterns.
 
 ## Next Steps
 
 - [Quick Start](/guide/quick-start) — write and run your first indicator with the CLI
 - [Language Basics](/guide/language-basics) — learn Navi syntax
-- [Migrating from Pine Script](/guide/pine-migration) — convert existing scripts
+- [Examples](/guide/examples) — study complete indicators and strategies

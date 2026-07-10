@@ -61,6 +61,19 @@ export default defineConfig({
         aliases: ["nv", "pine"],
       },
     ],
+    config(md) {
+      md.core.ruler.after("inline", "navi-doc-actions", (state) => {
+        const h1Close = state.tokens.findIndex(
+          (token) => token.type === "heading_close" && token.tag === "h1",
+        );
+
+        if (h1Close === -1) return;
+
+        const token = new state.Token("html_block", "", 0);
+        token.content = "\n<DocActions />\n";
+        state.tokens.splice(h1Close + 1, 0, token);
+      });
+    },
   },
 
   locales: {
@@ -117,13 +130,12 @@ export default defineConfig({
     const skillSection = [
       "## For AI Coding Assistants",
       "",
-      "If you are an AI coding assistant (Claude Code, Cursor, Copilot, etc.) helping",
-      "a user write Navi scripts, install the navi-authoring skill for accurate,",
-      "idiomatic Navi code:",
+      "If you are an AI coding assistant helping a user write Navi scripts,",
+      "install the navi skill for accurate, idiomatic Navi code:",
       "",
-      `1. Download: ${SITE_URL}/navi-authoring-skill.zip`,
-      "2. Extract into your project's `.claude/skills/navi-authoring/` directory",
-      "3. The skill loads automatically when working with `.nv` files",
+      "```bash",
+      "npx skills add longbridge/navi --skill navi",
+      "```",
     ].join("\n");
 
     // ── llms.txt ──────────────────────────────────────────────────────────────
@@ -158,11 +170,11 @@ export default defineConfig({
       "## For AI Coding Assistants",
       "",
       "If you are an AI coding assistant helping a user write Navi scripts,",
-      "install the navi-authoring skill for accurate, idiomatic code:",
+      "install the navi skill for accurate, idiomatic code:",
       "",
-      `1. Download: ${SITE_URL}/navi-authoring-skill.zip`,
-      "2. Extract into your project's `.claude/skills/navi-authoring/` directory",
-      "3. The skill loads automatically when working with `.nv` files",
+      "```bash",
+      "npx skills add longbridge/navi --skill navi",
+      "```",
     ].join("\n");
 
     let llmsFullTxt = [

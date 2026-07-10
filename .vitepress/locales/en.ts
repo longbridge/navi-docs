@@ -9,6 +9,7 @@ export const en: LocaleSpecificConfig<DefaultTheme.Config> & { label: string; la
   themeConfig: {
     nav: [
       { text: "Docs", link: "/guide/introduction" },
+      { text: "Skill", link: "/skill" },
       { text: "Playground", link: "/playground" },
       { text: "API Reference", link: "/api/stdlib/" },
     ],
