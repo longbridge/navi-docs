@@ -48,21 +48,19 @@ script_runner = "@shell"
 script = ["node scripts/generate-stdlib-docs.mjs"]
 
 # Package the navi-authoring Claude Code skill as a zip for users to download.
-[tasks.package-skill.linux]
+[tasks.package-skill]
 private = true
 workspace = false
+
+[tasks.package-skill.linux]
 script_runner = "@shell"
 script = ["zip -r \"${SITE}/public/navi-authoring-skill.zip\" \".claude/skills/navi-authoring\""]
 
 [tasks.package-skill.mac]
-private = true
-workspace = false
 script_runner = "@shell"
 script = ["zip -r \"${SITE}/public/navi-authoring-skill.zip\" \".claude/skills/navi-authoring\""]
 
 [tasks.package-skill.windows]
-private = true
-workspace = false
 script_runner = "@shell"
 script = ["powershell -Command \"Compress-Archive -Path '.claude/skills/navi-authoring' -DestinationPath '${SITE}/public/navi-authoring-skill.zip' -Force\""]
 
