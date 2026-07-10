@@ -94,6 +94,25 @@ The 'M', 'd', 'h', 'H', 'm' and 's' tokens can all be doubled to generate leadin
 
 ---
 
+### index_of {#index_of}
+
+```navi
+str.index_of(source: string, str: string): int
+```
+
+Returns the position of the first occurrence of a substring in a string, or `na` if not found.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `source` | <code>string</code> |  | The string to search within. |
+| `str` | <code>string</code> |  | The substring to search for. |
+
+**Returns:** <code>int</code> — The zero-based index of the first occurrence, or `na` if not found.
+
+---
+
 ### length {#length}
 
 ```navi
@@ -146,25 +165,6 @@ Returns the new substring of the source string if it matches a regex regular exp
 | `regex` | <code>string</code> |  | The regular expression pattern to match. |
 
 **Returns:** <code>string</code> — The matched substring, or an empty string if no match is found.
-
----
-
-### pos {#pos}
-
-```navi
-str.pos(source: string, str: string): int
-```
-
-Returns the position of the first occurrence of a substring in a string, or `na` if not found.
-
-**Parameters**
-
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| `source` | <code>string</code> |  | The string to search within. |
-| `str` | <code>string</code> |  | The substring to search for. |
-
-**Returns:** <code>int</code> — The zero-based index of the first occurrence, or `na` if not found.
 
 ---
 

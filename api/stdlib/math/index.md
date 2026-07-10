@@ -44,7 +44,7 @@ Represents the ratio of a circle's circumference to its diameter.
 
 ---
 
-### rphi {#rphi}
+### reciprocal_phi {#reciprocal_phi}
 
 **Type:** <code>const&nbsp;float</code>
 

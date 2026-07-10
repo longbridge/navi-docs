@@ -38,7 +38,7 @@ const _s3 = ref(0)
 
 ---
 
-### rphi {#rphi}
+### reciprocal_phi {#reciprocal_phi}
 
 **類型:** <code>const&nbsp;float</code>
 

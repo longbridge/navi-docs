@@ -30,11 +30,43 @@ Color constant for `#2962FF`.
 
 ---
 
+### BROWN {#BROWN}
+
+**Type:** <code>const&nbsp;color</code>
+
+Color constant for `#795548`.
+
+---
+
+### CORAL {#CORAL}
+
+**Type:** <code>const&nbsp;color</code>
+
+Color constant for `#FF7043`.
+
+---
+
+### CYAN {#CYAN}
+
+**Type:** <code>const&nbsp;color</code>
+
+Color constant for `#00BFF3`.
+
+---
+
 ### FUCHSIA {#FUCHSIA}
 
 **Type:** <code>const&nbsp;color</code>
 
 Color constant for `#E040FB`.
+
+---
+
+### GOLD {#GOLD}
+
+**Type:** <code>const&nbsp;color</code>
+
+Color constant for `#FFD700`.
 
 ---
 
@@ -51,6 +83,14 @@ Color constant for `#787B86`.
 **Type:** <code>const&nbsp;color</code>
 
 Color constant for `#4CAF50`.
+
+---
+
+### INDIGO {#INDIGO}
+
+**Type:** <code>const&nbsp;color</code>
+
+Color constant for `#3F51B5`.
 
 ---
 
@@ -94,6 +134,14 @@ Color constant for `#FF9800`.
 
 ---
 
+### PINK {#PINK}
+
+**Type:** <code>const&nbsp;color</code>
+
+Color constant for `#E91E63`.
+
+---
+
 ### PURPLE {#PURPLE}
 
 **Type:** <code>const&nbsp;color</code>
@@ -126,6 +174,14 @@ Color constant for `#089981`.
 
 ---
 
+### VIOLET {#VIOLET}
+
+**Type:** <code>const&nbsp;color</code>
+
+Color constant for `#7B1FA2`.
+
+---
+
 ### WHITE {#WHITE}
 
 **Type:** <code>const&nbsp;color</code>
@@ -142,10 +198,28 @@ Color constant for `#FDD835`.
 
 ## Functions
 
-### b {#b}
+### alpha {#alpha}
 
 ```navi
-color.b(color: color): float
+color.alpha(color: color): float
+```
+
+Returns the transparency component of the given `color`.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `color` | <code>color</code> |  | The color to extract the transparency component from. |
+
+**Returns:** <code>float</code> — A value in the range [0, 100] where 0 is fully opaque and 100 is fully transparent.
+
+---
+
+### blue {#blue}
+
+```navi
+color.blue(color: color): float
 ```
 
 Returns the blue component of the given `color`.
@@ -188,10 +262,10 @@ Creates a color that is a gradient between `bottom_color` and `top_color` based 
 
 ---
 
-### g {#g}
+### green {#green}
 
 ```navi
-color.g(color: color): float
+color.green(color: color): float
 ```
 
 Returns the green component of the given `color`.
@@ -225,10 +299,10 @@ Creates a new color by changing the transparency of the given `color` to `transp
 
 ---
 
-### r {#r}
+### red {#red}
 
 ```navi
-color.r(color: color): float
+color.red(color: color): float
 ```
 
 Returns the red component of the given `color`.
@@ -261,21 +335,3 @@ Creates a color from the specified red, green, blue components (0-255) and optio
 | `transp` | <code>float</code> | `0` | The transparency value (0-100, default: 0.0). |
 
 **Returns:** <code>color</code>
-
----
-
-### t {#t}
-
-```navi
-color.t(color: color): float
-```
-
-Returns the transparency component of the given `color`.
-
-**Parameters**
-
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| `color` | <code>color</code> |  | The color to extract the transparency component from. |
-
-**Returns:** <code>float</code> — A value in the range [0, 100] where 0 is fully opaque and 100 is fully transparent.

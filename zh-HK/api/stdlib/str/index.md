@@ -92,6 +92,25 @@ str.format_time(
 
 ---
 
+### index_of {#index_of}
+
+```navi
+str.index_of(source: string, str: string): int
+```
+
+傳回子字符串在字符串中第一次出現的位置，如果未找到，則傳回 `na`。
+
+**參數**
+
+| 名稱 | 類型 | 預設值 | 說明 |
+| --- | --- | --- | --- |
+| `source` | <code>string</code> |  | 要在其中搜索的字符串。 |
+| `str` | <code>string</code> |  | 要搜索的子字符串。 |
+
+**返回:** <code>int</code> — 第一次出現的從零開始的索引，如果未找到，則為 `na`。
+
+---
+
 ### length {#length}
 
 ```navi
@@ -144,25 +163,6 @@ str.match(source: string, regex: string): string
 | `regex` | <code>string</code> |  | 要匹配的正則表達式模式。 |
 
 **返回:** <code>string</code> — 匹配的子字符串，如果未找到匹配則為空字符串。
-
----
-
-### pos {#pos}
-
-```navi
-str.pos(source: string, str: string): int
-```
-
-傳回子字符串在字符串中第一次出現的位置，如果未找到，則傳回 `na`。
-
-**參數**
-
-| 名稱 | 類型 | 預設值 | 說明 |
-| --- | --- | --- | --- |
-| `source` | <code>string</code> |  | 要在其中搜索的字符串。 |
-| `str` | <code>string</code> |  | 要搜索的子字符串。 |
-
-**返回:** <code>int</code> — 第一次出現的從零開始的索引，如果未找到，則為 `na`。
 
 ---
 

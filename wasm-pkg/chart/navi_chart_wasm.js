@@ -254,12 +254,12 @@ function takeFromExternrefTable0(idx) {
     wasm.__externref_table_dealloc(idx);
     return value;
 }
-function wasm_bindgen__convert__closures_____invoke__hbebe2dad8b5eac24(arg0, arg1, arg2) {
-    wasm.wasm_bindgen__convert__closures_____invoke__hbebe2dad8b5eac24(arg0, arg1, arg2);
-}
-
 function wasm_bindgen__convert__closures_____invoke__hab42f9397c1f232b(arg0, arg1) {
     wasm.wasm_bindgen__convert__closures_____invoke__hab42f9397c1f232b(arg0, arg1);
+}
+
+function wasm_bindgen__convert__closures_____invoke__hbebe2dad8b5eac24(arg0, arg1, arg2) {
+    wasm.wasm_bindgen__convert__closures_____invoke__hbebe2dad8b5eac24(arg0, arg1, arg2);
 }
 
 function wasm_bindgen__convert__closures_____invoke__h3ac53d9680872b24(arg0, arg1, arg2, arg3) {

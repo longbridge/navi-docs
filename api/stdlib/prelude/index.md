@@ -29,7 +29,7 @@ The prelude is loaded automatically into every script. Its types and functions a
 | --- | --- |
 | [`AlertFreq`](/api/stdlib/prelude/AlertFreq) | Alert frequency constant for <a class="stdlib-ref" data-key="prelude::alert" href="/api/stdlib/prelude/#alert">alert</a>. |
 | [`Array<T>`](/api/stdlib/prelude/Array) | An ordered, indexable collection of elements of type `T`. |
-| [`BarmergeGaps`](/api/stdlib/prelude/BarmergeGaps) | Gap-filling mode for `request.*()` functions. |
+| [`BarmergeGaps`](/api/stdlib/prelude/BarmergeGaps) | Gap mode for `request.*()` functions. |
 | [`BarmergeLookahead`](/api/stdlib/prelude/BarmergeLookahead) | Lookahead mode for `request.*()` functions. |
 | [`Box`](/api/stdlib/prelude/Box) | Handle for a box drawing. |
 | [`CommissionType`](/api/stdlib/prelude/CommissionType) | Commission calculation mode for <a class="stdlib-ref" data-key="prelude::strategy" href="/api/stdlib/prelude/#strategy">strategy</a>. |
@@ -1719,7 +1719,7 @@ Resolves the closing timestamp of the bar bucket selected by `timeframe` and `se
 
 Maps the current chart bar to another timeframe and returns that target bar's closing timestamp.
 
-It uses the same two-stage offset model as <a class="stdlib-ref" data-key="prelude::time" href="/api/stdlib/prelude/#prop-time">time</a>, but reports the bar end instead of the bar start.
+It uses the same two-stage offset model as <a class="stdlib-ref" data-key="prelude::time" href="/api/stdlib/prelude/#fn-time">time</a>, but reports the bar end instead of the bar start.
 
 **Parameters**
 

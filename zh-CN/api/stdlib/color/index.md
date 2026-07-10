@@ -30,11 +30,43 @@ title: "color"
 
 ---
 
+### BROWN {#BROWN}
+
+**类型:** <code>const&nbsp;color</code>
+
+Color constant for `#795548`.
+
+---
+
+### CORAL {#CORAL}
+
+**类型:** <code>const&nbsp;color</code>
+
+Color constant for `#FF7043`.
+
+---
+
+### CYAN {#CYAN}
+
+**类型:** <code>const&nbsp;color</code>
+
+Color constant for `#00BFF3`.
+
+---
+
 ### FUCHSIA {#FUCHSIA}
 
 **类型:** <code>const&nbsp;color</code>
 
 `#E040FB` 的颜色常量。
+
+---
+
+### GOLD {#GOLD}
+
+**类型:** <code>const&nbsp;color</code>
+
+Color constant for `#FFD700`.
 
 ---
 
@@ -51,6 +83,14 @@ title: "color"
 **类型:** <code>const&nbsp;color</code>
 
 `#4CAF50` 的颜色常量。
+
+---
+
+### INDIGO {#INDIGO}
+
+**类型:** <code>const&nbsp;color</code>
+
+Color constant for `#3F51B5`.
 
 ---
 
@@ -94,6 +134,14 @@ title: "color"
 
 ---
 
+### PINK {#PINK}
+
+**类型:** <code>const&nbsp;color</code>
+
+Color constant for `#E91E63`.
+
+---
+
 ### PURPLE {#PURPLE}
 
 **类型:** <code>const&nbsp;color</code>
@@ -126,6 +174,14 @@ title: "color"
 
 ---
 
+### VIOLET {#VIOLET}
+
+**类型:** <code>const&nbsp;color</code>
+
+Color constant for `#7B1FA2`.
+
+---
+
 ### WHITE {#WHITE}
 
 **类型:** <code>const&nbsp;color</code>
@@ -142,10 +198,28 @@ title: "color"
 
 ## 函数
 
-### b {#b}
+### alpha {#alpha}
 
 ```navi
-color.b(color: color): float
+color.alpha(color: color): float
+```
+
+返回给定 `color` 的透明度分量。
+
+**参数**
+
+| 名称 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `color` | <code>color</code> |  | 从中提取透明度分量的颜色。 |
+
+**返回:** <code>float</code> — 范围 [0, 100] 中的值，其中 0 表示完全不透明，100 表示完全透明。
+
+---
+
+### blue {#blue}
+
+```navi
+color.blue(color: color): float
 ```
 
 返回给定 `color` 的蓝色分量。
@@ -188,10 +262,10 @@ color.from_gradient(
 
 ---
 
-### g {#g}
+### green {#green}
 
 ```navi
-color.g(color: color): float
+color.green(color: color): float
 ```
 
 返回给定 `color` 的绿色分量。
@@ -225,10 +299,10 @@ color.new(color: color, transp: float): color
 
 ---
 
-### r {#r}
+### red {#red}
 
 ```navi
-color.r(color: color): float
+color.red(color: color): float
 ```
 
 返回给定 `color` 的红色分量。
@@ -261,21 +335,3 @@ color.rgb(red: float, green: float, blue: float, transp: float = 0): color
 | `transp` | <code>float</code> | `0` | 透明度值（0-100，默认值：0.0）。 |
 
 **返回:** <code>color</code>
-
----
-
-### t {#t}
-
-```navi
-color.t(color: color): float
-```
-
-返回给定 `color` 的透明度分量。
-
-**参数**
-
-| 名称 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `color` | <code>color</code> |  | 从中提取透明度分量的颜色。 |
-
-**返回:** <code>float</code> — 范围 [0, 100] 中的值，其中 0 表示完全不透明，100 表示完全透明。
