@@ -1627,7 +1627,7 @@ table(x: Table): Table
 
 <div v-show="_s9 === 1">
 
-將當前圖表 bar 映射到另一個時間範圍並傳回該目標 bar 的結束時間戳。它使用與 <a class="stdlib-ref" data-key="prelude::time" href="/zh-HK/api/stdlib/prelude/#prop-time">time</a> 相同的兩階段偏移模型，但報告 bar 結束而不是 bar 開始。
+將當前圖表 bar 映射到另一個時間範圍並傳回該目標 bar 的結束時間戳。它使用與 <a class="stdlib-ref" data-key="prelude::time" href="/zh-HK/api/stdlib/prelude/#fn-time">time</a> 相同的兩階段偏移模型，但報告 bar 結束而不是 bar 開始。
 
 **參數**
 

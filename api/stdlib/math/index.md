@@ -152,6 +152,27 @@ Given a tangent value, returns the angle that produces it.
 
 ---
 
+### atan2 {#atan2}
+
+```navi
+math.atan2(y: float, x: float): float
+```
+
+Returns the four-quadrant arctangent of `y/x` in degrees.
+
+Unlike <a class="stdlib-ref" data-key="math::atan" href="/api/stdlib/math/#atan">atan</a>, this function takes two arguments and determines the correct quadrant using the signs of both. Useful for computing angles between vectors or points.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `y` | <code>float</code> |  | The Y component (numerator). |
+| `x` | <code>float</code> |  | The X component (denominator). |
+
+**Returns:** <code>float</code> — An angle in degrees in the range (-180, 180].
+
+---
+
 ### avg {#avg}
 
 <OverloadTabs v-model="_s1" :labels='["<span style=\"color:#24292E;--shiki-dark:#E1E4E8\">math.</span><span style=\"color:#6F42C1;--shiki-dark:#B392F0\">avg</span><span style=\"color:#24292E;--shiki-dark:#E1E4E8\">(numbers</span><span style=\"color:#D73A49;--shiki-dark:#F97583\">:</span><span style=\"color:#005CC5;--shiki-dark:#79B8FF\"> int</span><span style=\"color:#24292E;--shiki-dark:#E1E4E8\">)</span><span style=\"color:#D73A49;--shiki-dark:#F97583\">:</span><span style=\"color:#005CC5;--shiki-dark:#79B8FF\"> float</span>","<span style=\"color:#24292E;--shiki-dark:#E1E4E8\">math.</span><span style=\"color:#6F42C1;--shiki-dark:#B392F0\">avg</span><span style=\"color:#24292E;--shiki-dark:#E1E4E8\">(numbers</span><span style=\"color:#D73A49;--shiki-dark:#F97583\">:</span><span style=\"color:#005CC5;--shiki-dark:#79B8FF\"> float</span><span style=\"color:#24292E;--shiki-dark:#E1E4E8\">)</span><span style=\"color:#D73A49;--shiki-dark:#F97583\">:</span><span style=\"color:#005CC5;--shiki-dark:#79B8FF\"> float</span>"]' />
@@ -188,6 +209,26 @@ Returns the average (arithmetic mean) of all provided arguments.
 
 ---
 
+### cbrt {#cbrt}
+
+```navi
+math.cbrt(n: float): float
+```
+
+Returns the cube root of `n`.
+
+Correctly handles negative inputs (e.g., `cbrt(-8.0) = -2.0`), unlike `pow(n, 1.0/3.0)` which returns `na` for negatives.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `n` | <code>float</code> |  | The value to take the cube root of. |
+
+**Returns:** <code>float</code>
+
+---
+
 ### ceil {#ceil}
 
 ```navi
@@ -205,6 +246,28 @@ E.g., ceil(2.3) = 3, ceil(-2.3) = -2.
 | `n` | <code>float</code> |  | The value to round up. |
 
 **Returns:** <code>int</code>
+
+---
+
+### clamp {#clamp}
+
+```navi
+math.clamp(value: float, min: float, max: float): float
+```
+
+Clamps `value` to the closed interval `[min, max]`.
+
+Returns `min` if `value &lt; min`, `max` if `value &gt; max`, otherwise `value`. Avoids the verbose `math.max(min, math.min(max, x))` pattern.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | <code>float</code> |  | The value to clamp. |
+| `min` | <code>float</code> |  | The lower bound (inclusive). |
+| `max` | <code>float</code> |  | The upper bound (inclusive). |
+
+**Returns:** <code>float</code>
 
 ---
 
@@ -265,6 +328,27 @@ E.g., floor(2.7) = 2, floor(-2.3) = -3.
 | `n` | <code>float</code> |  | The value to round down. |
 
 **Returns:** <code>int</code>
+
+---
+
+### hypot {#hypot}
+
+```navi
+math.hypot(x: float, y: float): float
+```
+
+Returns the hypotenuse of a right triangle with legs `x` and `y`.
+
+Equivalent to `sqrt(x*x + y*y)` but numerically stable (avoids overflow for large inputs).
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `x` | <code>float</code> |  | The length of the first leg. |
+| `y` | <code>float</code> |  | The length of the second leg. |
+
+**Returns:** <code>float</code>
 
 ---
 
@@ -596,3 +680,23 @@ Converts an angle from degrees to radians.
 | `deg` | <code>float</code> |  | The angle in degrees. |
 
 **Returns:** <code>float</code>
+
+---
+
+### trunc {#trunc}
+
+```navi
+math.trunc(n: float): int
+```
+
+Truncates `n` toward zero (removes the fractional part).
+
+Unlike <a class="stdlib-ref" data-key="math::floor" href="/api/stdlib/math/#floor">floor</a>, truncation toward zero is symmetric: `trunc(-1.9) = -1`, whereas `floor(-1.9) = -2`.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `n` | <code>float</code> |  | The value to truncate. |
+
+**Returns:** <code>int</code>

@@ -168,6 +168,50 @@ Returns the new substring of the source string if it matches a regex regular exp
 
 ---
 
+### pad_end {#pad_end}
+
+```navi
+str.pad_end(str: string, len: int, fill: string = " "): string
+```
+
+Right-pads `str` with `fill` until it reaches at least `len` characters.
+
+If `str` is already `len` characters or longer, it is returned unchanged. `fill` is repeated cyclically if shorter than the required padding.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `str` | <code>string</code> |  | The string to pad. |
+| `len` | <code>int</code> |  | The minimum target length in characters. |
+| `fill` | <code>string</code> | `" "` | The padding string to repeat on the right. Defaults to `" "`. |
+
+**Returns:** <code>string</code>
+
+---
+
+### pad_start {#pad_start}
+
+```navi
+str.pad_start(str: string, len: int, fill: string = " "): string
+```
+
+Left-pads `str` with `fill` until it reaches at least `len` characters.
+
+If `str` is already `len` characters or longer, it is returned unchanged. `fill` is repeated cyclically if shorter than the required padding.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `str` | <code>string</code> |  | The string to pad. |
+| `len` | <code>int</code> |  | The minimum target length in characters. |
+| `fill` | <code>string</code> | `" "` | The padding string to repeat on the left. Defaults to `" "`. |
+
+**Returns:** <code>string</code>
+
+---
+
 ### repeat {#repeat}
 
 ```navi
@@ -396,6 +440,42 @@ str.trim(str: string): string
 ```
 
 Trims leading and trailing whitespace from the given string.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `str` | <code>string</code> |  | The string to trim. |
+
+**Returns:** <code>string</code>
+
+---
+
+### trim_end {#trim_end}
+
+```navi
+str.trim_end(str: string): string
+```
+
+Trims trailing (right-side) whitespace from the given string.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `str` | <code>string</code> |  | The string to trim. |
+
+**Returns:** <code>string</code>
+
+---
+
+### trim_start {#trim_start}
+
+```navi
+str.trim_start(str: string): string
+```
+
+Trims leading (left-side) whitespace from the given string.
 
 **Parameters**
 

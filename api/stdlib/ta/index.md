@@ -323,6 +323,46 @@ Useful for detecting state transitions (e.g., signal flips).
 
 ---
 
+### chop {#chop}
+
+```navi
+ta.chop(length: simple int): series float
+```
+
+Choppiness Index (CHOP).
+
+Quantifies how directional (trending) or sideways (choppy) the market is. Values near 100 signal maximum choppiness; values near the lower bound (≈ `100/log10(length)`) signal strong trend. Formula: `100 * log10(sum(ATR(1), length) / (highest_high - lowest_low)) / log10(length)`.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `length` | <code>simple&nbsp;int</code> |  | The lookback period (must be &gt;= 2). |
+
+**Returns:** <code>series&nbsp;float</code>
+
+---
+
+### cmf {#cmf}
+
+```navi
+ta.cmf(length: simple int): series float
+```
+
+Chaikin Money Flow (CMF).
+
+Measures buying and selling pressure over `length` bars using the Money Flow Multiplier weighted by volume. Positive values indicate accumulation; negative values indicate distribution. Formula: `sum(MFV, length) / sum(volume, length)` where `MFV = ((close - low) - (high - close)) / (high - low) * volume`.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `length` | <code>simple&nbsp;int</code> |  | The number of bars to accumulate. |
+
+**Returns:** <code>series&nbsp;float</code>
+
+---
+
 ### cmo {#cmo}
 
 ```navi
@@ -481,6 +521,27 @@ In other words it's a sum of all elements of the `source` series.
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `source` | <code>series&nbsp;float</code> |  | The input series to accumulate. |
+
+**Returns:** <code>series&nbsp;float</code>
+
+---
+
+### dema {#dema}
+
+```navi
+ta.dema(source: series float, length: simple int): series float
+```
+
+Double Exponential Moving Average (DEMA).
+
+Reduces the lag of a standard EMA by subtracting an EMA of the EMA. Formula: `2 * EMA(source, length) - EMA(EMA(source, length), length)`.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `source` | <code>series&nbsp;float</code> |  | The series to smooth. |
+| `length` | <code>simple&nbsp;int</code> |  | The smoothing period. |
 
 **Returns:** <code>series&nbsp;float</code>
 
@@ -1414,6 +1475,27 @@ It applies weighted moving average smoothing to the `source` series.
 
 ---
 
+### tema {#tema}
+
+```navi
+ta.tema(source: series float, length: simple int): series float
+```
+
+Triple Exponential Moving Average (TEMA).
+
+Further reduces EMA lag using three layers of smoothing. Formula: `3*EMA1 - 3*EMA2 + EMA3` where each EMA is applied to the previous layer's output.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `source` | <code>series&nbsp;float</code> |  | The series to smooth. |
+| `length` | <code>simple&nbsp;int</code> |  | The smoothing period. |
+
+**Returns:** <code>series&nbsp;float</code>
+
+---
+
 ### tr {#fn-tr}
 
 ```navi
@@ -1503,6 +1585,27 @@ Variance of the `source` series over the specified `length`.
 | `source` | <code>series&nbsp;float</code> |  | The input series for the calculation. |
 | `length` | <code>series&nbsp;int</code> |  | The number of bars for the calculation. |
 | `biased` | <code>series&nbsp;bool</code> | `true` | If true, uses biased estimation; if false, uses unbiased estimation. |
+
+**Returns:** <code>series&nbsp;float</code>
+
+---
+
+### vhf {#vhf}
+
+```navi
+ta.vhf(source: series float, length: simple int): series float
+```
+
+Vertical Horizontal Filter (VHF).
+
+Identifies whether the market is trending or ranging by comparing the price range to the sum of absolute bar-to-bar changes. Higher values indicate a stronger trend; lower values indicate choppiness. Formula: `(highest - lowest) / sum(|change|, length)`.
+
+**Parameters**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `source` | <code>series&nbsp;float</code> |  | The price series to analyze. |
+| `length` | <code>simple&nbsp;int</code> |  | The lookback period. |
 
 **Returns:** <code>series&nbsp;float</code>
 

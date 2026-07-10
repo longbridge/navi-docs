@@ -134,6 +134,27 @@ math.atan(value: float): float
 
 ---
 
+### atan2 {#atan2}
+
+```navi
+math.atan2(y: float, x: float): float
+```
+
+Returns the four-quadrant arctangent of `y/x` in degrees.
+
+Unlike <a class="stdlib-ref" data-key="math::atan" href="/zh-CN/api/stdlib/math/#atan">atan</a>, this function takes two arguments and determines the correct quadrant using the signs of both. Useful for computing angles between vectors or points.
+
+**参数**
+
+| 名称 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `y` | <code>float</code> |  | The Y component (numerator). |
+| `x` | <code>float</code> |  | The X component (denominator). |
+
+**返回:** <code>float</code> — An angle in degrees in the range (-180, 180].
+
+---
+
 ### avg {#avg}
 
 <OverloadTabs v-model="_s1" :labels='["<span style=\"color:#24292E;--shiki-dark:#E1E4E8\">math.</span><span style=\"color:#6F42C1;--shiki-dark:#B392F0\">avg</span><span style=\"color:#24292E;--shiki-dark:#E1E4E8\">(numbers</span><span style=\"color:#D73A49;--shiki-dark:#F97583\">:</span><span style=\"color:#005CC5;--shiki-dark:#79B8FF\"> int</span><span style=\"color:#24292E;--shiki-dark:#E1E4E8\">)</span><span style=\"color:#D73A49;--shiki-dark:#F97583\">:</span><span style=\"color:#005CC5;--shiki-dark:#79B8FF\"> float</span>","<span style=\"color:#24292E;--shiki-dark:#E1E4E8\">math.</span><span style=\"color:#6F42C1;--shiki-dark:#B392F0\">avg</span><span style=\"color:#24292E;--shiki-dark:#E1E4E8\">(numbers</span><span style=\"color:#D73A49;--shiki-dark:#F97583\">:</span><span style=\"color:#005CC5;--shiki-dark:#79B8FF\"> float</span><span style=\"color:#24292E;--shiki-dark:#E1E4E8\">)</span><span style=\"color:#D73A49;--shiki-dark:#F97583\">:</span><span style=\"color:#005CC5;--shiki-dark:#79B8FF\"> float</span>"]' />
@@ -168,6 +189,26 @@ math.atan(value: float): float
 
 ---
 
+### cbrt {#cbrt}
+
+```navi
+math.cbrt(n: float): float
+```
+
+Returns the cube root of `n`.
+
+Correctly handles negative inputs (e.g., `cbrt(-8.0) = -2.0`), unlike `pow(n, 1.0/3.0)` which returns `na` for negatives.
+
+**参数**
+
+| 名称 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `n` | <code>float</code> |  | The value to take the cube root of. |
+
+**返回:** <code>float</code>
+
+---
+
 ### ceil {#ceil}
 
 ```navi
@@ -183,6 +224,28 @@ math.ceil(n: float): int
 | `n` | <code>float</code> |  | 要向上舍入的值。 |
 
 **返回:** <code>int</code>
+
+---
+
+### clamp {#clamp}
+
+```navi
+math.clamp(value: float, min: float, max: float): float
+```
+
+Clamps `value` to the closed interval `[min, max]`.
+
+Returns `min` if `value &lt; min`, `max` if `value &gt; max`, otherwise `value`. Avoids the verbose `math.max(min, math.min(max, x))` pattern.
+
+**参数**
+
+| 名称 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | <code>float</code> |  | The value to clamp. |
+| `min` | <code>float</code> |  | The lower bound (inclusive). |
+| `max` | <code>float</code> |  | The upper bound (inclusive). |
+
+**返回:** <code>float</code>
 
 ---
 
@@ -237,6 +300,27 @@ math.floor(n: float): int
 | `n` | <code>float</code> |  | 要向下舍入的值。 |
 
 **返回:** <code>int</code>
+
+---
+
+### hypot {#hypot}
+
+```navi
+math.hypot(x: float, y: float): float
+```
+
+Returns the hypotenuse of a right triangle with legs `x` and `y`.
+
+Equivalent to `sqrt(x*x + y*y)` but numerically stable (avoids overflow for large inputs).
+
+**参数**
+
+| 名称 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `x` | <code>float</code> |  | The length of the first leg. |
+| `y` | <code>float</code> |  | The length of the second leg. |
+
+**返回:** <code>float</code>
 
 ---
 
@@ -548,3 +632,23 @@ math.toradians(deg: float): float
 | `deg` | <code>float</code> |  | 角度（以度为单位）。 |
 
 **返回:** <code>float</code>
+
+---
+
+### trunc {#trunc}
+
+```navi
+math.trunc(n: float): int
+```
+
+Truncates `n` toward zero (removes the fractional part).
+
+Unlike <a class="stdlib-ref" data-key="math::floor" href="/zh-CN/api/stdlib/math/#floor">floor</a>, truncation toward zero is symmetric: `trunc(-1.9) = -1`, whereas `floor(-1.9) = -2`.
+
+**参数**
+
+| 名称 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `n` | <code>float</code> |  | The value to truncate. |
+
+**返回:** <code>int</code>

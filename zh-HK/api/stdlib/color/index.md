@@ -280,6 +280,28 @@ color.green(color: color): float
 
 ---
 
+### mix {#mix}
+
+```navi
+color.mix(c1: color, c2: color, weight: float = 0.5): color
+```
+
+Linearly interpolates between two colors.
+
+`weight = 0.0` returns `c1`, `weight = 1.0` returns `c2`. Values outside `[0, 1]` are clamped. Interpolates all four channels: red, green, blue, and transparency.
+
+**參數**
+
+| 名稱 | 類型 | 預設值 | 說明 |
+| --- | --- | --- | --- |
+| `c1` | <code>color</code> |  | The start color. |
+| `c2` | <code>color</code> |  | The end color. |
+| `weight` | <code>float</code> | `0.5` | Blend factor in `[0.0, 1.0]`. Defaults to `0.5`. |
+
+**返回:** <code>color</code>
+
+---
+
 ### new {#new}
 
 ```navi

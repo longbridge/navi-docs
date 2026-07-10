@@ -1671,10 +1671,10 @@ export interface InitOutput {
   readonly intounderlyingbytesource_pull: (a: number, b: any) => any;
   readonly intounderlyingbytesource_start: (a: number, b: any) => void;
   readonly intounderlyingbytesource_type: (a: number) => number;
-  readonly wasm_bindgen__convert__closures_____invoke__hab42f9397c1f232b: (a: number, b: number) => void;
-  readonly wasm_bindgen__closure__destroy__h2901e1fb3a2ac338: (a: number, b: number) => void;
   readonly wasm_bindgen__convert__closures_____invoke__hbebe2dad8b5eac24: (a: number, b: number, c: any) => void;
   readonly wasm_bindgen__closure__destroy__hc022d676e74a4d14: (a: number, b: number) => void;
+  readonly wasm_bindgen__convert__closures_____invoke__hab42f9397c1f232b: (a: number, b: number) => void;
+  readonly wasm_bindgen__closure__destroy__h2901e1fb3a2ac338: (a: number, b: number) => void;
   readonly wasm_bindgen__convert__closures_____invoke__h3ac53d9680872b24: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;

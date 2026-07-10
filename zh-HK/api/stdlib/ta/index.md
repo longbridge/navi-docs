@@ -291,6 +291,46 @@ ta.cci(source: series float, length: series int): series float
 
 ---
 
+### chop {#chop}
+
+```navi
+ta.chop(length: simple int): series float
+```
+
+Choppiness Index (CHOP).
+
+Quantifies how directional (trending) or sideways (choppy) the market is. Values near 100 signal maximum choppiness; values near the lower bound (≈ `100/log10(length)`) signal strong trend. Formula: `100 * log10(sum(ATR(1), length) / (highest_high - lowest_low)) / log10(length)`.
+
+**參數**
+
+| 名稱 | 類型 | 預設值 | 說明 |
+| --- | --- | --- | --- |
+| `length` | <code>simple&nbsp;int</code> |  | The lookback period (must be &gt;= 2). |
+
+**返回:** <code>series&nbsp;float</code>
+
+---
+
+### cmf {#cmf}
+
+```navi
+ta.cmf(length: simple int): series float
+```
+
+Chaikin Money Flow (CMF).
+
+Measures buying and selling pressure over `length` bars using the Money Flow Multiplier weighted by volume. Positive values indicate accumulation; negative values indicate distribution. Formula: `sum(MFV, length) / sum(volume, length)` where `MFV = ((close - low) - (high - close)) / (high - low) * volume`.
+
+**參數**
+
+| 名稱 | 類型 | 預設值 | 說明 |
+| --- | --- | --- | --- |
+| `length` | <code>simple&nbsp;int</code> |  | The number of bars to accumulate. |
+
+**返回:** <code>series&nbsp;float</code>
+
+---
+
 ### cmo {#cmo}
 
 ```navi
@@ -443,6 +483,27 @@ ta.cum(source: series float): series float
 | 名稱 | 類型 | 預設值 | 說明 |
 | --- | --- | --- | --- |
 | `source` | <code>series&nbsp;float</code> |  | 要累積的傳入系列。 |
+
+**返回:** <code>series&nbsp;float</code>
+
+---
+
+### dema {#dema}
+
+```navi
+ta.dema(source: series float, length: simple int): series float
+```
+
+Double Exponential Moving Average (DEMA).
+
+Reduces the lag of a standard EMA by subtracting an EMA of the EMA. Formula: `2 * EMA(source, length) - EMA(EMA(source, length), length)`.
+
+**參數**
+
+| 名稱 | 類型 | 預設值 | 說明 |
+| --- | --- | --- | --- |
+| `source` | <code>series&nbsp;float</code> |  | The series to smooth. |
+| `length` | <code>simple&nbsp;int</code> |  | The smoothing period. |
 
 **返回:** <code>series&nbsp;float</code>
 
@@ -1356,6 +1417,27 @@ ta.swma(source: series float): series float
 
 ---
 
+### tema {#tema}
+
+```navi
+ta.tema(source: series float, length: simple int): series float
+```
+
+Triple Exponential Moving Average (TEMA).
+
+Further reduces EMA lag using three layers of smoothing. Formula: `3*EMA1 - 3*EMA2 + EMA3` where each EMA is applied to the previous layer's output.
+
+**參數**
+
+| 名稱 | 類型 | 預設值 | 說明 |
+| --- | --- | --- | --- |
+| `source` | <code>series&nbsp;float</code> |  | The series to smooth. |
+| `length` | <code>simple&nbsp;int</code> |  | The smoothing period. |
+
+**返回:** <code>series&nbsp;float</code>
+
+---
+
 ### tr {#fn-tr}
 
 ```navi
@@ -1441,6 +1523,27 @@ ta.variance(
 | `source` | <code>series&nbsp;float</code> |  | 用於計算的傳入系列。 |
 | `length` | <code>series&nbsp;int</code> |  | 用於計算的 bars 數量。 |
 | `biased` | <code>series&nbsp;bool</code> | `true` | 如果為真，則使用有偏估計；如果為 false，則使用無偏估計。 |
+
+**返回:** <code>series&nbsp;float</code>
+
+---
+
+### vhf {#vhf}
+
+```navi
+ta.vhf(source: series float, length: simple int): series float
+```
+
+Vertical Horizontal Filter (VHF).
+
+Identifies whether the market is trending or ranging by comparing the price range to the sum of absolute bar-to-bar changes. Higher values indicate a stronger trend; lower values indicate choppiness. Formula: `(highest - lowest) / sum(|change|, length)`.
+
+**參數**
+
+| 名稱 | 類型 | 預設值 | 說明 |
+| --- | --- | --- | --- |
+| `source` | <code>series&nbsp;float</code> |  | The price series to analyze. |
+| `length` | <code>simple&nbsp;int</code> |  | The lookback period. |
 
 **返回:** <code>series&nbsp;float</code>
 
