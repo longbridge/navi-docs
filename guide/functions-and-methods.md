@@ -165,11 +165,11 @@ Navi allows type parameters declared with `<...>` after the function name:
 fn identity<T>(value: T) {
     value;
 }
-fn first<T>(arr: array<T>) {
-    array.get(arr, 0);
+fn first<T>(arr: Array<T>) {
+    arr.get(0);
 }
-method contains<T>(self: array<T>, value: T) {
-    array.indexof(self, value) >= 0;
+method contains<T>(self: Array<T>, value: T) {
+    self.indexof(value) >= 0;
 }
 ```
 

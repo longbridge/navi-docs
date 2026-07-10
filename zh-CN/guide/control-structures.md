@@ -84,7 +84,7 @@ for i = 0 to 20 by 2 {}
 
 ```navi
 for i = 10 to 0 by -1 {
-    array.push(arr, i);
+    arr.push(i);
 }
 // i = 10, 9, 8, ..., 0
 ```
@@ -94,7 +94,7 @@ for i = 10 to 0 by -1 {
 遍历数组，仅获取值，或同时获取索引和值：
 
 ```navi
-var prices = array.from(100.0, 200.0, 300.0);
+var prices = Array.from(100.0, 200.0, 300.0);
 
 // 仅获取值
 for value in prices {
@@ -113,7 +113,7 @@ for (index, value) in prices {
 
 ```navi
 // 统计 OHLC 值中有多少大于 SMA
-let ohlcValues: array<float> = array.from(open, high, low, close);
+let ohlcValues: Array<float> = Array.from(open, high, low, close);
 fn qtyGreaterThan(value, array) {
     let result: int = 0;
     for currentElement in array {

@@ -84,7 +84,7 @@ Reverse loop with negative step:
 
 ```navi
 for i = 10 to 0 by -1 {
-    array.push(arr, i);
+    arr.push(i);
 }
 // i = 10, 9, 8, ..., 0
 ```
@@ -94,7 +94,7 @@ for i = 10 to 0 by -1 {
 Iterate over arrays with value only, or with both index and value:
 
 ```navi
-var prices = array.from(100.0, 200.0, 300.0);
+var prices = Array.from(100.0, 200.0, 300.0);
 
 // Value only
 for value in prices {
@@ -113,7 +113,7 @@ A `for` loop returns the last expression evaluated in its final iteration. If no
 
 ```navi
 // Count how many OHLC values are greater than the SMA
-let ohlcValues: array<float> = array.from(open, high, low, close);
+let ohlcValues: Array<float> = Array.from(open, high, low, close);
 fn qtyGreaterThan(value, array) {
     let result: int = 0;
     for currentElement in array {

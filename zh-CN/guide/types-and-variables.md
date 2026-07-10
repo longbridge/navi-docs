@@ -6,34 +6,34 @@
 
 ```navi
 // 类型推断
-a = 10;                    // 推断为 int
-name = "AAPL";             // 推断为 string
+let a = 10;                // 推断为 int
+let name = "AAPL";         // 推断为 string
 
 // 显式类型
-float b = 3.14;
-string label = "Buy";
-bool flag = true;
+let b: float = 3.14;
+let label: string = "Buy";
+let flag: bool = true;
 ```
 
 如果无法推断类型，则需要显式注解：
 
 ```navi
-a = na;                    // 错误：无法推断变量类型
-float a = na;              // OK
+let a = na;                // 错误：无法推断变量类型
+let a: float = na;         // OK
 ```
 
 ## 重新赋值
 
-使用 `:=` 重新赋值变量。也支持复合赋值运算符：
+使用 `=` 重新赋值变量。也支持复合赋值运算符：
 
 ```navi
-a = 10;
-a := 20;   // 重新赋值
-a += 5;    // a := a + 5
-a -= 1;    // a := a - 1
-a *= 2;    // a := a * 2
-a /= 3;    // a := a / 3
-a %= 4;    // a := a % 4
+let a = 10;
+a = 20;    // 重新赋值
+a += 5;    // a = a + 5
+a -= 1;    // a = a - 1
+a *= 2;    // a = a * 2
+a /= 3;    // a = a / 3
+a %= 4;    // a = a % 4
 ```
 
 ## 类型限定符
@@ -48,10 +48,10 @@ Navi 有四个类型限定符，描述值何时已知，从最严格到最宽松
 | `series` | 每根 K 线都可能变化 |
 
 ```navi
-const int a = 2;
-input int b = 10;
-simple int c = a + b;
-series float d = close;
+let a: const int = 2;
+let b: input int = 10;
+let c: simple int = a + b;
+let d: series float = close;
 ```
 
 限定符层级为：`const` -> `input` -> `simple` -> `series`。值可以沿此层级自动提升，但不能降级。
@@ -90,8 +90,8 @@ if close > open {
 `var` 适用于所有类型，包括数组和对象。`var` 数组会在各 K 线之间持续存在并增长：
 
 ```navi
-var a = array.new<float>(0);
-array.push(a, close);      // 每根 K 线数组增长 1 个元素
+var a = Array.new<float>(0);
+a.push(close);      // 每根 K 线数组增长 1 个元素
 ```
 
 ### `var` 的实时行为
@@ -110,7 +110,7 @@ if barstate.is_new {
 } else {
     updateCount = updateCount + 1;
 }
-plot(updateCount, style:  PlotStyle.Circles);
+plot(updateCount, style: PlotStyle.Circles);
 ```
 
 这对追踪 tick 级别的数据很有用。在历史 K 线上，`varip` 的行为与 `var` 相同。
@@ -121,8 +121,8 @@ plot(updateCount, style:  PlotStyle.Circles);
 
 ```navi
 struct Counter {
-    int bars = 0;
-    varip int ticks = 0;
+    int bars = 0,
+    varip int ticks = 0,
 }
 
 var counter: Counter = Counter.new();
@@ -140,10 +140,10 @@ counter.ticks += 1; // 不会回滚
 
 ## 元组解构
 
-返回元组的函数可以使用 `[...]` 语法解构：
+返回元组的函数可以使用 `(...)` 语法解构：
 
 ```navi
-[median, upperBand, lowerBand] = ta.bb(close, 20, 2.0);
+let (median, upperBand, lowerBand) = ta.bb(close, 20, 2.0);
 plot(median);
 plot(upperBand);
 plot(lowerBand);
@@ -154,10 +154,10 @@ plot(lowerBand);
 使用 `_` 丢弃不需要的值。它可以多次使用：
 
 ```navi
-[_, upper, _] = ta.bb(close, 20, 2.0);
+let (_, upper, _) = ta.bb(close, 20, 2.0);
 
-_ = someFunction();      // 丢弃返回值
-_ = anotherFunction();
+let _ = someFunction();      // 丢弃返回值
+let _ = anotherFunction();
 ```
 
 ## `na` — 缺失值
@@ -176,13 +176,13 @@ if not na(sma5) {
 使用 `nz()` 将 `na` 替换为默认值：
 
 ```navi
-value = nz(ta.sma(close, 5), 0.0);  // 将 na 替换为 0
+let value = nz(ta.sma(close, 5), 0.0);  // 将 na 替换为 0
 ```
 
 使用 `fixnan()` 将 `na` 替换为最后一个非 na 值：
 
 ```navi
-value = fixnan(ta.sma(close, 5));
+let value = fixnan(ta.sma(close, 5));
 ```
 
 ## 下一步

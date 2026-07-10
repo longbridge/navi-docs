@@ -4,16 +4,16 @@ Navi provides three generic collection types:
 
 | Type | Description |
 |---|---|
-| `array<T>` | Ordered, indexable sequence |
-| `matrix<T>` | 2D table of rows × columns |
-| `map<K, V>` | Key-value store |
+| `Array<T>` | Ordered, indexable sequence |
+| `Matrix<T>` | 2D table of rows × columns |
+| `Map<K, V>` | Key-value store |
 
 Collections are **reference types** — assigning copies the reference, not the contents. Use `.copy()` for an independent copy.
 
 Declare collections with `var` so they persist across bars:
 
 ```navi
-var highs: array<float> = array.new<float>();
+var highs: Array<float> = Array.new<float>();
 highs.push(high);   // accumulates one value per bar
 ```
 
@@ -31,16 +31,16 @@ fn calcBands(src, length, mult) {
 let (mid, upper, lower) = calcBands(close, 20, 2.0);
 ```
 
-## `array<T>`
+## `Array<T>`
 
 An ordered, zero-indexed sequence.
 
 **Creating**
 
 ```navi
-var a: array<float> = array.new<float>();
-let b: array<float> = array.new<float>(5, 0.0);  // pre-sized, filled with 0.0
-let c: array<int>   = array.from(10, 20, 30);
+var a: Array<float> = Array.new<float>();
+let b: Array<float> = Array.new<float>(5, 0.0);  // pre-sized, filled with 0.0
+let c: Array<int>   = Array.from(10, 20, 30);
 let values = [1, 2, 3];                           // array literal
 ```
 
@@ -71,9 +71,9 @@ let last: int   = a.lastindexof(close);
 **Slicing and combining**
 
 ```navi
-let sub: array<float>  = a.slice(1, 4);
-let both: array<float> = a.concat(b);
-let dup: array<float>  = a.copy();
+let sub: Array<float>  = a.slice(1, 4);
+let both: Array<float> = a.concat(b);
+let dup: Array<float>  = a.copy();
 a.reverse();
 a.fill(0.0, 0, 3);
 a.clear();
@@ -84,7 +84,7 @@ a.clear();
 ```navi
 a.sort();
 a.sort(SortOrder.Descending);
-let idx: array<int> = a.sort_indices();
+let idx: Array<int> = a.sort_indices();
 ```
 
 **Statistics** (numeric arrays)
@@ -111,13 +111,13 @@ for (i, v) in vals {
 }
 ```
 
-## `map<K, V>`
+## `Map<K, V>`
 
 An unordered key-value store. Keys must be a primitive type or enum.
 
 ```navi
 let counts = {"a": 1, "b": 2};               // map literal
-var m: map<string, float> = map.new<string, float>();
+var m: Map<string, float> = Map.new<string, float>();
 
 m.put("open",  open);
 m.put("close", close);
@@ -127,12 +127,12 @@ let exists: bool  = m.contains("close");
 let count: int    = m.size();
 let old: float    = m.remove("open");
 
-let ks: array<string> = m.keys();
-let vs: array<float>  = m.values();
+let ks: Array<string> = m.keys();
+let vs: Array<float>  = m.values();
 
 m.put_all(other);
 m.clear();
-let dup: map<string, float> = m.copy();
+let dup: Map<string, float> = m.copy();
 ```
 
 **Iterating**
@@ -143,34 +143,34 @@ for (k, v) in m {
 }
 ```
 
-## `matrix<T>`
+## `Matrix<T>`
 
 A two-dimensional table indexed by `[row, column]`.
 
 ```navi
-let mat: matrix<float> = matrix.new<float>(3, 4, 0.0);
+let mat: Matrix<float> = Matrix.new<float>(3, 4, 0.0);
 
 mat.set(0, 0, 1.5);
 let v: float = mat.get(0, 0);
 let r: int   = mat.rows();
 let c: int   = mat.columns();
 
-let row0: array<float> = mat.row(0);
-let col1: array<float> = mat.col(1);
+let row0: Array<float> = mat.row(0);
+let col1: Array<float> = mat.col(1);
 
-mat.add_row(na, array.from(1.0, 2.0, 3.0, 4.0));
+mat.add_row(na, Array.from(1.0, 2.0, 3.0, 4.0));
 mat.add_col();
 mat.remove_row();
 mat.remove_col(0);
 mat.reshape(2, 6);
-let sub: matrix<float> = mat.submatrix(0, 2, 0, 2);
-let t: matrix<float>   = mat.transpose();
+let sub: Matrix<float> = mat.subMatrix(0, 2, 0, 2);
+let t: Matrix<float>   = mat.transpose();
 mat.swap_rows(0, 1);
 mat.swap_columns(0, 1);
 mat.reverse();
 mat.fill(0.0);
 mat.sort();
-let dup: matrix<float> = mat.copy();
+let dup: Matrix<float> = mat.copy();
 ```
 
 **Math operations** (numeric matrices)
@@ -179,12 +179,12 @@ let dup: matrix<float> = mat.copy();
 let total: float         = mat.avg();
 let hi: float            = mat.max();
 let lo: float            = mat.min();
-let s: matrix<float>     = mat.sum(other);
-let d: matrix<float>     = mat.diff(other);
-let p: matrix<float>     = mat.multi(other);
-let i: matrix<float>     = mat.inv();
+let s: Matrix<float>     = mat.sum(other);
+let d: Matrix<float>     = mat.diff(other);
+let p: Matrix<float>     = mat.multi(other);
+let i: Matrix<float>     = mat.inv();
 let det: float           = mat.det();
 let rk: int              = mat.rank();
 let tr: float            = mat.trace();
-let pw: matrix<float>    = mat.pow(2);
+let pw: Matrix<float>    = mat.pow(2);
 ```

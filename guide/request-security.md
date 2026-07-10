@@ -16,7 +16,7 @@ request.security(symbol, timeframe, expression, gaps, lookahead, ignore_invalid_
 | `symbol` | `string` | Symbol identifier, e.g. `"NASDAQ:AAPL"` or `syminfo.tickerid` |
 | `timeframe` | `string` | Timeframe string, e.g. `"D"`, `"W"`, `"60"` |
 | `expression` | any series | Expression evaluated on the requested symbol/timeframe |
-| `gaps` | `BarmergeGaps` | `BarmergeGaps.Off` (default) or `BarmergeGaps.On` — whether to fill gaps with `na` |
+| `gaps` | `BarmergeGaps` | `BarmergeGaps.Off` (default): carry last value forward; `BarmergeGaps.On`: emit `na` between confirmations |
 | `lookahead` | `BarmergeLookahead` | `BarmergeLookahead.Off` (default) or `BarmergeLookahead.On` |
 | `ignore_invalid_symbol` | `bool` | If `true`, return `na` instead of error for unknown symbols |
 | `currency` | `string` | Currency for price conversion |
@@ -90,10 +90,10 @@ bar closes less frequently than the chart advances.
 <img class="dark-only" src="/request-security-alignment-dark.svg" alt="MTF alignment and gaps" style="width:100%;max-width:600px;">
 
 ```navi
-// Carry-forward (default): weekly_close is always defined
+// Off (default): weekly_close carries forward — always defined
 let weekly_close = request.security(syminfo.tickerid, "W", close);
 
-// Gap-fill: na on all days except Friday (when the weekly bar closes)
+// On: na on every day except when the weekly bar closes
 let weekly_close_gaps = request.security(syminfo.tickerid, "W", close, gaps: BarmergeGaps.On);
 ```
 
@@ -165,7 +165,7 @@ execution.
 ## `request.security_lower_tf`
 
 For lower timeframes, use `request.security_lower_tf`. It returns an
-`array<T>` containing every sub-bar value within the current chart bar,
+`Array<T>` containing every sub-bar value within the current chart bar,
 in ascending order:
 
 <img class="light-only" src="/request-security-lower-tf.svg" alt="security_lower_tf — sub-bars collected into an array" style="width:100%;max-width:580px;">
@@ -178,11 +178,11 @@ indicator("Intraday highs on Daily chart");
 let minute_highs = request.security_lower_tf(syminfo.tickerid, "1", high);
 
 // Highest 1-minute high within the current daily bar
-let intraday_high = array.max(minute_highs);
+let intraday_high = minute_highs.max();
 plot(intraday_high);
 ```
 
-The array is empty (`array.size() == 0`) for bars where no sub-bars are
+The array is empty (`minute_highs.size() == 0`) for bars where no sub-bars are
 available.
 
 ## Ticker Expressions

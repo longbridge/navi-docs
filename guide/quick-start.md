@@ -67,6 +67,41 @@ The `--dialect` parameter selects the script language:
 
 If your file uses the correct extension (`.nv` or `.pine`), the dialect is detected automatically and `--dialect` can be omitted.
 
+### Converting to Navi
+
+For new scripts, Navi (`.nv`) offers full editor support. The following shows a Bollinger Bands indicator written in both languages:
+
+```pine
+// Pine Script
+// @version=6
+indicator("Bollinger Bands", overlay=true)
+
+length = input.int(20, "Length")
+mult   = input.float(2.0, "Multiplier")
+
+[basis, upper, lower] = ta.bb(close, length, mult)
+
+plot(basis, "Basis", color.blue)
+plot(upper, "Upper", color.red)
+plot(lower, "Lower", color.green)
+fill(upper, lower, color.new(color.blue, 90))
+```
+
+```navi
+// Navi
+indicator("Bollinger Bands", overlay: true);
+
+let length = input.int(20, "Length");
+let mult   = input.float(2.0, "Multiplier");
+
+let (basis, upper, lower) = ta.bb(close, length, mult);
+
+plot(basis, "Basis", color.BLUE);
+plot(upper, "Upper", color.RED);
+plot(lower, "Lower", color.GREEN);
+fill(upper, lower, color.new(color.BLUE, 90));
+```
+
 ## Next Steps
 
 - [Language Basics](/guide/language-basics)

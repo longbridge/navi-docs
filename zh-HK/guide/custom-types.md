@@ -8,8 +8,8 @@
 struct Order {
     int id,
     string symbol,
-    float price = na;
-    varip int updateCount = 0;
+    float price = na,
+    varip int updateCount = 0,
 }
 ```
 
@@ -23,22 +23,22 @@ struct Order {
 使用 `.new()` 建立實例：
 
 ```navi
-Order myOrder = Order.new(id:  1, symbol:  "AAPL")
+let myOrder: Order = Order.new(id: 1, symbol: "AAPL");
 ```
 
 ### 存取和修改欄位
 
 ```navi
-orderPrice = myOrder.price
-myOrder.price := 155.0
-myOrder.quantity := 200
+let orderPrice = myOrder.price;
+myOrder.price = 155.0;
+myOrder.quantity = 200;
 ```
 
 ### 複製
 
 ```navi
-Order clone = Order.copy(myOrder)
-clone.price := 160.0
+let clone: Order = Order.copy(myOrder);
+clone.price = 160.0;
 ```
 
 ### 類型上的方法
@@ -47,21 +47,21 @@ clone.price := 160.0
 struct Position {
     float entry,
     float size,
-    bool isLong = true;
+    bool isLong = true,
 }
 
 method pnl(self: Position, currentPrice: float) {
     let diff = currentPrice - self.entry;
-    self.isLong ? diff * self.size : -diff * self.size
+    self.isLong ? diff * self.size : -diff * self.size;
 }
 
 method isProfit(self: Position, currentPrice: float) {
-    self.pnl(currentPrice) > 0
+    self.pnl(currentPrice) > 0;
 }
 
-let pos = Position.new(entry:  100.0, size:  10.0);
+let pos = Position.new(entry: 100.0, size: 10.0);
 if pos.isProfit(close) {
-    label.new(bar_index, high, str.tostring(pos.pnl(close), "#.##"))
+    label.new(bar_index, high, str.tostring(pos.pnl(close), "#.##"));
 }
 ```
 
@@ -71,8 +71,8 @@ if pos.isProfit(close) {
 
 ```navi
 struct Counter {
-    int bars = 0;
-    varip int ticks = 0;
+    int bars = 0,
+    varip int ticks = 0,
 }
 
 var counter: Counter = Counter.new();
@@ -108,7 +108,7 @@ method push<T>(self: Stack<T>, value: T) {
 
 method pop<T>(self: Stack<T>): T {
     self.count -= 1;
-    self.items.pop()
+    self.items.pop();
 }
 
 var s: Stack<float> = Stack.new();
@@ -126,7 +126,7 @@ s.push(open);
 enum Direction {
     Long,
     Short,
-    Both:  "Both Directions",
+    Both = "Both Directions",
 }
 ```
 
@@ -138,9 +138,9 @@ enum Direction {
 let d: Direction = Direction.Long;
 
 if d == Direction.Long {
-    strategy.entry("L", strategy.long)
+    strategy.entry("L", Direction.Long);
 } else if d == Direction.Short {
-    strategy.entry("S", strategy.short)
+    strategy.entry("S", Direction.Short);
 }
 ```
 
@@ -159,12 +159,12 @@ export struct Config {
 }
 
 export fn calcSMA(src: series float, length: simple int) {
-    ta.sma(src, length)
+    ta.sma(src, length);
 }
 
 export enum Side {
-    left,
-    right,
+    Left,
+    Right,
 }
 ```
 
@@ -172,7 +172,7 @@ export enum Side {
 
 ```navi
 indicator("My Indicator");
-use MyLib.nv as lib;
+use MyLib as lib;
 
 let config = lib.Config.new(length: 20, multiplier: 2.0);
 let sma = lib.calcSMA(close, config.length);
@@ -182,15 +182,15 @@ plot(sma);
 透過模組名稱存取匯出的成員：
 
 ```navi
-use utils.nv;
-utils.add(1, 2);                  // 呼叫匯出的函式
-let obj: utils.MyType = na;       // 使用匯出的類型
-let value = utils.MyEnum.A;       // 存取匯出的枚舉變體
+use utils;
+utils.add(1, 2);                     // 呼叫匯出的函式
+let obj: utils.MyType = na;          // 使用匯出的類型
+let value = utils.MyEnum.A;          // 存取匯出的枚舉變體
 ```
 
 ## 新類型宣告
 
-Navi 支援 `type Name => underlying_type` 語法來建立由現有類型支援的不同類型。這允許在不建立新結構的情況下定義特定領域的類型：
+Navi 支援 `type Name = underlying_type;` 語法來建立由現有類型支援的不同類型。這允許在不建立新結構的情況下定義特定領域的類型：
 
 ```navi
 type MyInt = int;
@@ -205,18 +205,6 @@ type SpecialInt = MyInt;
 let x: SpecialInt = 42; // OK
 ```
 
-標準函式庫廣泛使用新類型來為繪圖物件和繪圖樣式建立不同的類型：
-
-```navi
-// prelude/draw.1.nv
-export type plot_style = int;
-export type hline = int;
-export type label = int;
-export type line = int;
-export type box = int;
-export type table = int;
-```
-
 ## 編譯器特殊類型
 
 以下類型由 Navi 標準函式庫用於實作某些進階內建函式。通常情況下，您不會在自己的腳本中直接使用它們——它們出現在標準函式庫源碼中，當您呼叫 `input.source`、`request.security` 或 `max_bars_back` 等函式時會被透明處理。
@@ -226,7 +214,7 @@ export type table = int;
 允許函式接收**未求值的 AST 節點**而非計算後的值。`input.source()` 用它來取得使用者傳入的是哪個變數，從而在 UI 中以變數名稱顯示。
 
 ```navi
-let src = input.source(defval:  close);
+let src = input.source(defval: close);
 // `close` 被捕獲為表達式，不會被求值為數字。
 // 設定 UI 會將「Close」顯示為預設來源選項。
 ```

@@ -206,18 +206,6 @@ type SpecialInt = MyInt;
 let x: SpecialInt = 42; // OK
 ```
 
-The standard library uses newtypes extensively to create distinct types for drawing objects and plot styles:
-
-```navi
-// prelude/draw.1.nv
-export type plot_style = int;
-export type hline = int;
-export type label = int;
-export type line = int;
-export type box = int;
-export type table = int;
-```
-
 ## Compiler-Special Types
 
 The following types are used by Navi's standard library to implement certain advanced built-in functions. You will not normally use them in your own scripts — they appear in stdlib source and are handled transparently when you call functions like `input.source`, `request.security`, or `max_bars_back`.

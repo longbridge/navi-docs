@@ -47,7 +47,7 @@ fn myPlot(src, length:  14, title:  "Default") {
 调用函数时可以使用命名参数：
 
 ```navi
-plot(close, title:  "Close", color:  color.BLUE, linewidth:  2)
+plot(close, title: "Close", color: color.BLUE, linewidth: 2);
 ```
 
 ## 函数重载
@@ -95,9 +95,9 @@ method isProfit(self: Position, currentPrice: float) {
     self.pnl(currentPrice) > 0;
 }
 
-let pos = Position.new(entry:  100.0, size:  10.0);
+let pos = Position.new(entry: 100.0, size: 10.0);
 if pos.isProfit(close) {
-    label.new(bar_index, high, str.tostring(pos.pnl(close), "#.##"))
+    label.new(bar_index, high, str.tostring(pos.pnl(close), "#.##"));
 }
 ```
 
@@ -162,8 +162,8 @@ Navi 允许在函数名后用 `<...>` 声明类型参数：
 fn identity<T>(value: T) {
     value;
 }
-fn first<T>(arr: array<T>) {
-    array.get(arr, 0);
+fn first<T>(arr: Array<T>) {
+    arr.get(0);
 }
 ```
 

@@ -13,8 +13,8 @@ request.security(symbol, timeframe, expression, gaps, lookahead, ignore_invalid_
 | `symbol` | `string` | 標的識別符，如 `"NASDAQ:AAPL"` 或 `syminfo.tickerid` |
 | `timeframe` | `string` | 時間框架字串，如 `"D"`、`"W"`、`"60"` |
 | `expression` | 任意 series | 在請求的標的/時間框架上求值的表達式 |
-| `gaps` | `gaps_type` | `gaps.off`（預設）或 `gaps.on`——是否用 `na` 填充空缺 |
-| `lookahead` | `lookahead_type` | `lookahead.off`（預設）或 `lookahead.on` |
+| `gaps` | `BarmergeGaps` | `BarmergeGaps.Off`（預設）：延續最後值；`BarmergeGaps.On`：無新值時發出 `na` |
+| `lookahead` | `BarmergeLookahead` | `BarmergeLookahead.Off`（預設）或 `BarmergeLookahead.On` |
 | `ignore_invalid_symbol` | `bool` | 若為 `true`，未知標的返回 `na` 而不報錯 |
 | `currency` | `string` | 價格轉換的目標貨幣 |
 | `calc_bars_count` | `int` | 可選的正整數，用於限制請求流載入的最近歷史視窗大小 |
@@ -24,30 +24,30 @@ request.security(symbol, timeframe, expression, gaps, lookahead, ignore_invalid_
 ### 高時間框架收盤價
 
 ```navi
-indicator("日線圖上的週線收盤價", overlay: true)
+indicator("日線圖上的週線收盤價", overlay: true);
 
-weekly_close = request.security(syminfo.tickerid, "W", close)
-plot(weekly_close, "週線收盤", color: color.BLUE)
+let weekly_close = request.security(syminfo.tickerid, "W", close);
+plot(weekly_close, "週線收盤", color: color.BLUE);
 ```
 
 ### 其他標的
 
 ```navi
-indicator("AAPL 圖上的 SPY", overlay: false)
+indicator("AAPL 圖上的 SPY", overlay: false);
 
-spy_close = request.security("AMEX:SPY", "D", close)
-plot(spy_close)
+let spy_close = request.security("AMEX:SPY", "D", close);
+plot(spy_close);
 ```
 
 ### 高時間框架指標
 
 ```navi
-indicator("週線 RSI")
+indicator("週線 RSI");
 
-weekly_rsi = request.security(syminfo.tickerid, "W", ta.rsi(close, 14))
-plot(weekly_rsi)
-hline(70)
-hline(30)
+let weekly_rsi = request.security(syminfo.tickerid, "W", ta.rsi(close, 14));
+plot(weekly_rsi);
+hline(70);
+hline(30);
 ```
 
 ## 時間框架字串
@@ -70,56 +70,55 @@ hline(30)
 - `na` 表示不設定上限。
 
 ```navi
-recent_weekly = request.security(syminfo.tickerid, "W", close, calc_bars_count:  2)
+let recent_weekly = request.security(syminfo.tickerid, "W", close, calc_bars_count: 2);
 ```
 
 ## gaps（空缺填充）
 
 當請求的時間框架高於圖表時間框架時，高時間框架 bar 收盤的頻率低於圖表 bar 推進的頻率。
 
-- **`gaps.off`**（預設）：最後已知值向前延續——序列中不會出現 `na`。
-- **`gaps.on`**：每個高時間框架 bar 尚未收盤的圖表 bar 都會發出 `na`。
+- **`BarmergeGaps.Off`**（預設）：最後已知值向前延續——序列中不會出現 `na`。
+- **`BarmergeGaps.On`**：每個高時間框架 bar 尚未收盤的圖表 bar 都會發出 `na`。
 
 <img class="light-only" src="/request-security-alignment.svg" alt="MTF 對齊與 gaps" style="width:100%;max-width:600px;">
 <img class="dark-only" src="/request-security-alignment-dark.svg" alt="MTF 對齊與 gaps" style="width:100%;max-width:600px;">
 
 ```navi
-// 延續（預設）：weekly_close 始終有值
-weekly_close = request.security(syminfo.tickerid, "W", close)
+// Off（預設）：weekly_close 始終有值
+let weekly_close = request.security(syminfo.tickerid, "W", close);
 
-// 空缺填充：除週五（週線 bar 收盤）外的所有交易日均為 na
-weekly_close_gaps = request.security(syminfo.tickerid, "W", close, gaps: gaps.on)
+// On：除週五（週線 bar 收盤）外的所有交易日均為 na
+let weekly_close_gaps = request.security(syminfo.tickerid, "W", close, gaps: BarmergeGaps.On);
 ```
 
 ## lookahead（超前讀取）
 
-`lookahead.on` 使表達式在週期內的第一個圖表 bar 就能看到高時間框架 bar 的**最終值**，而不是正在形成中的值。這會在歷史 bar 中引入未來資料洩漏——僅在明確需要時使用。
+`BarmergeLookahead.On` 使表達式在週期內的第一個圖表 bar 就能看到高時間框架 bar 的**最終值**，而不是正在形成中的值。這會在歷史 bar 中引入未來資料洩漏——僅在明確需要時使用。
 
-<img class="light-only" src="/request-security-lookahead.svg" alt="lookahead.off 與 lookahead.on 對比" style="width:100%;max-width:600px;">
-<img class="dark-only" src="/request-security-lookahead-dark.svg" alt="lookahead.off 與 lookahead.on 對比" style="width:100%;max-width:600px;">
+<img class="light-only" src="/request-security-lookahead.svg" alt="BarmergeLookahead.Off 與 BarmergeLookahead.On 對比" style="width:100%;max-width:600px;">
+<img class="dark-only" src="/request-security-lookahead-dark.svg" alt="BarmergeLookahead.Off 與 BarmergeLookahead.On 對比" style="width:100%;max-width:600px;">
 
 ```navi
 // 預設：看到正在形成的週線開盤價（本週內持續更新）
-weekly_open = request.security(syminfo.tickerid, "W", open)
+let weekly_open = request.security(syminfo.tickerid, "W", open);
 
 // 使用 lookahead：週一即可看到已確認的週線開盤價
-weekly_open_confirmed = request.security(syminfo.tickerid, "W", open, lookahead: lookahead.on)
+let weekly_open_confirmed = request.security(syminfo.tickerid, "W", open, lookahead: BarmergeLookahead.On);
 ```
 
 ## `var` 和 `varip` 變量
 
-`var` 和 `varip` 變量需在腳本頂層宣告，不能在 `expression` 參數內部宣告。
-子實例會在請求的標的/時間框架上執行完整程式體，因此頂層的 `var` 狀態會在**請求的**時間框架的各個 bar 之間獨立累積：
+`var` 和 `varip` 變量需在腳本頂層宣告，不能在 `expression` 參數內部宣告。子實例會在請求的標的/時間框架上執行完整程式體，因此頂層的 `var` 狀態會在**請求的**時間框架的各個 bar 之間獨立累積：
 
 ```navi
-indicator("累計成交量（週線）")
+indicator("累計成交量（週線）");
 
 // 在頂層宣告——子實例在週線 bar 上累積此變量
-var float cum = 0.0
-cum += volume
+var cum: float = 0.0;
+cum += volume;
 
-weekly_cum_vol = request.security(syminfo.tickerid, "W", cum)
-plot(weekly_cum_vol)
+let weekly_cum_vol = request.security(syminfo.tickerid, "W", cum);
+plot(weekly_cum_vol);
 ```
 
 每個 `request.security` 呼叫點都有獨立的子實例——其 `var` 狀態與主腳本及其他 `request.security` 呼叫互相獨立。
@@ -129,12 +128,12 @@ plot(weekly_cum_vol)
 表達式可以以元組形式返回多個值：
 
 ```navi
-indicator("週線 OHLC")
+indicator("週線 OHLC");
 
 let (w_open, w_high, w_low, w_close) =
-    request.security(syminfo.tickerid, "W", (open, high, low, close))
+    request.security(syminfo.tickerid, "W", (open, high, low, close));
 
-plot_candle(w_open, w_high, w_low, w_close)
+plot_candle(w_open, w_high, w_low, w_close);
 ```
 
 ## `ignore_invalid_symbol`
@@ -142,7 +141,7 @@ plot_candle(w_open, w_high, w_low, w_close)
 當標的可能不存在於資料提供者中時使用此參數：
 
 ```navi
-price = request.security("SOME:SYMBOL", "D", close, ignore_invalid_symbol: true)
+let price = request.security("SOME:SYMBOL", "D", close, ignore_invalid_symbol: true);
 // 標的未識別時 price 為 na，不會觸發執行時錯誤
 ```
 
@@ -150,23 +149,23 @@ price = request.security("SOME:SYMBOL", "D", close, ignore_invalid_symbol: true)
 
 ## `request.security_lower_tf`
 
-獲取低時間框架資料時，使用 `request.security_lower_tf`。它返回一個 `array<T>`，包含當前圖表 bar 內所有子 bar 的值，按升序排列：
+獲取低時間框架資料時，使用 `request.security_lower_tf`。它返回一個 `Array<T>`，包含當前圖表 bar 內所有子 bar 的值，按升序排列：
 
 <img class="light-only" src="/request-security-lower-tf.svg" alt="security_lower_tf — 子 bar 收集為陣列" style="width:100%;max-width:580px;">
 <img class="dark-only" src="/request-security-lower-tf-dark.svg" alt="security_lower_tf — 子 bar 收集為陣列" style="width:100%;max-width:580px;">
 
 ```navi
-indicator("日線圖上的分鐘級最高價")
+indicator("日線圖上的分鐘級最高價");
 
 // 返回每根日線 bar 內所有 1 分鐘 bar 的最高價
-minute_highs = request.security_lower_tf(syminfo.tickerid, "1", high)
+let minute_highs = request.security_lower_tf(syminfo.tickerid, "1", high);
 
 // 當前日線 bar 內的最高 1 分鐘最高價
-intraday_high = array.max(minute_highs)
-plot(intraday_high)
+let intraday_high = minute_highs.max();
+plot(intraday_high);
 ```
 
-當某個 bar 內沒有子 bar 資料時，陣列為空（`array.size() == 0`）。
+當某個 bar 內沒有子 bar 資料時，陣列為空（`minute_highs.size() == 0`）。
 
 ## Ticker 表達式
 
@@ -188,23 +187,23 @@ Ticker 表達式是一個將多個標的透過算術運算子組合的字串。N
 **加權組合（50/50 投資組合）**
 
 ```navi
-blend = request.security("NASDAQ:AAPL*0.5+AMEX:SPY*0.5", "D", close)
+let blend = request.security("NASDAQ:AAPL*0.5+AMEX:SPY*0.5", "D", close);
 ```
 
 **相對表現（比值）**
 
 ```navi
 // AAPL 相對於 SPY 的價格——買一股 AAPL 需要多少股 SPY？
-ratio = request.security("NASDAQ:AAPL/AMEX:SPY", "D", close)
-plot(ratio)
+let ratio = request.security("NASDAQ:AAPL/AMEX:SPY", "D", close);
+plot(ratio);
 ```
 
 **價差（差值）**
 
 ```navi
 // 黃金/白銀價差
-spread = request.security("COMEX:GC1!/COMEX:SI1!", "D", close)
-plot(spread)
+let spread = request.security("COMEX:GC1!/COMEX:SI1!", "D", close);
+plot(spread);
 ```
 
 **多標的等權指數**
@@ -233,6 +232,3 @@ plot(tech);
 
 - **嵌套深度**：預設情況下，`request.security` 表達式內部最多可嵌套呼叫 `request.security` 3 層（可透過 `ExecutionLimits::max_security_depth` 配置）。
 - **呼叫次數**：每個唯一的 `(symbol, timeframe)` 組合計入 `ExecutionLimits::max_security_calls`（預設 40）。
-
-## 參閱
-

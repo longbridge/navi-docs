@@ -121,8 +121,8 @@ This is useful for tracking tick-level data. On historical bars, `varip` behaves
 
 ```navi
 struct Counter {
-    int bars = 0;
-    varip int ticks = 0;
+    int bars = 0,
+    varip int ticks = 0,
 }
 
 var counter: Counter = Counter.new();

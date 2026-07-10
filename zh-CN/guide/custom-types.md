@@ -8,8 +8,8 @@
 struct Order {
     int id,
     string symbol,
-    float price = na;
-    varip int updateCount = 0;
+    float price = na,
+    varip int updateCount = 0,
 }
 ```
 
@@ -23,22 +23,22 @@ struct Order {
 使用 `.new()` 创建实例：
 
 ```navi
-Order myOrder = Order.new(id:  1, symbol:  "AAPL")
+let myOrder: Order = Order.new(id: 1, symbol: "AAPL");
 ```
 
 ### 访问和修改字段
 
 ```navi
-orderPrice = myOrder.price
-myOrder.price := 155.0
-myOrder.quantity := 200
+let orderPrice = myOrder.price;
+myOrder.price = 155.0;
+myOrder.quantity = 200;
 ```
 
 ### 复制
 
 ```navi
-Order clone = Order.copy(myOrder)
-clone.price := 160.0
+let clone: Order = Order.copy(myOrder);
+clone.price = 160.0;
 ```
 
 ### 类型上的方法
@@ -47,21 +47,21 @@ clone.price := 160.0
 struct Position {
     float entry,
     float size,
-    bool isLong = true;
+    bool isLong = true,
 }
 
 method pnl(self: Position, currentPrice: float) {
     let diff = currentPrice - self.entry;
-    self.isLong ? diff * self.size : -diff * self.size
+    self.isLong ? diff * self.size : -diff * self.size;
 }
 
 method isProfit(self: Position, currentPrice: float) {
-    self.pnl(currentPrice) > 0
+    self.pnl(currentPrice) > 0;
 }
 
-let pos = Position.new(entry:  100.0, size:  10.0);
+let pos = Position.new(entry: 100.0, size: 10.0);
 if pos.isProfit(close) {
-    label.new(bar_index, high, str.tostring(pos.pnl(close), "#.##"))
+    label.new(bar_index, high, str.tostring(pos.pnl(close), "#.##"));
 }
 ```
 
@@ -71,8 +71,8 @@ if pos.isProfit(close) {
 
 ```navi
 struct Counter {
-    int bars = 0;
-    varip int ticks = 0;
+    int bars = 0,
+    varip int ticks = 0,
 }
 
 var counter: Counter = Counter.new();
@@ -108,7 +108,7 @@ method push<T>(self: Stack<T>, value: T) {
 
 method pop<T>(self: Stack<T>): T {
     self.count -= 1;
-    self.items.pop()
+    self.items.pop();
 }
 
 var s: Stack<float> = Stack.new();
@@ -126,7 +126,7 @@ s.push(open);
 enum Direction {
     Long,
     Short,
-    Both:  "Both Directions",
+    Both = "Both Directions",
 }
 ```
 
@@ -138,9 +138,9 @@ enum Direction {
 let d: Direction = Direction.Long;
 
 if d == Direction.Long {
-    strategy.entry("L", strategy.long)
+    strategy.entry("L", Direction.Long);
 } else if d == Direction.Short {
-    strategy.entry("S", strategy.short)
+    strategy.entry("S", Direction.Short);
 }
 ```
 
@@ -159,12 +159,12 @@ export struct Config {
 }
 
 export fn calcSMA(src: series float, length: simple int) {
-    ta.sma(src, length)
+    ta.sma(src, length);
 }
 
 export enum Side {
-    left,
-    right,
+    Left,
+    Right,
 }
 ```
 
@@ -172,7 +172,7 @@ export enum Side {
 
 ```navi
 indicator("My Indicator");
-use MyLib.nv as lib;
+use MyLib as lib;
 
 let config = lib.Config.new(length: 20, multiplier: 2.0);
 let sma = lib.calcSMA(close, config.length);
@@ -182,15 +182,15 @@ plot(sma);
 通过模块名称访问导出的成员：
 
 ```navi
-use utils.nv;
-utils.add(1, 2);                  // 调用导出的函数
-let obj: utils.MyType = na;       // 使用导出的类型
-let value = utils.MyEnum.A;       // 访问导出的枚举变体
+use utils;
+utils.add(1, 2);                     // 调用导出的函数
+let obj: utils.MyType = na;          // 使用导出的类型
+let value = utils.MyEnum.A;          // 访问导出的枚举变体
 ```
 
 ## 新类型声明
 
-Navi 支持 `type Name => underlying_type` 语法来创建由现有类型支持的不同类型。这允许在不创建新结构的情况下定义特定领域的类型：
+Navi 支持 `type Name = underlying_type;` 语法来创建由现有类型支持的不同类型。这允许在不创建新结构的情况下定义特定领域的类型：
 
 ```navi
 type MyInt = int;
@@ -205,18 +205,6 @@ type SpecialInt = MyInt;
 let x: SpecialInt = 42; // OK
 ```
 
-标准库广泛使用新类型来为绘图对象和绘图样式创建不同的类型：
-
-```navi
-// prelude/draw.1.nv
-export type plot_style = int;
-export type hline = int;
-export type label = int;
-export type line = int;
-export type box = int;
-export type table = int;
-```
-
 ## 编译器特殊类型
 
 以下类型由 Navi 标准库用于实现某些高级内置函数。通常情况下，你不会在自己的脚本中直接使用它们——它们出现在标准库源码中，当你调用 `input.source`、`request.security` 或 `max_bars_back` 等函数时会被透明处理。
@@ -226,7 +214,7 @@ export type table = int;
 允许函数接收**未求值的 AST 节点**而非计算后的值。`input.source()` 用它来获知用户传入的是哪个变量，从而在 UI 中以变量名显示。
 
 ```navi
-let src = input.source(defval:  close);
+let src = input.source(defval: close);
 // `close` 被捕获为表达式，不会被求值为数字。
 // 设置 UI 会将"Close"显示为默认来源选项。
 ```

@@ -67,6 +67,41 @@ longbridge quant run AAPL.US --start 2024-01-01 --end 2024-12-31 --script my_ind
 
 如果文件使用了正确的扩展名（`.nv` 或 `.pine`），语言会自动识别，无需手动指定 `--dialect`。
 
+### 转换为 Navi
+
+新脚本建议使用 Navi（`.nv`），可获得完整的编辑器支持。下面是同一个布林带指标分别用两种语言编写的对比：
+
+```pine
+// Pine Script
+// @version=6
+indicator("Bollinger Bands", overlay=true)
+
+length = input.int(20, "Length")
+mult   = input.float(2.0, "Multiplier")
+
+[basis, upper, lower] = ta.bb(close, length, mult)
+
+plot(basis, "Basis", color.blue)
+plot(upper, "Upper", color.red)
+plot(lower, "Lower", color.green)
+fill(upper, lower, color.new(color.blue, 90))
+```
+
+```navi
+// Navi
+indicator("Bollinger Bands", overlay: true);
+
+let length = input.int(20, "Length");
+let mult   = input.float(2.0, "Multiplier");
+
+let (basis, upper, lower) = ta.bb(close, length, mult);
+
+plot(basis, "Basis", color.BLUE);
+plot(upper, "Upper", color.RED);
+plot(lower, "Lower", color.GREEN);
+fill(upper, lower, color.new(color.BLUE, 90));
+```
+
 ## 下一步
 
 - [语言基础](/zh-CN/guide/language-basics)
