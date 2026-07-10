@@ -2,32 +2,32 @@
 indicator("Auto Pitchfork", overlay: true);
 
 struct Settings {
-    float devThreshold = 5.0,
-    int depth = 10,
-    color lineColor = #2962FF,
-    bool projectionPivots = true,
-    bool displayReversalPrice = true,
-    bool displayCumulativeVolume = true,
-    bool displayReversalPriceChange = true,
-    string differencePriceMode = "Absolute",
-    bool draw = true,
-    bool allowZigZagOnOneBar = true,
+    devThreshold: float = 5.0,
+    depth: int = 10,
+    lineColor: color = #2962FF,
+    projectionPivots: bool = true,
+    displayReversalPrice: bool = true,
+    displayCumulativeVolume: bool = true,
+    displayReversalPriceChange: bool = true,
+    differencePriceMode: string = "Absolute",
+    draw: bool = true,
+    allowZigZagOnOneBar: bool = true,
 }
 
 struct Pivot {
-    Line ln,
-    Label lb,
-    bool isHigh,
-    float vol,
-    chart.Point start,
-    chart.Point end,
+    ln: Line,
+    lb: Label,
+    isHigh: bool,
+    vol: float,
+    start: chart.Point,
+    end: chart.Point,
 }
 
 struct ZigZag {
-    Settings settings,
-    Array<Pivot> pivots,
-    float sumVol = 0,
-    Pivot projection = na,
+    settings: Settings,
+    pivots: Array<Pivot>,
+    sumVol: float = 0,
+    projection: Pivot = na,
 }
 
 fn findPivotPoint(

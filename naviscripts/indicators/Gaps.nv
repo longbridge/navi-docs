@@ -69,8 +69,8 @@ let colorDownBackgroundInput = input.color(
 );
 
 struct AlertInfo {
-    int countOpenGap,
-    int countClosedGap,
+    countOpenGap: int,
+    countClosedGap: int,
 }
 
 method hasOpenedGap(this: AlertInfo) {
@@ -84,9 +84,9 @@ method hasClosedGap(this: AlertInfo) {
 let alertInfo: AlertInfo = AlertInfo.new(0, 0);
 
 struct Gap {
-    bool isActive,
-    bool isBull,
-    Array<Box> boxes,
+    isActive: bool,
+    isBull: bool,
+    boxes: Array<Box>,
 }
 
 method delete(this: Gap) {

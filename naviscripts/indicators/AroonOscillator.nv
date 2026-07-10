@@ -1,9 +1,9 @@
 indicator("Aroon Oscillator", "Aroon Osc", timeframe: "", timeframe_gaps: true);
 
 struct collectedData {
-    Array<float> data,
-    Array<int> times,
-    int startTime,
+    data: Array<float>,
+    times: Array<int>,
+    startTime: int,
 }
 
 method maintainArray(

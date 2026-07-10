@@ -1,8 +1,8 @@
 indicator("Performance");
 
 struct Data {
-    Array<int> times,
-    Array<float> values,
+    times: Array<int>,
+    values: Array<float>,
 }
 
 fn calcLimit(timeOffset: series int) {

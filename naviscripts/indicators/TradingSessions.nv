@@ -128,21 +128,21 @@ let thirdSessionColor = input.color(
 );
 
 struct SessionDisplay {
-    Box sessionBox,
-    Label sessionLabel,
-    Line openLine,
-    Line avgLine,
-    Line closeLine,
-    float sumClose,
-    int numOfBars,
+    sessionBox: Box,
+    sessionLabel: Label,
+    openLine: Line,
+    avgLine: Line,
+    closeLine: Line,
+    sumClose: float,
+    numOfBars: int,
 }
 
 struct SessionInfo {
-    color color,
-    string name,
-    string session,
-    string timezone,
-    SessionDisplay active = na,
+    color: color,
+    name: string,
+    session: string,
+    timezone: string,
+    active: SessionDisplay = na,
 }
 
 method setName(this: SessionDisplay, name: string) {

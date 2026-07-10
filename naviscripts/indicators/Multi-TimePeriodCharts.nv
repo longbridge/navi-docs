@@ -52,11 +52,11 @@ let dnBorderColorInput: color = input(
 let dnBodyColorInput: color = input(DNBD_COLOR, "", inline: "11", group: GRP01);
 
 struct OHLC {
-    float o,
-    float h,
-    float l,
-    float c,
-    float prevC,
+    o: float,
+    h: float,
+    l: float,
+    c: float,
+    prevC: float,
 }
 
 method setBox(

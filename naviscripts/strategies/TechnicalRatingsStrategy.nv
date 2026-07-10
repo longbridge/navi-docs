@@ -6,9 +6,9 @@
     overlay: true
 );
 struct collectedData {
-    Array<float> data,
-    Array<int> times,
-    int startTime,
+    data: Array<float>,
+    times: Array<int>,
+    startTime: int,
 }
 
 method maintainArray(
@@ -113,9 +113,9 @@ fn averageAtTime(
 }
 
 struct collectedData {
-    Array<float> data,
-    Array<int> times,
-    int startTime,
+    data: Array<float>,
+    times: Array<int>,
+    startTime: int,
 }
 
 method maintainArray(

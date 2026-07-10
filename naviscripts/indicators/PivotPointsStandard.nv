@@ -255,9 +255,9 @@ let r5ShowInput = input.bool(
 );
 
 struct graphicSettings {
-    string levelName,
-    color levelColor,
-    bool showLevel,
+    levelName: string,
+    levelColor: color,
+    showLevel: bool,
 }
 
 var graphicSettingsArray = Array.from(
@@ -305,8 +305,8 @@ let numOfPivotLevels = switch pivotTypeInput {
     "DM" => 3,
 };
 struct pivotGraphic {
-    Line pivotLine,
-    Label pivotLabel,
+    pivotLine: Line,
+    pivotLabel: Label,
 }
 
 method delete(graphic: pivotGraphic) {
