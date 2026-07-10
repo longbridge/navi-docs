@@ -1,0 +1,30 @@
+﻿indicator(
+    title: "Connors RSI",
+    short_title: "CRSI",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let src = close;
+let lenrsi = input(3, "RSI Length");
+let lenupdown = input(2, "UpDown Length");
+let lenroc = input(100, "ROC Length");
+fn updown(s) {
+    let isEqual = s == s[1];
+    let isGrowing = s > s[1];
+    let ud = 0.0;
+    ud = isEqual ? 0 : isGrowing ? (nz(ud[1]) <= 0 ? 1 : nz(ud[1]) + 1) : (nz(
+        ud[1]
+    ) >= 0 ? -1 : nz(ud[1]) - 1);
+    ud;
+}
+let rsi = ta.rsi(src, lenrsi);
+let updownrsi = ta.rsi(updown(src), lenupdown);
+let percent_rank = ta.percent_rank(ta.roc(src, 1), lenroc);
+let crsi = math.avg(rsi, updownrsi, percent_rank);
+plot(crsi, "CRSI", #2962FF);
+let band1 = hline(70, "Upper Band", color: #787B86);
+hline(50, "Middle Band", color: Color.new(#787B86, 50));
+let band0 = hline(30, "Lower Band", color: #787B86);
+fill(band1, band0, Color.rgb(33, 150, 243, 90), title: "Background");

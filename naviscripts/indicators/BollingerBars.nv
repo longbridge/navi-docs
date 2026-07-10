@@ -1,0 +1,29 @@
+﻿indicator(
+    "Bollinger Bars",
+    overlay: true,
+    explicit_plot_zorder: true,
+    behind_chart: false
+);
+
+plot_candle(
+    high,
+    high,
+    low,
+    low,
+    "Bollinger Bars Wicks",
+    color: #0D349E,
+    border_color: #0D349E,
+    wick_color: na,
+    display: PlotDisplay.PANE
+);
+let col = close > open ? #089981 : #F23645;
+plot_candle(
+    open,
+    high,
+    low,
+    close,
+    "Bollinger Bars Body",
+    color: col,
+    border_color: col,
+    wick_color: na
+);

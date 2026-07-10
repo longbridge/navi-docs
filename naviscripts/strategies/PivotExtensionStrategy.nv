@@ -1,0 +1,11 @@
+﻿strategy("Pivot Extension Strategy", overlay: true);
+let leftBars = input(4, "Pivot Lookback Left");
+let rightBars = input(2, "Pivot Lookback Right");
+let ph = ta.pivot_high(leftBars, rightBars);
+let pl = ta.pivot_low(leftBars, rightBars);
+if (not na(pl)) {
+    strategy.entry("PivExtLE", Direction.Long, comment: "PivExtLE");
+}
+if (not na(ph)) {
+    strategy.entry("PivExtSE", Direction.Short, comment: "PivExtSE");
+}

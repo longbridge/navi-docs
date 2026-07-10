@@ -1,0 +1,23 @@
+﻿indicator(
+    "True Strength Index",
+    short_title: "TSI",
+    format: Format.Price,
+    precision: 4,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let long = input(title: "Long Length", defval: 25);
+let short = input(title: "Short Length", defval: 13);
+let signal = input(title: "Signal Length", defval: 13);
+let price = close;
+fn double_smooth(src, long, short) {
+    let fist_smooth = ta.ema(src, long);
+    ta.ema(fist_smooth, short);
+}
+let pc = ta.change(price);
+let double_smoothed_pc = double_smooth(pc, long, short);
+let double_smoothed_abs_pc = double_smooth(math.abs(pc), long, short);
+let tsi_value = 100 * (double_smoothed_pc / double_smoothed_abs_pc);
+plot(tsi_value, title: "True Strength Index", color: #2962FF);
+plot(ta.ema(tsi_value, signal), title: "Signal", color: #E91E63);
+hline(0, title: "Zero", color: #787B86);

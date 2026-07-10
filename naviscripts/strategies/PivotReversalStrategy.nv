@@ -1,0 +1,31 @@
+﻿strategy("Pivot Reversal Strategy", overlay: true);
+let leftBars = input(4, "Pivot Lookback Left");
+let rightBars = input(2, "Pivot Lookback Right");
+let swh = ta.pivot_high(leftBars, rightBars);
+let swl = ta.pivot_low(leftBars, rightBars);
+let swh_cond = not na(swh);
+let hprice = 0.0;
+hprice = swh_cond ? swh : hprice[1];
+let le = false;
+le = swh_cond ? true : (le[1] and high > hprice ? false : le[1]);
+if (le) {
+    strategy.entry(
+        "PivRevLE",
+        Direction.Long,
+        comment: "PivRevLE",
+        stop: hprice + symbol_info.min_tick
+    );
+}
+let swl_cond = not na(swl);
+let lprice = 0.0;
+lprice = swl_cond ? swl : lprice[1];
+let se = false;
+se = swl_cond ? true : (se[1] and low < lprice ? false : se[1]);
+if (se) {
+    strategy.entry(
+        "PivRevSE",
+        Direction.Short,
+        comment: "PivRevSE",
+        stop: lprice - symbol_info.min_tick
+    );
+}

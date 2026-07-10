@@ -1,0 +1,211 @@
+﻿indicator(
+    title: "RSI Divergence Indicator",
+    format: Format.Price,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let len = input.int(title: "RSI Period", minval: 1, defval: 14);
+let src = input(title: "RSI Source", defval: close);
+let lbR = input(
+    title: "Pivot Lookback Right",
+    defval: 5,
+    display: PlotDisplay.NONE
+);
+let lbL = input(title: "Pivot Lookback Left", defval: 5, display: PlotDisplay.NONE);
+let rangeUpper = input(
+    title: "Max of Lookback Range",
+    defval: 60,
+    display: PlotDisplay.NONE
+);
+let rangeLower = input(
+    title: "Min of Lookback Range",
+    defval: 5,
+    display: PlotDisplay.NONE
+);
+let plotBull = input(
+    title: "Plot Bullish",
+    defval: true,
+    display: PlotDisplay.NONE
+);
+let plotHiddenBull = input(
+    title: "Plot Hidden Bullish",
+    defval: false,
+    display: PlotDisplay.NONE
+);
+let plotBear = input(
+    title: "Plot Bearish",
+    defval: true,
+    display: PlotDisplay.NONE
+);
+let plotHiddenBear = input(
+    title: "Plot Hidden Bearish",
+    defval: false,
+    display: PlotDisplay.NONE
+);
+let bearColor = Color.RED;
+let bullColor = Color.GREEN;
+let hiddenBullColor = Color.new(Color.GREEN, 80);
+let hiddenBearColor = Color.new(Color.RED, 80);
+let textColor = Color.WHITE;
+let noneColor = Color.new(Color.WHITE, 100);
+let osc = ta.rsi(src, len);
+
+plot(osc, title: "RSI", line_width: 2, color: #2962FF);
+hline(50, title: "Middle line", color: #787B86, line_style: HLineStyle.Dotted);
+let obLevel = hline(
+    70,
+    title: "Overbought",
+    color: #787B86,
+    line_style: HLineStyle.Dotted
+);
+let osLevel = hline(
+    30,
+    title: "Oversold",
+    color: #787B86,
+    line_style: HLineStyle.Dotted
+);
+fill(obLevel, osLevel, title: "Background", color: Color.rgb(33, 150, 243, 90));
+
+let plFound = na(ta.pivot_low(osc, lbL, lbR)) ? false : true;
+let phFound = na(ta.pivot_high(osc, lbL, lbR)) ? false : true;
+fn _inRange(cond) {
+    let bars = ta.bars_since(cond == true);
+    rangeLower <= bars and bars <= rangeUpper;
+}
+
+let inRangePl = _inRange(plFound[1]);
+let oscHL = osc[lbR] > ta.value_when(plFound, osc[lbR], 1) and inRangePl;
+
+let priceLL = low[lbR] < ta.value_when(plFound, low[lbR], 1);
+let bullCondAlert = priceLL and oscHL and plFound;
+let bullCond = plotBull and bullCondAlert;
+
+plot(
+    plFound ? osc[lbR] : na,
+    offset: -lbR,
+    title: "Regular Bullish",
+    line_width: 2,
+    color: (bullCond ? bullColor : noneColor),
+    display: PlotDisplay.PANE,
+    editable: plotBull
+);
+
+plot_shape(
+    bullCond ? osc[lbR] : na,
+    offset: -lbR,
+    title: "Regular Bullish label",
+    text: " Bull ",
+    style: Shape.LabelUp,
+    location: Location.Absolute,
+    color: bullColor,
+    text_color: textColor,
+    editable: plotBull
+);
+
+let oscLL = osc[lbR] < ta.value_when(plFound, osc[lbR], 1) and inRangePl;
+
+let priceHL = low[lbR] > ta.value_when(plFound, low[lbR], 1);
+let hiddenBullCondAlert = priceHL and oscLL and plFound;
+let hiddenBullCond = plotHiddenBull and hiddenBullCondAlert;
+
+plot(
+    plFound ? osc[lbR] : na,
+    offset: -lbR,
+    title: "Hidden Bullish",
+    line_width: 2,
+    color: (hiddenBullCond ? hiddenBullColor : noneColor),
+    display: PlotDisplay.PANE,
+    editable: plotHiddenBull
+);
+
+plot_shape(
+    hiddenBullCond ? osc[lbR] : na,
+    offset: -lbR,
+    title: "Hidden Bullish label",
+    text: " H Bull ",
+    style: Shape.LabelUp,
+    location: Location.Absolute,
+    color: bullColor,
+    text_color: textColor,
+    editable: plotHiddenBull
+);
+
+let inRangePh = _inRange(phFound[1]);
+let oscLH = osc[lbR] < ta.value_when(phFound, osc[lbR], 1) and inRangePh;
+
+let priceHH = high[lbR] > ta.value_when(phFound, high[lbR], 1);
+
+let bearCondAlert = priceHH and oscLH and phFound;
+let bearCond = plotBear and bearCondAlert;
+
+plot(
+    phFound ? osc[lbR] : na,
+    offset: -lbR,
+    title: "Regular Bearish",
+    line_width: 2,
+    color: (bearCond ? bearColor : noneColor),
+    display: PlotDisplay.PANE,
+    editable: plotBear
+);
+
+plot_shape(
+    bearCond ? osc[lbR] : na,
+    offset: -lbR,
+    title: "Regular Bearish label",
+    text: " Bear ",
+    style: Shape.LabelDown,
+    location: Location.Absolute,
+    color: bearColor,
+    text_color: textColor,
+    editable: plotBear
+);
+
+let oscHH = osc[lbR] > ta.value_when(phFound, osc[lbR], 1) and inRangePh;
+
+let priceLH = high[lbR] < ta.value_when(phFound, high[lbR], 1);
+
+let hiddenBearCondAlert = priceLH and oscHH and phFound;
+let hiddenBearCond = plotHiddenBear and hiddenBearCondAlert;
+
+plot(
+    phFound ? osc[lbR] : na,
+    offset: -lbR,
+    title: "Hidden Bearish",
+    line_width: 2,
+    color: (hiddenBearCond ? hiddenBearColor : noneColor),
+    display: PlotDisplay.PANE,
+    editable: plotHiddenBear
+);
+
+plot_shape(
+    hiddenBearCond ? osc[lbR] : na,
+    offset: -lbR,
+    title: "Hidden Bearish label",
+    text: " H Bear ",
+    style: Shape.LabelDown,
+    location: Location.Absolute,
+    color: bearColor,
+    text_color: textColor,
+    editable: plotHiddenBear
+);
+
+alert_condition(
+    bullCondAlert,
+    title: 'Regular Bullish Divergence',
+    message: "Found a new Regular Bullish Divergence, `Pivot Lookback Right` number of bars to the left of the current bar"
+);
+alert_condition(
+    hiddenBullCondAlert,
+    title: 'Hidden Bullish Divergence',
+    message: 'Found a new Hidden Bullish Divergence, `Pivot Lookback Right` number of bars to the left of the current bar'
+);
+alert_condition(
+    bearCondAlert,
+    title: 'Regular Bearish Divergence',
+    message: 'Found a new Regular Bearish Divergence, `Pivot Lookback Right` number of bars to the left of the current bar'
+);
+alert_condition(
+    hiddenBearCondAlert,
+    title: 'Hidden Bearish Divergence',
+    message: 'Found a new Hidden Bearish Divergence, `Pivot Lookback Right` number of bars to the left of the current bar'
+);

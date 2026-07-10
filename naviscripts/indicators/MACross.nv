@@ -1,0 +1,19 @@
+﻿indicator(
+    title: "MA Cross",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let shortlen = input.int(9, "Short MA Length", minval: 1);
+let longlen = input.int(21, "Long MA Length", minval: 1);
+let short = ta.sma(close, shortlen);
+let long = ta.sma(close, longlen);
+plot(short, color: #FF6D00, title: "Short MA");
+plot(long, color: #43A047, title: "Long MA");
+plot(
+    ta.cross(short, long) ? short : na,
+    color: #2962FF,
+    style: PlotStyle.Cross,
+    line_width: 4,
+    title: "Cross"
+);

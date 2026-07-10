@@ -1,0 +1,16 @@
+﻿indicator(
+    title: "Donchian Channels",
+    short_title: "DC",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input.int(20, minval: 1);
+let offset = input.int(0, "Offset");
+let lower = ta.lowest(length);
+let upper = ta.highest(length);
+let basis = math.avg(upper, lower);
+plot(basis, "Basis", color: #FF6D00, offset: offset);
+let u = plot(upper, "Upper", color: #2962FF, offset: offset);
+let l = plot(lower, "Lower", color: #2962FF, offset: offset);
+fill(u, l, color: Color.rgb(33, 150, 243, 95), title: "Background");

@@ -1,0 +1,12 @@
+﻿indicator(
+    title: "Parabolic SAR",
+    short_title: "SAR",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let start = input(0.02);
+let increment = input(0.02);
+let maximum = input(0.2, "Max value");
+let out = ta.sar(start, increment, maximum);
+plot(out, "ParabolicSAR", style: PlotStyle.Cross, color: #2962FF);

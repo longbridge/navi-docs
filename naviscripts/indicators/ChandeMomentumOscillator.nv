@@ -1,0 +1,27 @@
+﻿indicator(
+    title: "Chande Momentum Oscillator",
+    short_title: "ChandeMO",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input.int(9, minval: 1);
+let src = input(close, "Source");
+let momm = ta.change(src);
+fn f1(m) {
+    m >= 0.0 ? m : 0.0;
+}
+fn f2(m) {
+    m >= 0.0 ? 0.0 : -m;
+}
+let m1 = f1(momm);
+let m2 = f2(momm);
+let sm1 = math.sum(m1, length);
+let sm2 = math.sum(m2, length);
+fn percent(nom, div) {
+    100 * nom / div;
+}
+let chandeMO = percent(sm1 - sm2, sm1 + sm2);
+plot(chandeMO, "Chande MO", color: #2962FF);
+hline(0, color: #787B86, line_style: HLineStyle.Dashed, title: "Zero line");

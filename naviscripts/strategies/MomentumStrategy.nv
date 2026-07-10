@@ -1,0 +1,29 @@
+﻿strategy("Momentum Strategy", overlay: true);
+let length = input(12);
+let price = close;
+fn momentum(seria, length) {
+    let mom = seria - seria[length];
+    mom;
+}
+let mom0 = momentum(price, length);
+let mom1 = momentum(mom0, 1);
+if (mom0 > 0 and mom1 > 0) {
+    strategy.entry(
+        "MomLE",
+        Direction.Long,
+        stop: high + symbol_info.min_tick,
+        comment: "MomLE"
+    );
+} else {
+    strategy.cancel("MomLE");
+}
+if (mom0 < 0 and mom1 < 0) {
+    strategy.entry(
+        "MomSE",
+        Direction.Short,
+        stop: low - symbol_info.min_tick,
+        comment: "MomSE"
+    );
+} else {
+    strategy.cancel("MomSE");
+}

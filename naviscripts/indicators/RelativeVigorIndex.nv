@@ -1,0 +1,23 @@
+﻿indicator(
+    title: "Relative Vigor Index",
+    short_title: "RVGI",
+    format: Format.Price,
+    precision: 4,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let len = input.int(10, title: "Length", minval: 1);
+let rvi = math.sum(ta.swma(close - open), len) / math.sum(
+    ta.swma(high - low),
+    len
+);
+let sig = ta.swma(rvi);
+let offset = input.int(
+    0,
+    "Offset",
+    minval: -500,
+    maxval: 500,
+    display: PlotDisplay.NONE
+);
+plot(rvi, color: #008000, title: "RVGI", offset: offset);
+plot(sig, color: #FF0000, title: "Signal", offset: offset);

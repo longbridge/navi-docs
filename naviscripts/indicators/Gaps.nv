@@ -1,0 +1,197 @@
+﻿indicator("Gaps", overlay: true, max_boxes_count: 500);
+
+let closeGapsPartially = input.bool(
+    false,
+    "Close Gaps Partially",
+    display: PlotDisplay.NONE
+);
+let boxLimitInput = input.int(
+    15,
+    "Max Number of Gaps",
+    minval: 1,
+    maxval: 500,
+    display: PlotDisplay.NONE
+);
+let minimalDeviationTooltip = "Specifies the minimal size of detected gaps, as a percentage of the average high-low range for the last 14 bars.";
+let minimalDeviationInput = nz(
+    input.float(
+        30.0,
+        "Minimal Deviation (%)",
+        tooltip: minimalDeviationTooltip,
+        minval: 1,
+        maxval: 100,
+        display: PlotDisplay.NONE
+    ) / 100 * ta.sma(high - low, 14)
+);
+let limitBoxLengthBoolInput = input.bool(
+    false,
+    "Limit Max Gap Trail Length (bars)",
+    inline: "Length Limit",
+    display: PlotDisplay.NONE
+);
+let limitBoxLengthIntInput = input.int(
+    300,
+    "",
+    inline: "Length Limit",
+    minval: 1,
+    display: PlotDisplay.NONE,
+    active: limitBoxLengthBoolInput
+);
+
+let groupName = "Border and fill colors";
+let colorUpBorderInput = input.color(
+    Color.GREEN,
+    "Up Gaps",
+    inline: "Gap Up",
+    group: groupName,
+    display: PlotDisplay.NONE
+);
+let colorUpBackgroundInput = input.color(
+    Color.new(Color.GREEN, 85),
+    "",
+    inline: "Gap Up",
+    group: groupName,
+    display: PlotDisplay.NONE
+);
+let colorDownBorderInput = input.color(
+    Color.RED,
+    "Down Gaps",
+    inline: "Gap Down",
+    group: groupName,
+    display: PlotDisplay.NONE
+);
+let colorDownBackgroundInput = input.color(
+    Color.new(Color.RED, 85),
+    "",
+    inline: "Gap Down",
+    group: groupName,
+    display: PlotDisplay.NONE
+);
+
+struct AlertInfo {
+    countOpenGap: int,
+    countClosedGap: int,
+}
+
+method hasOpenedGap(this: AlertInfo) {
+    this.countOpenGap > 0;
+}
+
+method hasClosedGap(this: AlertInfo) {
+    this.countClosedGap > 0;
+}
+
+let alertInfo: AlertInfo = AlertInfo.new(0, 0);
+
+struct Gap {
+    isActive: bool,
+    isBull: bool,
+    boxes: Array<Box>,
+}
+
+method delete(this: Gap) {
+    for _box in this.boxes {
+        _box.delete();
+    }
+}
+
+method partialClose(this: Gap) {
+    let activeBox = this.boxes.last();
+    activeBox.set_extend(Extend.None);
+    let top = this.isBull ? activeBox.get_top() : low;
+    let bottom = this.isBull ? high : activeBox.get_bottom();
+    this.boxes.push(
+        Box.new(
+            bar_index,
+            top,
+            bar_index,
+            bottom,
+            this.isBull ? colorDownBorderInput : colorUpBorderInput,
+            bg_color: this.isBull ? colorDownBackgroundInput : colorUpBackgroundInput
+        )
+    );
+}
+
+method fullClose(this: Gap) {
+    alertInfo.countClosedGap += 1;
+    let activeBox = this.boxes.last();
+    activeBox.set_extend(Extend.None);
+    this.isActive = false;
+    if closeGapsPartially {
+        activeBox.delete();
+    }
+}
+
+method checkForClose(this: Gap) {
+    if this.isActive {
+        let activeBox = this.boxes.last();
+        let top = activeBox.get_top();
+        let bot = activeBox.get_bottom();
+        let isBull = this.isBull;
+        activeBox.set_right(bar_index);
+        if (high > bot and isBull) or (low < top and not isBull) {
+            if closeGapsPartially {
+                this.partialClose();
+            } else {
+                this.fullClose();
+            }
+        }
+        let forceCloseBoxExceededLengthLimit: bool = (limitBoxLengthBoolInput and bar_index - activeBox.get_left() >= limitBoxLengthIntInput);
+        if ((high > top and isBull) or (low < bot and not isBull)) or forceCloseBoxExceededLengthLimit {
+            this.fullClose();
+        }
+    }
+}
+
+var allGaps = Array.new<Gap>();
+
+let isGapDown = high < low[1] and low[1] - high >= minimalDeviationInput;
+let isGapUp = low > high[1] and low - high[1] >= minimalDeviationInput;
+let isGap = isGapDown or isGapUp;
+let boxBorderColor = isGapDown ? colorDownBorderInput : colorUpBorderInput;
+let boxBgcolor = isGapDown ? colorDownBackgroundInput : colorUpBackgroundInput;
+
+fn registerNewGap(isGapDown: bool) {
+    alertInfo.countOpenGap += 1;
+    let newBox = Box.new(
+        bar_index - 1,
+        (isGapDown ? low[1] : low),
+        bar_index,
+        (isGapDown ? high : high[1]),
+        border_color: boxBorderColor,
+        bg_color: boxBgcolor,
+        extend: Extend.Right
+    );
+    allGaps.push(Gap.new(true, isGapDown, Array.from(newBox)));
+    if allGaps.size() > boxLimitInput {
+        allGaps.shift().delete();
+    }
+}
+
+for gap in allGaps {
+    gap.checkForClose();
+}
+
+if isGap {
+    registerNewGap(isGapDown);
+}
+
+if bar_state.is_last_confirmed_history and allGaps.size() == 0 {
+    let noGapText = "No gaps found on the current chart. \n The cause could be that some exchanges align the open of new bars on the close of the previous one, resulting in charts with no gaps. Alternatively, your Minimal Deviation might be too high.";
+    var infoTable = Table.new(Position.BottomRight, 1, 1);
+    Table.cell(
+        infoTable,
+        0,
+        0,
+        text: noGapText,
+        text_color: chart.bg_color,
+        bg_color: chart.fg_color
+    );
+}
+
+alert_condition(
+    alertInfo.hasOpenedGap(),
+    "New Gap Appeared",
+    "A new gap has appeared."
+);
+alert_condition(alertInfo.hasClosedGap(), "Gap Closed", "A gap was closed.");

@@ -1,0 +1,14 @@
+﻿indicator(
+    title: "Hull Moving Average",
+    short_title: "HMA",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input.int(9, "Length", minval: 2);
+let src = input(close, "Source");
+let hullma = ta.wma(
+    2 * ta.wma(src, length / 2) - ta.wma(src, length),
+    math.floor(math.sqrt(length))
+);
+plot(hullma, "HMA");

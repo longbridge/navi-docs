@@ -1,0 +1,12 @@
+﻿indicator(
+    title: "Least Squares Moving Average",
+    short_title: "LSMA",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input(title: "Length", defval: 25);
+let offset = input(title: "Offset", defval: 0);
+let src = input(close, title: "Source");
+let lsma = ta.linreg(src, length, offset);
+plot(lsma, "LSMA");

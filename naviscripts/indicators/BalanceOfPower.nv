@@ -1,0 +1,8 @@
+﻿indicator(
+    title: "Balance of Power",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+plot((close - open) / (high - low), "BOP", color: Color.RED);

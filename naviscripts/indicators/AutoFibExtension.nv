@@ -1,0 +1,1194 @@
+﻿indicator("Auto Fib Extension", overlay: true);
+
+struct Settings {
+    devThreshold: float = 5.0,
+    depth: int = 10,
+    lineColor: Color = #2962FF,
+    projectionPivots: bool = true,
+    displayReversalPrice: bool = true,
+    displayCumulativeVolume: bool = true,
+    displayReversalPriceChange: bool = true,
+    differencePriceMode: String = "Absolute",
+    draw: bool = true,
+    allowZigZagOnOneBar: bool = true,
+}
+
+struct Pivot {
+    ln: Line,
+    lb: Label,
+    isHigh: bool,
+    vol: float,
+    start: chart.Point,
+    end: chart.Point,
+}
+
+struct ZigZag {
+    settings: Settings,
+    pivots: Array<Pivot>,
+    sumVol: float = 0,
+    projection: Pivot = na,
+}
+
+fn findPivotPoint(
+    source: series float,
+    depth: series int,
+    isHigh: simple bool
+) {
+    let pivotPrice: float = nz(source[depth]);
+    if depth == 0 {
+        chart.Point.new(time, bar_index, pivotPrice);
+    } else if depth * 2 <= bar_index {
+        let isFound: bool = true;
+        for i = 0 to depth - 1 {
+            if (isHigh and source[i] > pivotPrice) or (not isHigh and source[i] < pivotPrice) {
+                isFound = false;
+                break;
+            }
+        }
+        for i = depth + 1 to 2 * depth {
+            if (isHigh and source[i] >= pivotPrice) or (not isHigh and source[i] <= pivotPrice) {
+                isFound = false;
+                break;
+            }
+        }
+        if isFound {
+            chart.Point.new(time[depth], bar_index[depth], pivotPrice);
+        }
+    }
+}
+
+fn calcDev(start: series float, end: series float) {
+    let result: float = 100 * (end - start) / math.abs(start);
+}
+
+fn priceRotationDiff(
+    start: series float,
+    end: series float,
+    settings: Settings
+) {
+    let diff: float = end - start;
+    let sign: String = math.sign(diff) > 0 ? "+" : "";
+    let diffStr: String = switch settings.differencePriceMode {
+        "Absolute" => String.from(diff, Format.Mintick),
+        => String.from(diff * 100 / start, Format.Percent),
+    };
+    let result: String = "({0}{1})".format(sign, diffStr);
+}
+
+fn priceRotationAggregate(
+    start: series float,
+    end: series float,
+    vol: series float,
+    settings: Settings
+) {
+    let result: String = "";
+    if settings.displayReversalPrice {
+        result += String.from(end, Format.Mintick) + " ";
+    }
+    if settings.displayReversalPriceChange {
+        result += priceRotationDiff(start, end, settings) + " ";
+    }
+    if settings.displayCumulativeVolume {
+        result += "\n" + String.from(vol, Format.Volume);
+    }
+    result;
+}
+
+fn makePivotLabel(
+    isHigh: series bool,
+    point: chart.Point,
+    settings: Settings
+) {
+    if settings.displayReversalPrice or settings.displayReversalPriceChange or settings.displayCumulativeVolume {
+        let (yloc, txtColor) = switch {
+            isHigh => (YLoc.AboveBar, Color.GREEN),
+            => (YLoc.BelowBar, Color.RED),
+        };
+        Label.new(
+            point,
+            style: LabelStyle.NoLabel,
+            xloc: XLoc.BarTime,
+            yloc: yloc,
+            text_color: txtColor
+        );
+    }
+}
+
+method updatePivot(
+    this: Pivot,
+    end: chart.Point,
+    vol: series float,
+    settings: Settings
+) {
+    this.end = end;
+    this.vol = vol;
+    if not na(this.lb) {
+        this.lb.set_point(this.end);
+        this.lb.set_text(
+            priceRotationAggregate(
+                this.start.price,
+                this.end.price,
+                this.vol,
+                settings
+            )
+        );
+    }
+    this.ln.set_second_point(this.end);
+}
+
+fn newPivot(
+    start: chart.Point,
+    end: chart.Point,
+    vol: series float,
+    isHigh: series bool,
+    settings: Settings
+) {
+    let p: Pivot = Pivot.new(na, na, isHigh, vol, start, end);
+    if settings.draw {
+        p.ln = Line.new(
+            start,
+            end,
+            xloc: XLoc.BarTime,
+            color: settings.lineColor,
+            width: 2
+        );
+        p.lb = makePivotLabel(isHigh, end, settings);
+    }
+    p.updatePivot(end, vol, settings);
+    p;
+}
+
+method delete(this: Pivot) {
+    if not na(this.ln) {
+        this.ln.delete();
+    }
+    if not na(this.lb) {
+        this.lb.delete();
+    }
+}
+
+method isMorePrice(this: Pivot, point: chart.Point) {
+    let m: int = this.isHigh ? 1 : -1;
+    let result: bool = point.price * m > this.end.price * m;
+}
+
+method lastPivot(this: ZigZag) {
+    let result: Pivot = this.pivots.size() > 0 ? this.pivots.last() : na;
+}
+
+method updateLastPivot(this: ZigZag, point: chart.Point) {
+    let lastPivot: Pivot = this.lastPivot();
+    if this.pivots.size() == 1 {
+        lastPivot.start = point;
+        if this.settings.draw {
+            lastPivot.ln.set_first_point(point);
+        }
+    }
+    lastPivot.updatePivot(point, lastPivot.vol + this.sumVol, this.settings);
+    this.sumVol = 0;
+}
+
+method newPivotFound(this: ZigZag, new: Pivot) {
+    this.pivots.push(new);
+    this.sumVol = 0;
+}
+
+method newPivotPointFound(
+    this: ZigZag,
+    isHigh: simple bool,
+    point: chart.Point
+) {
+    let result: bool = false;
+    let lastPivot: Pivot = this.lastPivot();
+    if not na(lastPivot) {
+        if lastPivot.isHigh == isHigh {
+            if lastPivot.isMorePrice(point) {
+                this.updateLastPivot(point);
+                result = true;
+            }
+        } else {
+            let dev: float = calcDev(lastPivot.end.price, point.price);
+            if not lastPivot.isHigh and dev >= this.settings.devThreshold or lastPivot.isHigh and dev <= -1 * this.settings.devThreshold {
+                newPivotFound(
+                    this,
+                    newPivot(
+                        lastPivot.end,
+                        point,
+                        this.sumVol,
+                        isHigh,
+                        this.settings
+                    )
+                );
+                result = true;
+            }
+        }
+    } else {
+        this.newPivotFound(
+            newPivot(point, point, this.sumVol, isHigh, this.settings)
+        );
+        result = true;
+    }
+    result;
+}
+
+method tryFindPivot(
+    this: ZigZag,
+    source: series float,
+    isHigh: simple bool,
+    depth: series int,
+    registerPivot: series bool = true
+) {
+    let point: chart.Point = findPivotPoint(source, depth, isHigh);
+    let result: bool = not na(point) and registerPivot ? this.newPivotPointFound(
+        isHigh,
+        point
+    ) : false;
+}
+
+method popLastPivot(this: ZigZag) {
+    if this.pivots.size() > 0 {
+        let p: Pivot = this.pivots.pop();
+        p.delete();
+    }
+}
+
+fn findProjectionPivot(
+    isHigh: series bool,
+    depth: series int,
+    lastPivotEnd: chart.Point,
+    devThreshold: series float,
+    prices: Array<float>,
+    times: Array<int>
+) {
+    let result: chart.Point = na;
+    let n: int = prices.size();
+    if n > 0 {
+        let slice: Array<float> = prices.slice(
+            0,
+            bar_index - lastPivotEnd.index
+        );
+        let extreme: float = isHigh ? slice.max() : slice.min();
+        let ind: int = slice.indexof(extreme);
+        let dir: int = isHigh ? 1 : -1;
+        let valid: bool = ind + depth < n and dir * calcDev(
+            lastPivotEnd.price,
+            extreme
+        ) >= devThreshold;
+        if valid {
+            for i = 1 to depth {
+                let lIndex: int = ind + i;
+                let v: float = prices.get(lIndex);
+                if (isHigh and v >= extreme) or (not isHigh and v <= extreme) {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        if valid {
+            result = chart.Point.new(times.get(ind), bar_index - ind, extreme);
+        } else {
+            for i = bar_index to lastPivotEnd.index + 1 {
+                if i == ind {
+                    continue;
+                }
+                let pIndex: int = bar_index - i;
+                if pIndex < 0 or pIndex >= n or pIndex + depth >= n {
+                    continue;
+                }
+                let candidate: float = prices.get(pIndex);
+                if dir * calcDev(lastPivotEnd.price, candidate) < devThreshold {
+                    continue;
+                }
+                let okRight: bool = true;
+                if pIndex > 0 {
+                    for j = 1 to math.min(depth, pIndex) {
+                        let rIndex: int = pIndex - j;
+                        let v: float = prices.get(rIndex);
+                        if (isHigh and v > candidate) or (not isHigh and v < candidate) {
+                            okRight = false;
+                            break;
+                        }
+                    }
+                }
+                if not okRight {
+                    continue;
+                }
+                let okLeft: bool = true;
+                for j = 1 to depth {
+                    let lIndex: int = pIndex + j;
+                    let v: float = prices.get(lIndex);
+                    if (isHigh and v >= candidate) or (not isHigh and v <= candidate) {
+                        okLeft = false;
+                        break;
+                    }
+                }
+                if not okLeft {
+                    continue;
+                }
+                if na(result) or (isHigh and result.price < candidate) or (not isHigh and result.price > candidate) {
+                    result = chart.Point.new(times.get(pIndex), i, candidate);
+                    if candidate == extreme {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    result;
+}
+
+method updateProjectionPivot(
+    this: ZigZag,
+    projectionPoint: chart.Point,
+    isHigh: series bool,
+    projVol: series float
+) {
+    if this.settings.projectionPivots {
+        let last: Pivot = this.lastPivot();
+        this.projection = newPivot(
+            last.end,
+            projectionPoint,
+            projVol,
+            isHigh,
+            this.settings
+        );
+        this.projection.ln.set_style(LineStyle.Dashed);
+        this.pivots.push(this.projection);
+    }
+}
+
+method update(this: ZigZag) {
+    var highs: Array<float> = Array.new<float>();
+    highs.unshift(high);
+    var lows: Array<float> = Array.new<float>();
+    lows.unshift(low);
+    var times: Array<int> = Array.new<int>();
+    times.unshift(time);
+    var cVols: Array<float> = Array.new<float>();
+    cVols.unshift(ta.cum(volume));
+    var maxSize: int = 0;
+    let depth: int = math.max(2, math.floor(this.settings.depth / 2));
+    if not na(this.projection) {
+        this.popLastPivot();
+        this.projection = na;
+    }
+    this.sumVol += nz(volume[depth]);
+    let size: int = this.pivots.size();
+    maxSize = math.max(maxSize, size);
+    let newHigh: bool = this.tryFindPivot(high, true, depth);
+    let newLow: bool = this.tryFindPivot(
+        low,
+        false,
+        depth,
+        this.settings.allowZigZagOnOneBar or not newHigh
+    );
+    let invalidated: bool = false;
+    let threshold: float = this.settings.devThreshold;
+    var removed: Pivot = na;
+    var prevProjection: chart.Point = na;
+    if this.settings.projectionPivots and bar_state.is_last {
+        if not (newHigh or newLow) {
+            let last: Pivot = this.lastPivot();
+            if not na(last) and na(prevProjection) {
+                let extreme: float = switch {
+                    last.isHigh => bar_state.is_history[1] ? highs.slice(
+                        0,
+                        bar_index - last.end.index
+                    ).max() : high,
+                    => bar_state.is_history[1] ? lows.slice(
+                        0,
+                        bar_index - last.end.index
+                    ).min() : low,
+                };
+                if size == maxSize and isMorePrice(
+                    last,
+                    chart.Point.now(extreme)
+                ) {
+                    this.sumVol += last.vol;
+                    removed = last;
+                    this.popLastPivot();
+                    invalidated = true;
+                    last = this.lastPivot();
+                }
+            }
+            if not na(last) {
+                let nextIsHigh: bool = not last.isHigh;
+                let projectionPoint: chart.Point = findProjectionPivot(
+                    nextIsHigh,
+                    depth,
+                    last.end,
+                    threshold,
+                    nextIsHigh ? highs : lows,
+                    times
+                );
+                if not na(projectionPoint) {
+                    let startOff: int = bar_index - last.end.index;
+                    let endOff: int = bar_index - projectionPoint.index;
+                    let projVol: float = cVols.get(endOff) - cVols.get(
+                        startOff
+                    );
+                    this.updateProjectionPivot(
+                        projectionPoint,
+                        nextIsHigh,
+                        projVol
+                    );
+                }
+                if not na(removed) {
+                    let checkHigh: bool = not removed.isHigh;
+                    let revProjection: chart.Point = findProjectionPivot(
+                        checkHigh,
+                        depth,
+                        removed.end,
+                        threshold,
+                        checkHigh ? highs : lows,
+                        times
+                    );
+                    if not na(revProjection) and not na(projectionPoint) and projectionPoint.index < revProjection.index {
+                        revProjection = na;
+                    }
+                    if not na(revProjection) {
+                        if not na(this.projection) {
+                            this.popLastPivot();
+                            this.projection = na;
+                        }
+                        let rev: Pivot = newPivot(
+                            removed.start,
+                            removed.end,
+                            removed.vol,
+                            removed.isHigh,
+                            this.settings
+                        );
+                        this.sumVol -= rev.vol;
+                        switch {
+                            rev.isHigh => newHigh = true,
+                            => newLow = true,
+                        }
+                        this.pivots.push(rev);
+                        removed = na;
+                        let startOff: int = bar_index - rev.end.index;
+                        let endOff: int = bar_index - revProjection.index;
+                        let projVol: float = cVols.get(endOff) - cVols.get(
+                            startOff
+                        );
+                        this.updateProjectionPivot(
+                            revProjection,
+                            checkHigh,
+                            projVol
+                        );
+                    }
+                }
+                prevProjection = projectionPoint;
+            }
+        } else {
+            prevProjection = na;
+            removed = na;
+        }
+    }
+    let result: bool = invalidated or newHigh or newLow;
+}
+
+fn newInstance(settings: Settings = na) {
+    let result: ZigZag = ZigZag.new(
+        na(settings) ? Settings.new() : settings,
+        Array.new<Pivot>()
+    );
+}
+
+let depthTooltip = "The minimum number of bars that will be taken into account when calculating the indicator.";
+let depth = input.int(
+    title: "Depth",
+    defval: 10,
+    minval: 2,
+    inline: "Pivots",
+    tooltip: depthTooltip
+);
+let reverse = input(false, "Reverse", display: PlotDisplay.NONE);
+var extendLeft = input(
+    false,
+    "Extend Left    |    Extend Right",
+    inline: "Extend Lines",
+    display: PlotDisplay.NONE
+);
+var extendRight = input(
+    true,
+    "",
+    inline: "Extend Lines",
+    display: PlotDisplay.NONE
+);
+var extending = Extend.None;
+if extendLeft and extendRight {
+    extending = Extend.Both;
+}
+if extendLeft and not extendRight {
+    extending = Extend.Left;
+}
+if not extendLeft and extendRight {
+    extending = Extend.Right;
+}
+let prices = input(true, "Show Prices", display: PlotDisplay.NONE);
+let levels = input(
+    true,
+    "Show Levels",
+    inline: "Levels",
+    display: PlotDisplay.NONE
+);
+let levelsFormat = input.string(
+    "Values",
+    "",
+    options: ["Values", "Percent"],
+    inline: "Levels",
+    display: PlotDisplay.NONE,
+    active: levels
+);
+let labelsPosition = input.string(
+    "Left",
+    "Labels Position",
+    options: ["Left", "Right"],
+    display: PlotDisplay.NONE
+);
+let backgroundTransparency = input.int(
+    85,
+    "Background Transparency",
+    minval: 0,
+    maxval: 100,
+    display: PlotDisplay.NONE
+);
+
+let upperThreshold = 0.236;
+let lowerThreshold = 1.0;
+
+fn pivots(src, length, isHigh) {
+    if bar_index >= length {
+        let price = nz(src[length]);
+        let found = true;
+        for i = 0 to length * 2 {
+            if (isHigh and src[i] > price) or (not isHigh and src[i] < price) {
+                found = false;
+                break;
+            }
+        }
+        if found {
+            chart.Point.from_time(time[length], price);
+        }
+    }
+}
+
+fn update() {
+    var lineLastHL: Line = na;
+    var lineLastLH: Line = na;
+    var lineLast: Line = na;
+    var pivotsH: chart.Point[] = Array.new<chart.Point>();
+    var lastH: chart.Point = na;
+    var pivotsL: chart.Point[] = Array.new<chart.Point>();
+    var lastL: chart.Point = na;
+    var isHighLast = false;
+    var startPrice: float = na;
+    var endPrice: float = na;
+    let H = pivots(high, depth / 2, true);
+    let L = pivots(low, depth / 2, false);
+    let countPivotsH = pivotsH.size();
+    let countPivotsL = pivotsL.size();
+    if countPivotsH > 0 and countPivotsL > 0 {
+        lastH = pivotsH.get(countPivotsH - 1);
+        lastL = pivotsL.get(countPivotsL - 1);
+        isHighLast = lastH.time > lastL.time;
+        if isHighLast {
+            if not na(H) {
+                if H.price > lastH.price {
+                    pivotsH.set(countPivotsH - 1, H);
+                }
+                H = na;
+            }
+        } else {
+            if not na(L) {
+                if L.price < lastL.price {
+                    pivotsL.set(countPivotsL - 1, L);
+                }
+                L = na;
+            }
+        }
+    }
+    if not na(H) {
+        pivotsH.push(H);
+    }
+    if not na(L) {
+        pivotsL.push(L);
+    }
+    if bar_state.is_last and pivotsH.size() > 0 and pivotsL.size() > 0 {
+        let pivotsHCopy = pivotsH.copy();
+        let pivotsLCopy = pivotsL.copy();
+        while pivotsHCopy.size() > 0 and pivotsLCopy.size() > 0 {
+            lastH = pivotsHCopy.pop();
+            lastL = pivotsLCopy.pop();
+            isHighLast = lastH.time > lastL.time;
+            let pivots = isHighLast ? pivotsHCopy : pivotsLCopy;
+            for i = pivots.size() - 1 to 0 {
+                if i < 0 {
+                    break;
+                }
+                let p = pivots.get(i);
+                if p.time < lastL.time {
+                    break;
+                }
+                let betterPrice = isHighLast ? p.price > lastH.price : p.price < lastL.price;
+                if p.price > lastH.price {
+                    lastH = pivots.pop();
+                } else {
+                    pivots.remove(i);
+                }
+            }
+            if pivotsHCopy.size() == 0 or pivotsLCopy.size() == 0 {
+                break;
+            }
+            isHighLast = lastH.time > lastL.time;
+            pivots = isHighLast ? pivotsHCopy : pivotsLCopy;
+            let prevPivot = pivots.get(pivots.size() - 1);
+            startPrice = prevPivot.price;
+            if isHighLast {
+                endPrice = lastL.price;
+                let diff = math.abs(startPrice - endPrice);
+                if lastH.price > endPrice + diff * lowerThreshold or lastH.price < endPrice + diff * upperThreshold {
+                    pivotsLCopy.push(lastL);
+                    continue;
+                }
+                Line.delete(lineLastHL);
+                Line.delete(lineLastLH);
+                lineLastHL = Line.new(
+                    prevPivot,
+                    lastL,
+                    color: Color.RED,
+                    width: 1,
+                    style: LineStyle.Dashed,
+                    xloc: XLoc.BarTime
+                );
+                lineLastLH = Line.new(
+                    lastL,
+                    lastH,
+                    color: Color.GREEN,
+                    width: 1,
+                    style: LineStyle.Dashed,
+                    xloc: XLoc.BarTime
+                );
+                lineLast = lineLastLH;
+            } else {
+                endPrice = lastH.price;
+                let diff = math.abs(startPrice - endPrice);
+                if lastL.price < endPrice - diff * lowerThreshold or lastL.price > endPrice - diff * upperThreshold {
+                    pivotsHCopy.push(lastH);
+                    continue;
+                }
+                Line.delete(lineLastHL);
+                Line.delete(lineLastLH);
+                lineLastLH = Line.new(
+                    prevPivot,
+                    lastH,
+                    color: Color.RED,
+                    width: 1,
+                    style: LineStyle.Dashed,
+                    xloc: XLoc.BarTime
+                );
+                lineLastHL = Line.new(
+                    lastH,
+                    lastL,
+                    color: Color.GREEN,
+                    width: 1,
+                    style: LineStyle.Dashed,
+                    xloc: XLoc.BarTime
+                );
+                lineLast = lineLastHL;
+            }
+            break;
+        }
+    }
+    let diff = (isHighLast ? -1 : 1) * math.abs(startPrice - endPrice);
+    let offset = isHighLast ? Line.get_y1(lineLastLH) - Line.get_y2(lineLastLH) : Line.get_y1(
+        lineLastHL
+    ) - Line.get_y2(lineLastHL);
+    offset = (isHighLast ? -1 : 1) * math.abs(offset);
+    if bar_state.is_last and na(lineLast) {
+        runtime.error(
+            "Not enough data to calculate Auto Fib Extension on the current symbol. Change the chart's timeframe to a lower one or select a smaller calculation depth using the indicator's `Depth` settings."
+        );
+    }
+    (endPrice - offset, diff, lineLast);
+}
+
+let (endPrice, diff, lineLast) = update();
+
+fn _draw_line(price, col) {
+    var id = Line.new(
+        time,
+        price,
+        time,
+        price,
+        color: col,
+        width: 1,
+        extend: extending,
+        xloc: XLoc.BarTime
+    );
+    if not na(lineLast) {
+        Line.set_xy1(id, Line.get_x1(lineLast), price);
+        Line.set_xy2(id, Line.get_x2(lineLast), price);
+    }
+    id;
+}
+
+fn _draw_label(price, txt, txtColor) {
+    if not na(price) {
+        let x = labelsPosition == "Left" ? Line.get_x1(lineLast) : not extendRight ? Line.get_x2(
+            lineLast
+        ) : time;
+        let labelStyle = labelsPosition == "Left" ? LabelStyle.Right : LabelStyle.Left;
+        let align = labelsPosition == "Left" ? TextHAlign.Right : TextHAlign.Left;
+        let labelsAlignStrLeft = txt + '\n ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏ \n';
+        let labelsAlignStrRight = '       ' + txt + '\n ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏ \n';
+        let labelsAlignStr = labelsPosition == "Left" ? labelsAlignStrLeft : labelsAlignStrRight;
+        var id = Label.new(
+            x: x,
+            y: price,
+            text: labelsAlignStr,
+            text_color: txtColor,
+            style: labelStyle,
+            text_align: align,
+            color: #00000000,
+            xloc: XLoc.BarTime
+        );
+        Label.set_xy(id, x, price);
+        Label.set_text(id, labelsAlignStr);
+        Label.set_text_color(id, txtColor);
+    }
+}
+
+fn _wrap(txt) {
+    "(" + String.from(txt, Format.Mintick) + ")";
+}
+
+fn _label_txt(level, price) {
+    if not na(price) {
+        let l = levelsFormat == "Values" ? String.from(level) : String.from(level * 100) + "%";
+        (levels ? l : "") + (prices ? _wrap(price) : "");
+    }
+}
+
+fn _crossing_level(sr, r) {
+    (r > sr and r < sr[1]) or (r < sr and r > sr[1]);
+}
+
+fn processLevel(
+    show: bool,
+    value: float,
+    colorL: Color,
+    lineIdOther: series Line
+): series Line {
+    let m: float = value;
+    let r = endPrice + ((reverse ? -1 : 1) * diff * m);
+    if show {
+        let lineId = _draw_line(r, colorL);
+        _draw_label(r, _label_txt(m, r), colorL);
+        if _crossing_level(close, r) {
+            alert(
+                "Autofib: " + symbol_info.ticker + " crossing level " + String.from(value)
+            );
+        }
+        if not na(lineIdOther) {
+            LineFill.new(
+                lineId,
+                lineIdOther,
+                color: Color.new(colorL, backgroundTransparency)
+            );
+        }
+        lineId;
+    } else {
+        lineIdOther;
+    }
+}
+
+let show_0 = input(true, "", inline: "Level0", display: PlotDisplay.NONE);
+let value_0 = input(
+    0,
+    "",
+    inline: "Level0",
+    display: PlotDisplay.NONE,
+    active: show_0
+);
+let color_0 = input(
+    #787b86,
+    "",
+    inline: "Level0",
+    display: PlotDisplay.NONE,
+    active: show_0
+);
+
+let show_0_236 = input(true, "", inline: "Level0", display: PlotDisplay.NONE);
+let value_0_236 = input(
+    0.236,
+    "",
+    inline: "Level0",
+    display: PlotDisplay.NONE,
+    active: show_0_236
+);
+let color_0_236 = input(
+    #f44336,
+    "",
+    inline: "Level0",
+    display: PlotDisplay.NONE,
+    active: show_0_236
+);
+
+let show_0_382 = input(true, "", inline: "Level1", display: PlotDisplay.NONE);
+let value_0_382 = input(
+    0.382,
+    "",
+    inline: "Level1",
+    display: PlotDisplay.NONE,
+    active: show_0_382
+);
+let color_0_382 = input(
+    #81c784,
+    "",
+    inline: "Level1",
+    display: PlotDisplay.NONE,
+    active: show_0_382
+);
+
+let show_0_5 = input(true, "", inline: "Level1", display: PlotDisplay.NONE);
+let value_0_5 = input(
+    0.5,
+    "",
+    inline: "Level1",
+    display: PlotDisplay.NONE,
+    active: show_0_5
+);
+let color_0_5 = input(
+    #4caf50,
+    "",
+    inline: "Level1",
+    display: PlotDisplay.NONE,
+    active: show_0_5
+);
+
+let show_0_618 = input(true, "", inline: "Level2", display: PlotDisplay.NONE);
+let value_0_618 = input(
+    0.618,
+    "",
+    inline: "Level2",
+    display: PlotDisplay.NONE,
+    active: show_0_618
+);
+let color_0_618 = input(
+    #009688,
+    "",
+    inline: "Level2",
+    display: PlotDisplay.NONE,
+    active: show_0_618
+);
+
+let show_0_65 = input(false, "", inline: "Level2", display: PlotDisplay.NONE);
+let value_0_65 = input(
+    0.65,
+    "",
+    inline: "Level2",
+    display: PlotDisplay.NONE,
+    active: show_0_65
+);
+let color_0_65 = input(
+    #009688,
+    "",
+    inline: "Level2",
+    display: PlotDisplay.NONE,
+    active: show_0_65
+);
+
+let show_0_786 = input(true, "", inline: "Level3", display: PlotDisplay.NONE);
+let value_0_786 = input(
+    0.786,
+    "",
+    inline: "Level3",
+    display: PlotDisplay.NONE,
+    active: show_0_786
+);
+let color_0_786 = input(
+    #64b5f6,
+    "",
+    inline: "Level3",
+    display: PlotDisplay.NONE,
+    active: show_0_786
+);
+
+let show_1 = input(true, "", inline: "Level3", display: PlotDisplay.NONE);
+let value_1 = input(
+    1,
+    "",
+    inline: "Level3",
+    display: PlotDisplay.NONE,
+    active: show_1
+);
+let color_1 = input(
+    #787b86,
+    "",
+    inline: "Level3",
+    display: PlotDisplay.NONE,
+    active: show_1
+);
+
+let show_1_272 = input(false, "", inline: "Level4", display: PlotDisplay.NONE);
+let value_1_272 = input(
+    1.272,
+    "",
+    inline: "Level4",
+    display: PlotDisplay.NONE,
+    active: show_1_272
+);
+let color_1_272 = input(
+    #81c784,
+    "",
+    inline: "Level4",
+    display: PlotDisplay.NONE,
+    active: show_1_272
+);
+
+let show_1_414 = input(false, "", inline: "Level4", display: PlotDisplay.NONE);
+let value_1_414 = input(
+    1.414,
+    "",
+    inline: "Level4",
+    display: PlotDisplay.NONE,
+    active: show_1_414
+);
+let color_1_414 = input(
+    #f44336,
+    "",
+    inline: "Level4",
+    display: PlotDisplay.NONE,
+    active: show_1_414
+);
+
+let show_1_618 = input(true, "", inline: "Level5", display: PlotDisplay.NONE);
+let value_1_618 = input(
+    1.618,
+    "",
+    inline: "Level5",
+    display: PlotDisplay.NONE,
+    active: show_1_618
+);
+let color_1_618 = input(
+    #2962ff,
+    "",
+    inline: "Level5",
+    display: PlotDisplay.NONE,
+    active: show_1_618
+);
+
+let show_1_65 = input(false, "", inline: "Level5", display: PlotDisplay.NONE);
+let value_1_65 = input(
+    1.65,
+    "",
+    inline: "Level5",
+    display: PlotDisplay.NONE,
+    active: show_1_65
+);
+let color_1_65 = input(
+    #2962ff,
+    "",
+    inline: "Level5",
+    display: PlotDisplay.NONE,
+    active: show_1_65
+);
+
+let show_2_618 = input(true, "", inline: "Level6", display: PlotDisplay.NONE);
+let value_2_618 = input(
+    2.618,
+    "",
+    inline: "Level6",
+    display: PlotDisplay.NONE,
+    active: show_2_618
+);
+let color_2_618 = input(
+    #f44336,
+    "",
+    inline: "Level6",
+    display: PlotDisplay.NONE,
+    active: show_2_618
+);
+
+let show_2_65 = input(false, "", inline: "Level6", display: PlotDisplay.NONE);
+let value_2_65 = input(
+    2.65,
+    "",
+    inline: "Level6",
+    display: PlotDisplay.NONE,
+    active: show_2_65
+);
+let color_2_65 = input(
+    #f44336,
+    "",
+    inline: "Level6",
+    display: PlotDisplay.NONE,
+    active: show_2_65
+);
+
+let show_3_618 = input(true, "", inline: "Level7", display: PlotDisplay.NONE);
+let value_3_618 = input(
+    3.618,
+    "",
+    inline: "Level7",
+    display: PlotDisplay.NONE,
+    active: show_3_618
+);
+let color_3_618 = input(
+    #9c27b0,
+    "",
+    inline: "Level7",
+    display: PlotDisplay.NONE,
+    active: show_3_618
+);
+
+let show_3_65 = input(false, "", inline: "Level7", display: PlotDisplay.NONE);
+let value_3_65 = input(
+    3.65,
+    "",
+    inline: "Level7",
+    display: PlotDisplay.NONE,
+    active: show_3_65
+);
+let color_3_65 = input(
+    #9c27b0,
+    "",
+    inline: "Level7",
+    display: PlotDisplay.NONE,
+    active: show_3_65
+);
+
+let show_4_236 = input(true, "", inline: "Level8", display: PlotDisplay.NONE);
+let value_4_236 = input(
+    4.236,
+    "",
+    inline: "Level8",
+    display: PlotDisplay.NONE,
+    active: show_4_236
+);
+let color_4_236 = input(
+    #e91e63,
+    "",
+    inline: "Level8",
+    display: PlotDisplay.NONE,
+    active: show_4_236
+);
+
+let show_4_618 = input(false, "", inline: "Level8", display: PlotDisplay.NONE);
+let value_4_618 = input(
+    4.618,
+    "",
+    inline: "Level8",
+    display: PlotDisplay.NONE,
+    active: show_4_618
+);
+let color_4_618 = input(
+    #81c784,
+    "",
+    inline: "Level8",
+    display: PlotDisplay.NONE,
+    active: show_4_618
+);
+
+let show_neg_0_236 = input(false, "", inline: "Level9", display: PlotDisplay.NONE);
+let value_neg_0_236 = input(
+    -0.236,
+    "",
+    inline: "Level9",
+    display: PlotDisplay.NONE,
+    active: show_neg_0_236
+);
+let color_neg_0_236 = input(
+    #f44336,
+    "",
+    inline: "Level9",
+    display: PlotDisplay.NONE,
+    active: show_neg_0_236
+);
+
+let show_neg_0_382 = input(false, "", inline: "Level9", display: PlotDisplay.NONE);
+let value_neg_0_382 = input(
+    -0.382,
+    "",
+    inline: "Level9",
+    display: PlotDisplay.NONE,
+    active: show_neg_0_382
+);
+let color_neg_0_382 = input(
+    #81c784,
+    "",
+    inline: "Level9",
+    display: PlotDisplay.NONE,
+    active: show_neg_0_382
+);
+
+let show_neg_0_618 = input(false, "", inline: "Level10", display: PlotDisplay.NONE);
+let value_neg_0_618 = input(
+    -0.618,
+    "",
+    inline: "Level10",
+    display: PlotDisplay.NONE,
+    active: show_neg_0_618
+);
+let color_neg_0_618 = input(
+    #009688,
+    "",
+    inline: "Level10",
+    display: PlotDisplay.NONE,
+    active: show_neg_0_618
+);
+
+let show_neg_0_65 = input(false, "", inline: "Level10", display: PlotDisplay.NONE);
+let value_neg_0_65 = input(
+    -0.65,
+    "",
+    inline: "Level10",
+    display: PlotDisplay.NONE,
+    active: show_neg_0_65
+);
+let color_neg_0_65 = input(
+    #009688,
+    "",
+    inline: "Level10",
+    display: PlotDisplay.NONE,
+    active: show_neg_0_65
+);
+
+let lineId0 = processLevel(show_neg_0_65, value_neg_0_65, color_neg_0_65, na);
+let lineId1 = processLevel(
+    show_neg_0_618,
+    value_neg_0_618,
+    color_neg_0_618,
+    lineId0
+);
+let lineId2 = processLevel(
+    show_neg_0_382,
+    value_neg_0_382,
+    color_neg_0_382,
+    lineId1
+);
+let lineId3 = processLevel(
+    show_neg_0_236,
+    value_neg_0_236,
+    color_neg_0_236,
+    lineId2
+);
+let lineId4 = processLevel(show_0, value_0, color_0, lineId3);
+let lineId5 = processLevel(show_0_236, value_0_236, color_0_236, lineId4);
+let lineId6 = processLevel(show_0_382, value_0_382, color_0_382, lineId5);
+let lineId7 = processLevel(show_0_5, value_0_5, color_0_5, lineId6);
+let lineId8 = processLevel(show_0_618, value_0_618, color_0_618, lineId7);
+let lineId9 = processLevel(show_0_65, value_0_65, color_0_65, lineId8);
+let lineId10 = processLevel(show_0_786, value_0_786, color_0_786, lineId9);
+let lineId11 = processLevel(show_1, value_1, color_1, lineId10);
+let lineId12 = processLevel(show_1_272, value_1_272, color_1_272, lineId11);
+let lineId13 = processLevel(show_1_414, value_1_414, color_1_414, lineId12);
+let lineId14 = processLevel(show_1_618, value_1_618, color_1_618, lineId13);
+let lineId15 = processLevel(show_1_65, value_1_65, color_1_65, lineId14);
+let lineId16 = processLevel(show_2_618, value_2_618, color_2_618, lineId15);
+let lineId17 = processLevel(show_2_65, value_2_65, color_2_65, lineId16);
+let lineId18 = processLevel(show_3_618, value_3_618, color_3_618, lineId17);
+let lineId19 = processLevel(show_3_65, value_3_65, color_3_65, lineId18);
+let lineId20 = processLevel(show_4_236, value_4_236, color_4_236, lineId19);
+let lineId21 = processLevel(show_4_618, value_4_618, color_4_618, lineId20);

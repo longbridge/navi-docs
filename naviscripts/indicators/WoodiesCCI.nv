@@ -1,0 +1,30 @@
+﻿indicator(title: "Woodies CCI", timeframe: "", timeframe_gaps: true);
+let cciTurboLength = input.int(
+    title: "CCI Turbo Length",
+    defval: 6,
+    minval: 3,
+    maxval: 14
+);
+let cci14Length = input.int(
+    title: "CCI 14 Length",
+    defval: 14,
+    minval: 7,
+    maxval: 20
+);
+let source = close;
+let cciTurbo = ta.cci(source, cciTurboLength);
+let cci14 = ta.cci(source, cci14Length);
+let last5IsDown = cci14[5] < 0 and cci14[4] < 0 and cci14[3] < 0 and cci14[2] < 0 and cci14[1] < 0;
+let last5IsUp = cci14[5] > 0 and cci14[4] > 0 and cci14[3] > 0 and cci14[2] > 0 and cci14[1] > 0;
+let histogramColor = last5IsUp ? #009688 : last5IsDown ? #F44336 : cci14 < 0 ? #009688 : #F44336;
+plot(
+    cci14,
+    title: "CCI Turbo Histogram",
+    color: histogramColor,
+    style: PlotStyle.Histogram
+);
+plot(cciTurbo, title: "CCI Turbo", color: #009688, style: PlotStyle.Line);
+plot(cci14, title: "CCI 14", color: #F44336, style: PlotStyle.Line);
+hline(0, title: "Zero line", color: #787B86, line_style: HLineStyle.Solid);
+hline(100, title: "Hundred line", color: #787B86, line_style: HLineStyle.Dotted);
+hline(-100, title: "Minus line", color: #787B86, line_style: HLineStyle.Dotted);

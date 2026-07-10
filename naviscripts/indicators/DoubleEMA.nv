@@ -1,0 +1,13 @@
+﻿indicator(
+    title: "Double EMA",
+    short_title: "DEMA",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input.int(9, minval: 1);
+let src = input(close, title: "Source");
+let e1 = ta.ema(src, length);
+let e2 = ta.ema(e1, length);
+let dema = 2 * e1 - e2;
+plot(dema, "DEMA", color: #43A047);

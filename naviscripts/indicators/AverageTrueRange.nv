@@ -1,0 +1,26 @@
+﻿indicator(
+    title: "Average True Range",
+    short_title: "ATR",
+    overlay: false,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input.int(title: "Length", defval: 14, minval: 1);
+let smoothing = input.string(
+    title: "Smoothing",
+    defval: "RMA",
+    options: ["RMA", "SMA", "EMA", "WMA"]
+);
+fn ma_function(source, length) {
+    switch smoothing {
+        "RMA" => ta.rma(source, length),
+        "SMA" => ta.sma(source, length),
+        "EMA" => ta.ema(source, length),
+        => ta.wma(source, length),
+    }
+}
+plot(
+    ma_function(ta.tr(true), length),
+    title: "ATR",
+    color: Color.new(#B71C1C, 0)
+);

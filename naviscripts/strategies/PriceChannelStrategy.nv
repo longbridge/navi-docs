@@ -1,0 +1,8 @@
+﻿strategy("Price Channel Strategy", overlay: true);
+let length = input(20);
+let hh = ta.highest(high, length);
+let ll = ta.lowest(low, length);
+if (not na(close[length])) {
+    strategy.entry("PChLE", Direction.Long, comment: "PChLE", stop: hh);
+    strategy.entry("PChSE", Direction.Short, comment: "PChSE", stop: ll);
+}

@@ -1,0 +1,12 @@
+﻿strategy("MovingAvg2line Cross", overlay: true);
+let fastLength = input(9);
+let slowLength = input(18);
+let price = close;
+let mafast = ta.sma(price, fastLength);
+let maslow = ta.sma(price, slowLength);
+if (ta.cross_over(mafast, maslow)) {
+    strategy.entry("MA2CrossLE", Direction.Long, comment: "MA2CrossLE");
+}
+if (ta.cross_under(mafast, maslow)) {
+    strategy.entry("MA2CrossSE", Direction.Short, comment: "MA2CrossSE");
+}

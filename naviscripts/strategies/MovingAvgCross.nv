@@ -1,0 +1,17 @@
+﻿strategy("MovingAvg Cross", overlay: true);
+let length = input(9, "Length");
+let confirmBars = input(1, "Confirm bars");
+let price = close;
+let ma = ta.sma(price, length);
+let bcond = price > ma;
+let bcount = 0;
+bcount = bcond ? nz(bcount[1]) + 1 : 0;
+if (bcount == confirmBars) {
+    strategy.entry("MACrossLE", Direction.Long, comment: "MACrossLE");
+}
+let scond = price < ma;
+let scount = 0;
+scount = scond ? nz(scount[1]) + 1 : 0;
+if (scount == confirmBars) {
+    strategy.entry("MACrossSE", Direction.Short, comment: "MACrossSE");
+}

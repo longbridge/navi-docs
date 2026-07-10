@@ -1,0 +1,9 @@
+﻿strategy("InSide Bar Strategy", overlay: true);
+if (high < high[1] and low > low[1]) {
+    if (close > open) {
+        strategy.entry("InsBarLE", Direction.Long, comment: "InsBarLE");
+    }
+    if (close < open) {
+        strategy.entry("InsBarSE", Direction.Short, comment: "InsBarSE");
+    }
+}

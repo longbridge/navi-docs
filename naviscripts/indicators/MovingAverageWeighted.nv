@@ -1,0 +1,18 @@
+﻿indicator(
+    title: "Moving Average Weighted",
+    short_title: "WMA",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let len = input.int(9, minval: 1, title: "Length");
+let src = input(close, title: "Source");
+let offset = input.int(
+    title: "Offset",
+    defval: 0,
+    minval: -500,
+    maxval: 500,
+    display: PlotDisplay.NONE
+);
+let out = ta.wma(src, len);
+plot(out, title: "WMA", color: Color.BLUE, offset: offset);

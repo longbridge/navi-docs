@@ -1,0 +1,21 @@
+﻿indicator(
+    "Williams Percent Range",
+    short_title: "Williams %R",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input(title: "Length", defval: 14);
+let src = input(close, "Source");
+fn _pr(length) {
+    let max = ta.highest(length);
+    let min = ta.lowest(length);
+    100 * (src - max) / (max - min);
+}
+let percentR = _pr(length);
+let obPlot = hline(-20, title: "Upper Band", color: #787B86);
+hline(-50, title: "Middle Level", line_style: HLineStyle.Dotted, color: #787B86);
+let osPlot = hline(-80, title: "Lower Band", color: #787B86);
+fill(obPlot, osPlot, title: "Background", color: Color.rgb(126, 87, 194, 90));
+plot(percentR, title: "%R", color: #7E57C2);

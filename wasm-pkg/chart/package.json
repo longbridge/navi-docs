@@ -1,0 +1,17 @@
+{
+  "name": "navi-chart-wasm",
+  "type": "module",
+  "description": "WASM chart widget for Navi — canvas renderer + JS bindings",
+  "version": "0.2.0",
+  "license": "LGPL-3.0",
+  "files": [
+    "navi_chart_wasm_bg.wasm",
+    "navi_chart_wasm.js",
+    "navi_chart_wasm.d.ts"
+  ],
+  "main": "navi_chart_wasm.js",
+  "types": "navi_chart_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

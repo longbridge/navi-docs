@@ -1,0 +1,104 @@
+﻿indicator(
+    title: "Relative Volatility Index",
+    short_title: "RVI",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input.int(10, minval: 1);
+let offset = input.int(0, "Offset", minval: -500, maxval: 500);
+let src = close;
+let len = 14;
+let stddev = ta.stdev(src, length);
+let upper = ta.ema(ta.change(src) <= 0 ? 0 : stddev, len);
+let lower = ta.ema(ta.change(src) > 0 ? 0 : stddev, len);
+let rvi = upper / (upper + lower) * 100;
+
+let h0 = hline(80, "Upper Band", color: #787B86);
+hline(50, "Middle Band", color: Color.new(#787B86, 50));
+let h1 = hline(20, "Lower Band", color: #787B86);
+fill(h0, h1, color: Color.rgb(126, 87, 194, 90), title: "Background");
+
+plot(rvi, title: "RVI", color: #7E57C2, offset: offset);
+
+let GRP = "Smoothing";
+let TT_BB = "Only applies when 'SMA + Bollinger Bands' is selected. Determines the distance between the SMA and the bands.";
+let maTypeInput = input.string(
+    "SMA",
+    "Type",
+    options: [
+        "None",
+        "SMA",
+        "SMA + Bollinger Bands",
+        "EMA",
+        "SMMA (RMA)",
+        "WMA",
+        "VWMA"
+    ],
+    group: GRP,
+    display: PlotDisplay.NONE
+);
+var isBB = maTypeInput == "SMA + Bollinger Bands";
+let maLengthInput = input.int(
+    14,
+    "Length",
+    group: GRP,
+    display: PlotDisplay.NONE,
+    active: maTypeInput != "None"
+);
+let bbMultInput = input.float(
+    2.0,
+    "BB StdDev",
+    minval: 0.001,
+    maxval: 50,
+    step: 0.5,
+    tooltip: TT_BB,
+    group: GRP,
+    display: PlotDisplay.NONE,
+    active: isBB
+);
+var enableMA = maTypeInput != "None";
+
+fn ma(source, length, MAtype) {
+    switch MAtype {
+        "SMA" => ta.sma(source, length),
+        "SMA + Bollinger Bands" => ta.sma(source, length),
+        "EMA" => ta.ema(source, length),
+        "SMMA (RMA)" => ta.rma(source, length),
+        "WMA" => ta.wma(source, length),
+        "VWMA" => ta.vwma(source, length),
+    }
+}
+
+let smoothingMA = enableMA ? ma(rvi, maLengthInput, maTypeInput) : na;
+let smoothingStDev = isBB ? ta.stdev(rvi, maLengthInput) * bbMultInput : na;
+plot(
+    smoothingMA,
+    "RVI-based MA",
+    color: Color.YELLOW,
+    display: enableMA ? PlotDisplay.ALL : PlotDisplay.NONE,
+    editable: enableMA
+);
+let bbUpperBand = plot(
+    smoothingMA + smoothingStDev,
+    title: "Upper Bollinger Band",
+    color: Color.GREEN,
+    display: isBB ? PlotDisplay.ALL : PlotDisplay.NONE,
+    editable: isBB
+);
+let bbLowerBand = plot(
+    smoothingMA - smoothingStDev,
+    title: "Lower Bollinger Band",
+    color: Color.GREEN,
+    display: isBB ? PlotDisplay.ALL : PlotDisplay.NONE,
+    editable: isBB
+);
+fill(
+    bbUpperBand,
+    bbLowerBand,
+    color: isBB ? Color.new(Color.GREEN, 90) : na,
+    title: "Bollinger Bands Background Fill",
+    display: isBB ? PlotDisplay.ALL : PlotDisplay.NONE,
+    editable: isBB
+);

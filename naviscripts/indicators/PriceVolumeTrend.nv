@@ -1,0 +1,15 @@
+﻿indicator(
+    title: "Price Volume Trend",
+    short_title: "PVT",
+    format: Format.Volume,
+    timeframe: "",
+    timeframe_gaps: true
+);
+var cumVol = 0.;
+cumVol += nz(volume);
+if bar_state.is_last and cumVol == 0 {
+    runtime.error("No volume is provided by the data vendor.");
+}
+let src = close;
+let vt = ta.cum(ta.change(src) / src[1] * volume);
+plot(vt, color: #2962FF, title: "PVT");

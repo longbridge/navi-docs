@@ -1,0 +1,16 @@
+﻿indicator(
+    title: "Vortex Indicator",
+    short_title: "VI",
+    format: Format.Price,
+    precision: 4,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let period_ = input.int(14, title: "Length", minval: 2);
+let VMP = math.sum(math.abs(high - low[1]), period_);
+let VMM = math.sum(math.abs(low - high[1]), period_);
+let STR = math.sum(ta.atr(1), period_);
+let VIP = VMP / STR;
+let VIM = VMM / STR;
+plot(VIP, title: "VI +", color: #2962FF);
+plot(VIM, title: "VI -", color: #E91E63);

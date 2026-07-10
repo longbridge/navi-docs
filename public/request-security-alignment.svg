@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 230"
+     font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="13">
+  <defs>
+    <style>
+      .text      { fill: #334155 }
+      .muted     { fill: #94a3b8 }
+      .week-f    { fill: #dcfce7; stroke: #4ade80 }
+      .week-t    { fill: #15803d }
+      .bar-f     { fill: #e0f2fe; stroke: #7dd3fc }
+      .bar-t     { fill: #0369a1 }
+      .off-f     { fill: #f1f5f9; stroke: #cbd5e1 }
+      .off-t     { fill: #64748b }
+      .on-f      { fill: #fafafa; stroke: #e2e8f0 }
+      .arrow     { fill: #94a3b8 }
+      .sep       { stroke: #e2e8f0 }
+    </style>
+    <marker id="a" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <path d="M0,0 L7,3.5 L0,7 Z" class="arrow"/>
+    </marker>
+  </defs>
+
+  <!-- row labels -->
+  <text x="0" y="58"  class="muted" font-size="12" dominant-baseline="middle">chart bar</text>
+  <text x="0" y="100" class="muted" font-size="12" dominant-baseline="middle">MTF bar</text>
+  <text x="0" y="148" class="muted" font-size="12" dominant-baseline="middle">gaps.off</text>
+  <text x="0" y="194" class="muted" font-size="12" dominant-baseline="middle">gaps.on</text>
+
+  <!-- column headers -->
+  <text x="147" y="20" text-anchor="middle" class="muted" font-size="12">Mon</text>
+  <text x="232" y="20" text-anchor="middle" class="muted" font-size="12">Tue</text>
+  <text x="317" y="20" text-anchor="middle" class="muted" font-size="12">Wed</text>
+  <text x="402" y="20" text-anchor="middle" class="muted" font-size="12">Thu</text>
+  <text x="487" y="20" text-anchor="middle" class="text" font-size="12" font-weight="600">Fri ✓</text>
+
+  <line x1="112" y1="30" x2="524" y2="30" class="sep" stroke-width="1"/>
+
+  <!-- chart bars -->
+  <rect x="114" y="38" width="65" height="38" rx="4" class="bar-f" stroke-width="1"/>
+  <rect x="199" y="38" width="65" height="38" rx="4" class="bar-f" stroke-width="1"/>
+  <rect x="284" y="38" width="65" height="38" rx="4" class="bar-f" stroke-width="1"/>
+  <rect x="369" y="38" width="65" height="38" rx="4" class="bar-f" stroke-width="1"/>
+  <rect x="454" y="38" width="65" height="38" rx="4" class="bar-f" stroke-width="1"/>
+  <text x="147" y="60" text-anchor="middle" class="bar-t" font-size="12" dominant-baseline="middle">D0</text>
+  <text x="232" y="60" text-anchor="middle" class="bar-t" font-size="12" dominant-baseline="middle">D1</text>
+  <text x="317" y="60" text-anchor="middle" class="bar-t" font-size="12" dominant-baseline="middle">D2</text>
+  <text x="402" y="60" text-anchor="middle" class="bar-t" font-size="12" dominant-baseline="middle">D3</text>
+  <text x="487" y="60" text-anchor="middle" class="bar-t" font-size="12" dominant-baseline="middle">D4</text>
+
+  <!-- MTF weekly bar -->
+  <rect x="114" y="82" width="405" height="38" rx="4" class="week-f" stroke-width="1.5"/>
+  <text x="317" y="103" text-anchor="middle" class="week-t" font-size="12" font-weight="600" dominant-baseline="middle">Weekly bar (open Mon → close Fri)</text>
+
+  <!-- gaps.off row -->
+  <rect x="114" y="130" width="65" height="30" rx="4" class="off-f" stroke-width="1"/>
+  <rect x="199" y="130" width="65" height="30" rx="4" class="off-f" stroke-width="1"/>
+  <rect x="284" y="130" width="65" height="30" rx="4" class="off-f" stroke-width="1"/>
+  <rect x="369" y="130" width="65" height="30" rx="4" class="off-f" stroke-width="1"/>
+  <rect x="454" y="130" width="65" height="30" rx="4" class="week-f" stroke-width="1.5"/>
+  <text x="147" y="145" text-anchor="middle" class="off-t" font-size="12" dominant-baseline="middle">prev</text>
+  <text x="232" y="145" text-anchor="middle" class="off-t" font-size="12" dominant-baseline="middle">prev</text>
+  <text x="317" y="145" text-anchor="middle" class="off-t" font-size="12" dominant-baseline="middle">prev</text>
+  <text x="402" y="145" text-anchor="middle" class="off-t" font-size="12" dominant-baseline="middle">prev</text>
+  <text x="487" y="145" text-anchor="middle" class="week-t" font-size="12" font-weight="600" dominant-baseline="middle">new</text>
+  <line x1="181" y1="145" x2="197" y2="145" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a)"/>
+  <line x1="266" y1="145" x2="282" y2="145" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a)"/>
+  <line x1="351" y1="145" x2="367" y2="145" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a)"/>
+  <line x1="436" y1="145" x2="452" y2="145" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a)"/>
+
+  <!-- gaps.on row -->
+  <rect x="114" y="176" width="65" height="30" rx="4" class="on-f" stroke-width="1" stroke-dasharray="4,2"/>
+  <rect x="199" y="176" width="65" height="30" rx="4" class="on-f" stroke-width="1" stroke-dasharray="4,2"/>
+  <rect x="284" y="176" width="65" height="30" rx="4" class="on-f" stroke-width="1" stroke-dasharray="4,2"/>
+  <rect x="369" y="176" width="65" height="30" rx="4" class="on-f" stroke-width="1" stroke-dasharray="4,2"/>
+  <rect x="454" y="176" width="65" height="30" rx="4" class="week-f" stroke-width="1.5"/>
+  <text x="147" y="191" text-anchor="middle" class="muted" font-size="13" font-style="italic" dominant-baseline="middle">na</text>
+  <text x="232" y="191" text-anchor="middle" class="muted" font-size="13" font-style="italic" dominant-baseline="middle">na</text>
+  <text x="317" y="191" text-anchor="middle" class="muted" font-size="13" font-style="italic" dominant-baseline="middle">na</text>
+  <text x="402" y="191" text-anchor="middle" class="muted" font-size="13" font-style="italic" dominant-baseline="middle">na</text>
+  <text x="487" y="191" text-anchor="middle" class="week-t" font-size="12" font-weight="600" dominant-baseline="middle">new</text>
+</svg>

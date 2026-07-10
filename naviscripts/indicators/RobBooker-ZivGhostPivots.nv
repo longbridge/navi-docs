@@ -1,0 +1,74 @@
+﻿plot(close, "Close Price", color: #00BCD4);
+indicator(
+    title: "Rob Booker - Ziv Ghost Pivots",
+    short_title: "Ghost Pivots",
+    overlay: true
+);
+let s4 = input(true, title: "Show Next 4 HR Pivot");
+let sd = input(true, title: "Show Next Day (8 HR) Pivot");
+let sw = input(true, title: "Show Next Week Pivot");
+let sm = input(true, title: "Show Next Month Pivot");
+let fourHR_offset = 0;
+let day_offset = 0;
+let week_offset = 0;
+let month_offset = 0;
+let etime_pivot = sd == true ? request.security(
+    symbol_info.tickerid,
+    "240",
+    hlc3[0],
+    BarmergeGaps.Off,
+    BarmergeLookahead.On
+) : na;
+let dtime_pivot = sd == true ? request.security(
+    symbol_info.tickerid,
+    "D",
+    hlc3[0],
+    BarmergeGaps.Off,
+    BarmergeLookahead.On
+) : na;
+let wtime_pivot = sw == true ? request.security(
+    symbol_info.tickerid,
+    "W",
+    hlc3[0],
+    BarmergeGaps.Off,
+    BarmergeLookahead.On
+) : na;
+let mtime_pivot = sm == true ? request.security(
+    symbol_info.tickerid,
+    "M",
+    hlc3[0],
+    BarmergeGaps.Off,
+    BarmergeLookahead.On
+) : na;
+plot_char(
+    etime_pivot,
+    color: #00BCD4,
+    char: "8",
+    text: "",
+    location: Location.Absolute,
+    offset: fourHR_offset
+);
+plot_char(
+    dtime_pivot,
+    color: #2962FF,
+    char: "d",
+    text: "",
+    location: Location.Absolute,
+    offset: day_offset
+);
+plot_char(
+    wtime_pivot,
+    color: #673AB7,
+    char: "w",
+    text: "",
+    location: Location.Absolute,
+    offset: week_offset
+);
+plot_char(
+    mtime_pivot,
+    color: #E91E63,
+    char: "m",
+    text: "",
+    location: Location.Absolute,
+    offset: month_offset
+);

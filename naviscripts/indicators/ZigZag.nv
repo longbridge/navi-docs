@@ -1,0 +1,552 @@
+indicator(
+    "Zig Zag",
+    overlay: true,
+    max_lines_count: 500,
+    max_labels_count: 500
+);
+
+struct Settings {
+    devThreshold: float = 5.0,
+    depth: int = 10,
+    lineColor: Color = #2962FF,
+    projectionPivots: bool = true,
+    displayReversalPrice: bool = true,
+    displayCumulativeVolume: bool = true,
+    displayReversalPriceChange: bool = true,
+    differencePriceMode: String = "Absolute",
+    draw: bool = true,
+    allowZigZagOnOneBar: bool = true,
+}
+
+struct Pivot {
+    ln: Line,
+    lb: Label,
+    isHigh: bool,
+    vol: float,
+    start: chart.Point,
+    end: chart.Point,
+}
+
+struct ZigZag {
+    settings: Settings,
+    pivots: Array<Pivot>,
+    sumVol: float = 0,
+    projection: Pivot = na,
+}
+
+fn findPivotPoint(
+    source: series float,
+    depth: series int,
+    isHigh: simple bool
+) {
+    let pivotPrice: float = nz(source[depth]);
+    if depth == 0 {
+        chart.Point.new(time, bar_index, pivotPrice);
+    } else if depth * 2 <= bar_index {
+        let isFound: bool = true;
+        for i = 0 to depth - 1 {
+            if (isHigh and source[i] > pivotPrice) or (not isHigh and source[i] < pivotPrice) {
+                isFound = false;
+                break;
+            }
+        }
+        for i = depth + 1 to 2 * depth {
+            if (isHigh and source[i] >= pivotPrice) or (not isHigh and source[i] <= pivotPrice) {
+                isFound = false;
+                break;
+            }
+        }
+        if isFound {
+            chart.Point.new(time[depth], bar_index[depth], pivotPrice);
+        }
+    }
+}
+
+fn calcDev(start: series float, end: series float) {
+    let result: float = 100 * (end - start) / math.abs(start);
+}
+
+fn priceRotationDiff(
+    start: series float,
+    end: series float,
+    settings: Settings
+) {
+    let diff: float = end - start;
+    let sign: String = math.sign(diff) > 0 ? "+" : "";
+    let diffStr: String = switch settings.differencePriceMode {
+        "Absolute" => String.from(diff, Format.Mintick),
+        => String.from(diff * 100 / start, Format.Percent),
+    };
+    let result: String = "({0}{1})".format(sign, diffStr);
+}
+
+fn priceRotationAggregate(
+    start: series float,
+    end: series float,
+    vol: series float,
+    settings: Settings
+) {
+    let result: String = "";
+    if settings.displayReversalPrice {
+        result += String.from(end, Format.Mintick) + " ";
+    }
+    if settings.displayReversalPriceChange {
+        result += priceRotationDiff(start, end, settings) + " ";
+    }
+    if settings.displayCumulativeVolume {
+        result += "\n" + String.from(vol, Format.Volume);
+    }
+    result;
+}
+
+fn makePivotLabel(
+    isHigh: series bool,
+    point: chart.Point,
+    settings: Settings
+) {
+    if settings.displayReversalPrice or settings.displayReversalPriceChange or settings.displayCumulativeVolume {
+        let (yloc, txtColor) = switch {
+            isHigh => (YLoc.AboveBar, Color.GREEN),
+            => (YLoc.BelowBar, Color.RED),
+        };
+        Label.new(
+            point,
+            style: LabelStyle.NoLabel,
+            xloc: XLoc.BarTime,
+            yloc: yloc,
+            text_color: txtColor
+        );
+    }
+}
+
+method updatePivot(
+    this: Pivot,
+    end: chart.Point,
+    vol: series float,
+    settings: Settings
+) {
+    this.end = end;
+    this.vol = vol;
+    if not na(this.lb) {
+        this.lb.set_point(this.end);
+        this.lb.set_text(
+            priceRotationAggregate(
+                this.start.price,
+                this.end.price,
+                this.vol,
+                settings
+            )
+        );
+    }
+    this.ln.set_second_point(this.end);
+}
+
+fn newPivot(
+    start: chart.Point,
+    end: chart.Point,
+    vol: series float,
+    isHigh: series bool,
+    settings: Settings
+) {
+    let p: Pivot = Pivot.new(na, na, isHigh, vol, start, end);
+    if settings.draw {
+        p.ln = Line.new(
+            start,
+            end,
+            xloc: XLoc.BarTime,
+            color: settings.lineColor,
+            width: 2
+        );
+        p.lb = makePivotLabel(isHigh, end, settings);
+    }
+    p.updatePivot(end, vol, settings);
+    p;
+}
+
+method delete(this: Pivot) {
+    if not na(this.ln) {
+        this.ln.delete();
+    }
+    if not na(this.lb) {
+        this.lb.delete();
+    }
+}
+
+method isMorePrice(this: Pivot, point: chart.Point) {
+    let m: int = this.isHigh ? 1 : -1;
+    let result: bool = point.price * m > this.end.price * m;
+}
+
+method lastPivot(this: ZigZag) {
+    let result: Pivot = this.pivots.size() > 0 ? this.pivots.last() : na;
+}
+
+method updateLastPivot(this: ZigZag, point: chart.Point) {
+    let lastPivot: Pivot = this.lastPivot();
+    if this.pivots.size() == 1 {
+        lastPivot.start = point;
+        if this.settings.draw {
+            lastPivot.ln.set_first_point(point);
+        }
+    }
+    lastPivot.updatePivot(point, lastPivot.vol + this.sumVol, this.settings);
+    this.sumVol = 0;
+}
+
+method newPivotFound(this: ZigZag, new: Pivot) {
+    this.pivots.push(new);
+    this.sumVol = 0;
+}
+
+method newPivotPointFound(
+    this: ZigZag,
+    isHigh: simple bool,
+    point: chart.Point
+) {
+    let result: bool = false;
+    let lastPivot: Pivot = this.lastPivot();
+    if not na(lastPivot) {
+        if lastPivot.isHigh == isHigh {
+            if lastPivot.isMorePrice(point) {
+                this.updateLastPivot(point);
+                result = true;
+            }
+        } else {
+            let dev: float = calcDev(lastPivot.end.price, point.price);
+            if not lastPivot.isHigh and dev >= this.settings.devThreshold or lastPivot.isHigh and dev <= -1 * this.settings.devThreshold {
+                newPivotFound(
+                    this,
+                    newPivot(
+                        lastPivot.end,
+                        point,
+                        this.sumVol,
+                        isHigh,
+                        this.settings
+                    )
+                );
+                result = true;
+            }
+        }
+    } else {
+        this.newPivotFound(
+            newPivot(point, point, this.sumVol, isHigh, this.settings)
+        );
+        result = true;
+    }
+    result;
+}
+
+method tryFindPivot(
+    this: ZigZag,
+    source: series float,
+    isHigh: simple bool,
+    depth: series int,
+    registerPivot: series bool = true
+) {
+    let point: chart.Point = findPivotPoint(source, depth, isHigh);
+    let result: bool = not na(point) and registerPivot ? this.newPivotPointFound(
+        isHigh,
+        point
+    ) : false;
+}
+
+method popLastPivot(this: ZigZag) {
+    if this.pivots.size() > 0 {
+        let p: Pivot = this.pivots.pop();
+        p.delete();
+    }
+}
+
+fn findProjectionPivot(
+    isHigh: series bool,
+    depth: series int,
+    lastPivotEnd: chart.Point,
+    devThreshold: series float,
+    prices: Array<float>,
+    times: Array<int>
+) {
+    let result: chart.Point = na;
+    let n: int = prices.size();
+    if n > 0 {
+        let slice: Array<float> = prices.slice(
+            0,
+            bar_index - lastPivotEnd.index
+        );
+        let extreme: float = isHigh ? slice.max() : slice.min();
+        let ind: int = slice.indexof(extreme);
+        let dir: int = isHigh ? 1 : -1;
+        let valid: bool = ind + depth < n and dir * calcDev(
+            lastPivotEnd.price,
+            extreme
+        ) >= devThreshold;
+        if valid {
+            for i = 1 to depth {
+                let lIndex: int = ind + i;
+                let v: float = prices.get(lIndex);
+                if (isHigh and v >= extreme) or (not isHigh and v <= extreme) {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        if valid {
+            result = chart.Point.new(times.get(ind), bar_index - ind, extreme);
+        } else {
+            for i = bar_index to lastPivotEnd.index + 1 {
+                if i == ind {
+                    continue;
+                }
+                let pIndex: int = bar_index - i;
+                if pIndex < 0 or pIndex >= n or pIndex + depth >= n {
+                    continue;
+                }
+                let candidate: float = prices.get(pIndex);
+                if dir * calcDev(lastPivotEnd.price, candidate) < devThreshold {
+                    continue;
+                }
+                let okRight: bool = true;
+                if pIndex > 0 {
+                    for j = 1 to math.min(depth, pIndex) {
+                        let rIndex: int = pIndex - j;
+                        let v: float = prices.get(rIndex);
+                        if (isHigh and v > candidate) or (not isHigh and v < candidate) {
+                            okRight = false;
+                            break;
+                        }
+                    }
+                }
+                if not okRight {
+                    continue;
+                }
+                let okLeft: bool = true;
+                for j = 1 to depth {
+                    let lIndex: int = pIndex + j;
+                    let v: float = prices.get(lIndex);
+                    if (isHigh and v >= candidate) or (not isHigh and v <= candidate) {
+                        okLeft = false;
+                        break;
+                    }
+                }
+                if not okLeft {
+                    continue;
+                }
+                if na(result) or (isHigh and result.price < candidate) or (not isHigh and result.price > candidate) {
+                    result = chart.Point.new(times.get(pIndex), i, candidate);
+                    if candidate == extreme {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    result;
+}
+
+method updateProjectionPivot(
+    this: ZigZag,
+    projectionPoint: chart.Point,
+    isHigh: series bool,
+    projVol: series float
+) {
+    if this.settings.projectionPivots {
+        let last: Pivot = this.lastPivot();
+        this.projection = newPivot(
+            last.end,
+            projectionPoint,
+            projVol,
+            isHigh,
+            this.settings
+        );
+        this.projection.ln.set_style(LineStyle.Dashed);
+        this.pivots.push(this.projection);
+    }
+}
+
+method update(this: ZigZag) {
+    var highs: Array<float> = Array.new<float>();
+    highs.unshift(high);
+    var lows: Array<float> = Array.new<float>();
+    lows.unshift(low);
+    var times: Array<int> = Array.new<int>();
+    times.unshift(time);
+    var cVols: Array<float> = Array.new<float>();
+    cVols.unshift(ta.cum(volume));
+    var maxSize: int = 0;
+    let depth: int = math.max(2, math.floor(this.settings.depth / 2));
+    if not na(this.projection) {
+        this.popLastPivot();
+        this.projection = na;
+    }
+    this.sumVol += nz(volume[depth]);
+    let size: int = this.pivots.size();
+    maxSize = math.max(maxSize, size);
+    let newHigh: bool = this.tryFindPivot(high, true, depth);
+    let newLow: bool = this.tryFindPivot(
+        low,
+        false,
+        depth,
+        this.settings.allowZigZagOnOneBar or not newHigh
+    );
+    let invalidated: bool = false;
+    let threshold: float = this.settings.devThreshold;
+    var removed: Pivot = na;
+    var prevProjection: chart.Point = na;
+    if this.settings.projectionPivots and bar_state.is_last {
+        if not (newHigh or newLow) {
+            let last: Pivot = this.lastPivot();
+            if not na(last) and na(prevProjection) {
+                let extreme: float = switch {
+                    last.isHigh => bar_state.is_history[1] ? highs.slice(
+                        0,
+                        bar_index - last.end.index
+                    ).max() : high,
+                    => bar_state.is_history[1] ? lows.slice(
+                        0,
+                        bar_index - last.end.index
+                    ).min() : low,
+                };
+                if size == maxSize and isMorePrice(
+                    last,
+                    chart.Point.now(extreme)
+                ) {
+                    this.sumVol += last.vol;
+                    removed = last;
+                    this.popLastPivot();
+                    invalidated = true;
+                    last = this.lastPivot();
+                }
+            }
+            if not na(last) {
+                let nextIsHigh: bool = not last.isHigh;
+                let projectionPoint: chart.Point = findProjectionPivot(
+                    nextIsHigh,
+                    depth,
+                    last.end,
+                    threshold,
+                    nextIsHigh ? highs : lows,
+                    times
+                );
+                if not na(projectionPoint) {
+                    let startOff: int = bar_index - last.end.index;
+                    let endOff: int = bar_index - projectionPoint.index;
+                    let projVol: float = cVols.get(endOff) - cVols.get(
+                        startOff
+                    );
+                    this.updateProjectionPivot(
+                        projectionPoint,
+                        nextIsHigh,
+                        projVol
+                    );
+                }
+                if not na(removed) {
+                    let checkHigh: bool = not removed.isHigh;
+                    let revProjection: chart.Point = findProjectionPivot(
+                        checkHigh,
+                        depth,
+                        removed.end,
+                        threshold,
+                        checkHigh ? highs : lows,
+                        times
+                    );
+                    if not na(revProjection) and not na(projectionPoint) and projectionPoint.index < revProjection.index {
+                        revProjection = na;
+                    }
+                    if not na(revProjection) {
+                        if not na(this.projection) {
+                            this.popLastPivot();
+                            this.projection = na;
+                        }
+                        let rev: Pivot = newPivot(
+                            removed.start,
+                            removed.end,
+                            removed.vol,
+                            removed.isHigh,
+                            this.settings
+                        );
+                        this.sumVol -= rev.vol;
+                        switch {
+                            rev.isHigh => newHigh = true,
+                            => newLow = true,
+                        }
+                        this.pivots.push(rev);
+                        removed = na;
+                        let startOff: int = bar_index - rev.end.index;
+                        let endOff: int = bar_index - revProjection.index;
+                        let projVol: float = cVols.get(endOff) - cVols.get(
+                            startOff
+                        );
+                        this.updateProjectionPivot(
+                            revProjection,
+                            checkHigh,
+                            projVol
+                        );
+                    }
+                }
+                prevProjection = projectionPoint;
+            }
+        } else {
+            prevProjection = na;
+            removed = na;
+        }
+    }
+    let result: bool = invalidated or newHigh or newLow;
+}
+
+fn newInstance(settings: Settings = na) {
+    let result: ZigZag = ZigZag.new(
+        na(settings) ? Settings.new() : settings,
+        Array.new<Pivot>()
+    );
+}
+
+let deviationInput = input.float(
+    5.0,
+    "Price deviation for reversals (%)",
+    0.00001,
+    100.0,
+    0.5,
+    "0.00001 - 100"
+);
+let depthInput = input.int(10, "Pivot legs", 2);
+let lineColorInput = input(#2962FF, "line color", display: PlotDisplay.NONE);
+let extendInput = input(true, "Extend to last bar", display: PlotDisplay.NONE);
+let showPriceInput = input(
+    true,
+    "Display reversal price",
+    display: PlotDisplay.NONE
+);
+let showVolInput = input(
+    true,
+    "Display cumulative volume",
+    display: PlotDisplay.NONE
+);
+let showChgInput = input(
+    true,
+    "Display reversal price change",
+    inline: "priceRev",
+    display: PlotDisplay.NONE
+);
+let priceDiffInput = input.string(
+    "Absolute",
+    "",
+    ["Absolute", "Percent"],
+    inline: "priceRev",
+    display: PlotDisplay.NONE,
+    active: showChgInput
+);
+
+var zigZag = newInstance(
+    Settings.new(
+        deviationInput,
+        depthInput,
+        lineColorInput,
+        extendInput,
+        showPriceInput,
+        showVolInput,
+        showChgInput,
+        priceDiffInput,
+        true
+    )
+);
+
+zigZag.update();

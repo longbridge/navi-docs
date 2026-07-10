@@ -1,0 +1,10 @@
+﻿indicator(
+    title: "Momentum",
+    short_title: "Mom",
+    timeframe: "",
+    timeframe_gaps: true
+);
+let len = input.int(10, minval: 1, title: "Length");
+let src = input(close, title: "Source");
+let mom = src - src[len];
+plot(mom, color: #2962FF, title: "MOM");

@@ -1,0 +1,857 @@
+{
+  "en": {
+    "prelude": {
+      "types": [
+        {
+          "name": "AlertFreq",
+          "genericParams": []
+        },
+        {
+          "name": "Array",
+          "genericParams": [
+            "T"
+          ]
+        },
+        {
+          "name": "BarmergeGaps",
+          "genericParams": []
+        },
+        {
+          "name": "BarmergeLookahead",
+          "genericParams": []
+        },
+        {
+          "name": "Box",
+          "genericParams": []
+        },
+        {
+          "name": "Color",
+          "genericParams": []
+        },
+        {
+          "name": "CommissionType",
+          "genericParams": []
+        },
+        {
+          "name": "Currency",
+          "genericParams": []
+        },
+        {
+          "name": "DayOfWeek",
+          "genericParams": []
+        },
+        {
+          "name": "DefaultQtyType",
+          "genericParams": []
+        },
+        {
+          "name": "Direction",
+          "genericParams": []
+        },
+        {
+          "name": "DividendsField",
+          "genericParams": []
+        },
+        {
+          "name": "EarningsField",
+          "genericParams": []
+        },
+        {
+          "name": "Extend",
+          "genericParams": []
+        },
+        {
+          "name": "FontFamily",
+          "genericParams": []
+        },
+        {
+          "name": "Format",
+          "genericParams": []
+        },
+        {
+          "name": "HLine",
+          "genericParams": []
+        },
+        {
+          "name": "HLineStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Label",
+          "genericParams": []
+        },
+        {
+          "name": "LabelStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Line",
+          "genericParams": []
+        },
+        {
+          "name": "LineFill",
+          "genericParams": []
+        },
+        {
+          "name": "LineStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Location",
+          "genericParams": []
+        },
+        {
+          "name": "Map",
+          "genericParams": [
+            "K",
+            "V"
+          ]
+        },
+        {
+          "name": "Matrix",
+          "genericParams": [
+            "T"
+          ]
+        },
+        {
+          "name": "OcaType",
+          "genericParams": []
+        },
+        {
+          "name": "Plot",
+          "genericParams": []
+        },
+        {
+          "name": "PlotDisplay",
+          "genericParams": []
+        },
+        {
+          "name": "PlotStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Polyline",
+          "genericParams": []
+        },
+        {
+          "name": "Position",
+          "genericParams": []
+        },
+        {
+          "name": "ScaleType",
+          "genericParams": []
+        },
+        {
+          "name": "Session",
+          "genericParams": []
+        },
+        {
+          "name": "Shape",
+          "genericParams": []
+        },
+        {
+          "name": "Size",
+          "genericParams": []
+        },
+        {
+          "name": "SortOrder",
+          "genericParams": []
+        },
+        {
+          "name": "SplitsField",
+          "genericParams": []
+        },
+        {
+          "name": "String",
+          "genericParams": []
+        },
+        {
+          "name": "Table",
+          "genericParams": []
+        },
+        {
+          "name": "TextFormat",
+          "genericParams": []
+        },
+        {
+          "name": "TextHAlign",
+          "genericParams": []
+        },
+        {
+          "name": "TextVAlign",
+          "genericParams": []
+        },
+        {
+          "name": "TextWrap",
+          "genericParams": []
+        },
+        {
+          "name": "XLoc",
+          "genericParams": []
+        },
+        {
+          "name": "YLoc",
+          "genericParams": []
+        }
+      ],
+      "functions": [
+        "alert",
+        "alert_condition",
+        "bar_color",
+        "bg_color",
+        "bool",
+        "box",
+        "color",
+        "day_of_month",
+        "day_of_week",
+        "fill",
+        "fixnan",
+        "float",
+        "hline",
+        "hour",
+        "indicator",
+        "input",
+        "int",
+        "label",
+        "library",
+        "line",
+        "line_fill",
+        "max_bars_back",
+        "minute",
+        "month",
+        "na",
+        "nz",
+        "plot",
+        "plot_arrow",
+        "plot_bar",
+        "plot_candle",
+        "plot_char",
+        "plot_shape",
+        "second",
+        "strategy",
+        "string",
+        "table",
+        "time",
+        "time_close",
+        "timestamp",
+        "week_of_year",
+        "year"
+      ],
+      "properties": [
+        "ask",
+        "bar_index",
+        "bid",
+        "close",
+        "day_of_month",
+        "day_of_week",
+        "high",
+        "hl2",
+        "hlc3",
+        "hlcc4",
+        "hour",
+        "last_bar_index",
+        "last_bar_time",
+        "low",
+        "minute",
+        "month",
+        "ohlc4",
+        "open",
+        "second",
+        "time",
+        "time_close",
+        "time_now",
+        "time_tradingday",
+        "volume",
+        "week_of_year",
+        "year"
+      ]
+    },
+    "modules": [
+      "bar_state",
+      "chart",
+      "input",
+      "log",
+      "math",
+      "request",
+      "runtime",
+      "session",
+      "strategy",
+      "strategy.closed_trades",
+      "strategy.open_trades",
+      "strategy.risk",
+      "symbol_info",
+      "ta",
+      "timeframe"
+    ]
+  },
+  "zh-CN": {
+    "prelude": {
+      "types": [
+        {
+          "name": "AlertFreq",
+          "genericParams": []
+        },
+        {
+          "name": "Array",
+          "genericParams": [
+            "T"
+          ]
+        },
+        {
+          "name": "BarmergeGaps",
+          "genericParams": []
+        },
+        {
+          "name": "BarmergeLookahead",
+          "genericParams": []
+        },
+        {
+          "name": "Box",
+          "genericParams": []
+        },
+        {
+          "name": "Color",
+          "genericParams": []
+        },
+        {
+          "name": "CommissionType",
+          "genericParams": []
+        },
+        {
+          "name": "Currency",
+          "genericParams": []
+        },
+        {
+          "name": "DayOfWeek",
+          "genericParams": []
+        },
+        {
+          "name": "DefaultQtyType",
+          "genericParams": []
+        },
+        {
+          "name": "Direction",
+          "genericParams": []
+        },
+        {
+          "name": "DividendsField",
+          "genericParams": []
+        },
+        {
+          "name": "EarningsField",
+          "genericParams": []
+        },
+        {
+          "name": "Extend",
+          "genericParams": []
+        },
+        {
+          "name": "FontFamily",
+          "genericParams": []
+        },
+        {
+          "name": "Format",
+          "genericParams": []
+        },
+        {
+          "name": "HLine",
+          "genericParams": []
+        },
+        {
+          "name": "HLineStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Label",
+          "genericParams": []
+        },
+        {
+          "name": "LabelStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Line",
+          "genericParams": []
+        },
+        {
+          "name": "LineFill",
+          "genericParams": []
+        },
+        {
+          "name": "LineStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Location",
+          "genericParams": []
+        },
+        {
+          "name": "Map",
+          "genericParams": [
+            "K",
+            "V"
+          ]
+        },
+        {
+          "name": "Matrix",
+          "genericParams": [
+            "T"
+          ]
+        },
+        {
+          "name": "OcaType",
+          "genericParams": []
+        },
+        {
+          "name": "Plot",
+          "genericParams": []
+        },
+        {
+          "name": "PlotDisplay",
+          "genericParams": []
+        },
+        {
+          "name": "PlotStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Polyline",
+          "genericParams": []
+        },
+        {
+          "name": "Position",
+          "genericParams": []
+        },
+        {
+          "name": "ScaleType",
+          "genericParams": []
+        },
+        {
+          "name": "Session",
+          "genericParams": []
+        },
+        {
+          "name": "Shape",
+          "genericParams": []
+        },
+        {
+          "name": "Size",
+          "genericParams": []
+        },
+        {
+          "name": "SortOrder",
+          "genericParams": []
+        },
+        {
+          "name": "SplitsField",
+          "genericParams": []
+        },
+        {
+          "name": "String",
+          "genericParams": []
+        },
+        {
+          "name": "Table",
+          "genericParams": []
+        },
+        {
+          "name": "TextFormat",
+          "genericParams": []
+        },
+        {
+          "name": "TextHAlign",
+          "genericParams": []
+        },
+        {
+          "name": "TextVAlign",
+          "genericParams": []
+        },
+        {
+          "name": "TextWrap",
+          "genericParams": []
+        },
+        {
+          "name": "XLoc",
+          "genericParams": []
+        },
+        {
+          "name": "YLoc",
+          "genericParams": []
+        }
+      ],
+      "functions": [
+        "alert",
+        "alert_condition",
+        "bar_color",
+        "bg_color",
+        "bool",
+        "box",
+        "color",
+        "day_of_month",
+        "day_of_week",
+        "fill",
+        "fixnan",
+        "float",
+        "hline",
+        "hour",
+        "indicator",
+        "input",
+        "int",
+        "label",
+        "library",
+        "line",
+        "line_fill",
+        "max_bars_back",
+        "minute",
+        "month",
+        "na",
+        "nz",
+        "plot",
+        "plot_arrow",
+        "plot_bar",
+        "plot_candle",
+        "plot_char",
+        "plot_shape",
+        "second",
+        "strategy",
+        "string",
+        "table",
+        "time",
+        "time_close",
+        "timestamp",
+        "week_of_year",
+        "year"
+      ],
+      "properties": [
+        "ask",
+        "bar_index",
+        "bid",
+        "close",
+        "day_of_month",
+        "day_of_week",
+        "high",
+        "hl2",
+        "hlc3",
+        "hlcc4",
+        "hour",
+        "last_bar_index",
+        "last_bar_time",
+        "low",
+        "minute",
+        "month",
+        "ohlc4",
+        "open",
+        "second",
+        "time",
+        "time_close",
+        "time_now",
+        "time_tradingday",
+        "volume",
+        "week_of_year",
+        "year"
+      ]
+    },
+    "modules": [
+      "bar_state",
+      "chart",
+      "input",
+      "log",
+      "math",
+      "request",
+      "runtime",
+      "session",
+      "strategy",
+      "strategy.closed_trades",
+      "strategy.open_trades",
+      "strategy.risk",
+      "symbol_info",
+      "ta",
+      "timeframe"
+    ]
+  },
+  "zh-HK": {
+    "prelude": {
+      "types": [
+        {
+          "name": "AlertFreq",
+          "genericParams": []
+        },
+        {
+          "name": "Array",
+          "genericParams": [
+            "T"
+          ]
+        },
+        {
+          "name": "BarmergeGaps",
+          "genericParams": []
+        },
+        {
+          "name": "BarmergeLookahead",
+          "genericParams": []
+        },
+        {
+          "name": "Box",
+          "genericParams": []
+        },
+        {
+          "name": "Color",
+          "genericParams": []
+        },
+        {
+          "name": "CommissionType",
+          "genericParams": []
+        },
+        {
+          "name": "Currency",
+          "genericParams": []
+        },
+        {
+          "name": "DayOfWeek",
+          "genericParams": []
+        },
+        {
+          "name": "DefaultQtyType",
+          "genericParams": []
+        },
+        {
+          "name": "Direction",
+          "genericParams": []
+        },
+        {
+          "name": "DividendsField",
+          "genericParams": []
+        },
+        {
+          "name": "EarningsField",
+          "genericParams": []
+        },
+        {
+          "name": "Extend",
+          "genericParams": []
+        },
+        {
+          "name": "FontFamily",
+          "genericParams": []
+        },
+        {
+          "name": "Format",
+          "genericParams": []
+        },
+        {
+          "name": "HLine",
+          "genericParams": []
+        },
+        {
+          "name": "HLineStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Label",
+          "genericParams": []
+        },
+        {
+          "name": "LabelStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Line",
+          "genericParams": []
+        },
+        {
+          "name": "LineFill",
+          "genericParams": []
+        },
+        {
+          "name": "LineStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Location",
+          "genericParams": []
+        },
+        {
+          "name": "Map",
+          "genericParams": [
+            "K",
+            "V"
+          ]
+        },
+        {
+          "name": "Matrix",
+          "genericParams": [
+            "T"
+          ]
+        },
+        {
+          "name": "OcaType",
+          "genericParams": []
+        },
+        {
+          "name": "Plot",
+          "genericParams": []
+        },
+        {
+          "name": "PlotDisplay",
+          "genericParams": []
+        },
+        {
+          "name": "PlotStyle",
+          "genericParams": []
+        },
+        {
+          "name": "Polyline",
+          "genericParams": []
+        },
+        {
+          "name": "Position",
+          "genericParams": []
+        },
+        {
+          "name": "ScaleType",
+          "genericParams": []
+        },
+        {
+          "name": "Session",
+          "genericParams": []
+        },
+        {
+          "name": "Shape",
+          "genericParams": []
+        },
+        {
+          "name": "Size",
+          "genericParams": []
+        },
+        {
+          "name": "SortOrder",
+          "genericParams": []
+        },
+        {
+          "name": "SplitsField",
+          "genericParams": []
+        },
+        {
+          "name": "String",
+          "genericParams": []
+        },
+        {
+          "name": "Table",
+          "genericParams": []
+        },
+        {
+          "name": "TextFormat",
+          "genericParams": []
+        },
+        {
+          "name": "TextHAlign",
+          "genericParams": []
+        },
+        {
+          "name": "TextVAlign",
+          "genericParams": []
+        },
+        {
+          "name": "TextWrap",
+          "genericParams": []
+        },
+        {
+          "name": "XLoc",
+          "genericParams": []
+        },
+        {
+          "name": "YLoc",
+          "genericParams": []
+        }
+      ],
+      "functions": [
+        "alert",
+        "alert_condition",
+        "bar_color",
+        "bg_color",
+        "bool",
+        "box",
+        "color",
+        "day_of_month",
+        "day_of_week",
+        "fill",
+        "fixnan",
+        "float",
+        "hline",
+        "hour",
+        "indicator",
+        "input",
+        "int",
+        "label",
+        "library",
+        "line",
+        "line_fill",
+        "max_bars_back",
+        "minute",
+        "month",
+        "na",
+        "nz",
+        "plot",
+        "plot_arrow",
+        "plot_bar",
+        "plot_candle",
+        "plot_char",
+        "plot_shape",
+        "second",
+        "strategy",
+        "string",
+        "table",
+        "time",
+        "time_close",
+        "timestamp",
+        "week_of_year",
+        "year"
+      ],
+      "properties": [
+        "ask",
+        "bar_index",
+        "bid",
+        "close",
+        "day_of_month",
+        "day_of_week",
+        "high",
+        "hl2",
+        "hlc3",
+        "hlcc4",
+        "hour",
+        "last_bar_index",
+        "last_bar_time",
+        "low",
+        "minute",
+        "month",
+        "ohlc4",
+        "open",
+        "second",
+        "time",
+        "time_close",
+        "time_now",
+        "time_tradingday",
+        "volume",
+        "week_of_year",
+        "year"
+      ]
+    },
+    "modules": [
+      "bar_state",
+      "chart",
+      "input",
+      "log",
+      "math",
+      "request",
+      "runtime",
+      "session",
+      "strategy",
+      "strategy.closed_trades",
+      "strategy.open_trades",
+      "strategy.risk",
+      "symbol_info",
+      "ta",
+      "timeframe"
+    ]
+  }
+}

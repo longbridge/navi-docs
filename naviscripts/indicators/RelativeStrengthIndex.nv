@@ -1,0 +1,235 @@
+﻿indicator(
+    title: "Relative Strength Index",
+    short_title: "RSI",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+
+let rsiLengthInput = input.int(
+    14,
+    minval: 1,
+    title: "RSI Length",
+    group: "RSI Settings"
+);
+let rsiSourceInput = input.source(close, "Source", group: "RSI Settings");
+let calculateDivergence = input.bool(
+    false,
+    title: "Calculate Divergence",
+    group: "RSI Settings",
+    display: PlotDisplay.NONE,
+    tooltip: "Calculating divergences is needed in order for divergence alerts to fire."
+);
+
+let change = ta.change(rsiSourceInput);
+let up = ta.rma(math.max(change, 0), rsiLengthInput);
+let down = ta.rma(-math.min(change, 0), rsiLengthInput);
+let rsi = down == 0 ? 100 : up == 0 ? 0 : 100 - (100 / (1 + up / down));
+
+let rsiPlot = plot(rsi, "RSI", color: #7E57C2);
+let rsiUpperBand = hline(70, "RSI Upper Band", color: #787B86);
+let midline = hline(50, "RSI Middle Band", color: Color.new(#787B86, 50));
+let rsiLowerBand = hline(30, "RSI Lower Band", color: #787B86);
+fill(
+    rsiUpperBand,
+    rsiLowerBand,
+    color: Color.rgb(126, 87, 194, 90),
+    title: "RSI Background Fill"
+);
+let midLinePlot = plot(50, color: na, editable: false, display: PlotDisplay.NONE);
+fill(
+    rsiPlot,
+    midLinePlot,
+    100,
+    70,
+    top_color: Color.new(Color.GREEN, 0),
+    bottom_color: Color.new(Color.GREEN, 100),
+    title: "Overbought Gradient Fill"
+);
+fill(
+    rsiPlot,
+    midLinePlot,
+    30,
+    0,
+    top_color: Color.new(Color.RED, 100),
+    bottom_color: Color.new(Color.RED, 0),
+    title: "Oversold Gradient Fill"
+);
+
+let GRP = "Smoothing";
+let TT_BB = "Only applies when 'SMA + Bollinger Bands' is selected. Determines the distance between the SMA and the bands.";
+let maTypeInput = input.string(
+    "SMA",
+    "Type",
+    options: [
+        "None",
+        "SMA",
+        "SMA + Bollinger Bands",
+        "EMA",
+        "SMMA (RMA)",
+        "WMA",
+        "VWMA"
+    ],
+    group: GRP,
+    display: PlotDisplay.NONE
+);
+var isBB = maTypeInput == "SMA + Bollinger Bands";
+let maLengthInput = input.int(
+    14,
+    "Length",
+    group: GRP,
+    display: PlotDisplay.NONE,
+    active: maTypeInput != "None"
+);
+let bbMultInput = input.float(
+    2.0,
+    "BB StdDev",
+    minval: 0.001,
+    maxval: 50,
+    step: 0.5,
+    tooltip: TT_BB,
+    group: GRP,
+    display: PlotDisplay.NONE,
+    active: isBB
+);
+var enableMA = maTypeInput != "None";
+
+fn ma(source, length, MAtype) {
+    switch MAtype {
+        "SMA" => ta.sma(source, length),
+        "SMA + Bollinger Bands" => ta.sma(source, length),
+        "EMA" => ta.ema(source, length),
+        "SMMA (RMA)" => ta.rma(source, length),
+        "WMA" => ta.wma(source, length),
+        "VWMA" => ta.vwma(source, length),
+    }
+}
+
+let smoothingMA = enableMA ? ma(rsi, maLengthInput, maTypeInput) : na;
+let smoothingStDev = isBB ? ta.stdev(rsi, maLengthInput) * bbMultInput : na;
+plot(
+    smoothingMA,
+    "RSI-based MA",
+    color: Color.YELLOW,
+    display: enableMA ? PlotDisplay.ALL : PlotDisplay.NONE,
+    editable: enableMA
+);
+let bbUpperBand = plot(
+    smoothingMA + smoothingStDev,
+    title: "Upper Bollinger Band",
+    color: Color.GREEN,
+    display: isBB ? PlotDisplay.ALL : PlotDisplay.NONE,
+    editable: isBB
+);
+let bbLowerBand = plot(
+    smoothingMA - smoothingStDev,
+    title: "Lower Bollinger Band",
+    color: Color.GREEN,
+    display: isBB ? PlotDisplay.ALL : PlotDisplay.NONE,
+    editable: isBB
+);
+fill(
+    bbUpperBand,
+    bbLowerBand,
+    color: isBB ? Color.new(Color.GREEN, 90) : na,
+    title: "Bollinger Bands Background Fill",
+    display: isBB ? PlotDisplay.ALL : PlotDisplay.NONE,
+    editable: isBB
+);
+
+let lookbackRight = 5;
+let lookbackLeft = 5;
+let rangeUpper = 60;
+let rangeLower = 5;
+let bearColor = Color.RED;
+let bullColor = Color.GREEN;
+let textColor = Color.WHITE;
+let noneColor = Color.new(Color.WHITE, 100);
+
+fn _inRange(cond: bool) {
+    let bars = ta.bars_since(cond);
+    rangeLower <= bars and bars <= rangeUpper;
+}
+
+let plFound = false;
+let phFound = false;
+
+let bullCond = false;
+let bearCond = false;
+
+let rsiLBR = rsi[lookbackRight];
+
+if calculateDivergence {
+    plFound = not na(ta.pivot_low(rsi, lookbackLeft, lookbackRight));
+    let rsiHL = rsiLBR > ta.value_when(plFound, rsiLBR, 1) and _inRange(
+        plFound[1]
+    );
+    let lowLBR = low[lookbackRight];
+    let priceLL = lowLBR < ta.value_when(plFound, lowLBR, 1);
+    bullCond = priceLL and rsiHL and plFound;
+    phFound = not na(ta.pivot_high(rsi, lookbackLeft, lookbackRight));
+    let rsiLH = rsiLBR < ta.value_when(phFound, rsiLBR, 1) and _inRange(
+        phFound[1]
+    );
+    let highLBR = high[lookbackRight];
+    let priceHH = highLBR > ta.value_when(phFound, highLBR, 1);
+    bearCond = priceHH and rsiLH and phFound;
+}
+
+plot(
+    plFound ? rsiLBR : na,
+    offset: -lookbackRight,
+    title: "Regular Bullish",
+    line_width: 2,
+    color: (bullCond ? bullColor : noneColor),
+    display: PlotDisplay.PANE,
+    editable: calculateDivergence
+);
+
+plot_shape(
+    bullCond ? rsiLBR : na,
+    offset: -lookbackRight,
+    title: "Regular Bullish label",
+    text: " Bull ",
+    style: Shape.LabelUp,
+    location: Location.Absolute,
+    color: bullColor,
+    text_color: textColor,
+    display: PlotDisplay.PANE,
+    editable: calculateDivergence
+);
+
+plot(
+    phFound ? rsiLBR : na,
+    offset: -lookbackRight,
+    title: "Regular Bearish",
+    line_width: 2,
+    color: (bearCond ? bearColor : noneColor),
+    display: PlotDisplay.PANE,
+    editable: calculateDivergence
+);
+
+plot_shape(
+    bearCond ? rsiLBR : na,
+    offset: -lookbackRight,
+    title: "Regular Bearish label",
+    text: " Bear ",
+    style: Shape.LabelDown,
+    location: Location.Absolute,
+    color: bearColor,
+    text_color: textColor,
+    display: PlotDisplay.PANE,
+    editable: calculateDivergence
+);
+
+alert_condition(
+    bullCond,
+    title: 'Regular Bullish Divergence',
+    message: "Found a new Regular Bullish Divergence, `Pivot Lookback Right` number of bars to the left of the current bar."
+);
+alert_condition(
+    bearCond,
+    title: 'Regular Bearish Divergence',
+    message: 'Found a new Regular Bearish Divergence, `Pivot Lookback Right` number of bars to the left of the current bar.'
+);

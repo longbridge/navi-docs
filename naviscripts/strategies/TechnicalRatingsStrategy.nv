@@ -1,0 +1,1067 @@
+﻿strategy(
+    title: "Technical Ratings Strategy",
+    short_title: "Technicals Strategy",
+    default_qty_type: DefaultQtyType.PercentOfEquity,
+    default_qty_value: 5,
+    overlay: true
+);
+struct collectedData {
+    data: Array<float>,
+    times: Array<int>,
+    startTime: int,
+}
+
+method maintainArray(
+    id: Array<collectedData>,
+    maxSize: simple int,
+    data: collectedData
+) {
+    id.push(data);
+    if id.size() > maxSize {
+        id.shift();
+    }
+}
+
+method calcAverageByTime(id: Array<collectedData>, timeOffset: series int) {
+    let sum: float = 0.0;
+    for eachItem in id {
+        let startTime: int = eachItem.startTime;
+        let index: int = eachItem.times.binary_search_leftmost(
+            startTime + timeOffset
+        );
+        let adjData: float = eachItem.data.size() - 1 >= index ? eachItem.data.get(
+            index
+        ) : eachItem.data.last();
+        sum += adjData;
+    }
+    let result: float = sum / id.size();
+}
+
+fn calcCumulativeSeries(
+    source: series float,
+    anchor: series bool,
+    adjustRealtime: simple bool = false
+) {
+    var sum: float = 0.0;
+    var lastAnchor: int = na;
+    if anchor {
+        sum = 0.0;
+        lastAnchor = time;
+    }
+    sum += source;
+    if adjustRealtime and not bar_state.is_confirmed {
+        let timePassed: int = math.min(time_now, time_close) - lastAnchor;
+        let timeTotal: int = time_close - lastAnchor;
+        let currentRatio: float = sum / timePassed;
+        sum = currentRatio * timeTotal;
+    }
+    let result: float = sum;
+}
+
+fn averageAtTime(
+    source: series float,
+    length: simple int,
+    anchor: series bool,
+    isCumulative: simple bool = true
+) {
+    var historicalData: Array<collectedData> = Array.new<collectedData>();
+    var newData: collectedData = collectedData.new(
+        Array.new<float>(),
+        Array.new<int>()
+    );
+    let src: float = isCumulative ? calcCumulativeSeries(source, anchor) : source;
+    if anchor {
+        historicalData.maintainArray(length, newData);
+        newData = collectedData.new(Array.new<float>(), Array.new<int>(), time);
+    }
+    newData.times.push(time);
+    newData.data.push(src);
+    let result: float = calcAverageByTime(
+        historicalData,
+        time - newData.startTime
+    );
+}
+
+fn averageAtTime(
+    source: series float,
+    length: simple int,
+    timeframe: simple String,
+    isCumulative: simple bool = true
+) {
+    var historicalData: Array<collectedData> = Array.new<collectedData>();
+    var newData: collectedData = collectedData.new(
+        Array.new<float>(),
+        Array.new<int>(),
+        time(timeframe)
+    );
+    let anchor: bool = timeframe.change(timeframe);
+    let src: float = isCumulative ? calcCumulativeSeries(source, anchor) : source;
+    if anchor {
+        historicalData.maintainArray(length, newData);
+        newData = collectedData.new(
+            Array.new<float>(),
+            Array.new<int>(),
+            time(timeframe)
+        );
+    }
+    newData.times.push(time);
+    newData.data.push(src);
+    let result: float = calcAverageByTime(
+        historicalData,
+        time - newData.startTime
+    );
+}
+
+fn ewma(source: series float, alpha: series float) {
+    if alpha < 0 {
+        runtime.error(
+            "Invalid smoothing factor. The value must not be negative."
+        );
+    }
+    let result: float = na;
+    result = alpha * source + (1.0 - alpha) * nz(result[1], source);
+}
+
+fn ao(
+    source: series float = hl2,
+    shortLength: simple int = 5,
+    longLength: simple int = 34
+) {
+    let result: float = ta.sma(source, shortLength) - ta.sma(
+        source,
+        longLength
+    );
+}
+
+fn aroon(length: simple int) {
+    let aroonDown: float = 100 * (ta.lowest_bars(low, length + 1) + length) / length;
+    let aroonUp: float = 100 * (ta.highest_bars(high, length + 1) + length) / length;
+    (aroonUp, aroonDown);
+}
+
+fn atr2(length: series float) {
+    if length < 1 {
+        runtime.error(
+            "Invalid length ({0}). The value must be greater than or equal to 1.".format(length)
+        );
+    }
+    let alpha: float = 1.0 / length;
+    let result: float = ewma(ta.tr(true), alpha);
+}
+
+fn cagr(
+    entryTime: series int,
+    entryPrice: series float,
+    exitTime: series int,
+    exitPrice: series float
+) {
+    let MS_IN_ONE_DAY: int = 24 * 60 * 60 * 1000;
+    let daysBetween: float = (exitTime - entryTime) / MS_IN_ONE_DAY;
+    let result: float = if daysBetween >= 1 and not (na(entryPrice) or na(
+        exitPrice
+    )) {
+        let years: float = daysBetween / 365.;
+        let rate: float = exitPrice / entryPrice;
+        100 * (math.pow(rate, 1 / years) - 1);
+    } else {
+        na;
+    };
+}
+
+fn chandelier(
+    length: series int,
+    atrLength: simple int,
+    mult: series float
+) {
+    let atr: float = ta.atr(atrLength) * mult;
+    (ta.highest(length) - atr, ta.lowest(length) + atr);
+}
+
+fn chandelier2(
+    length: series int,
+    atrLength: series float,
+    mult: series float
+) {
+    let atr: float = atr2(atrLength) * mult;
+    (ta.highest(length) - atr, ta.lowest(length) + atr);
+}
+
+fn changePercent(newValue: series float, oldValue: series float) {
+    let result: float = 100 * (newValue - oldValue) / oldValue;
+}
+
+fn coppock(
+    source: series float,
+    longLength: simple int,
+    shortLength: simple int,
+    smoothLength: simple int
+) {
+    let result: float = ta.wma(
+        ta.roc(source, longLength) + ta.roc(source, shortLength),
+        smoothLength
+    );
+}
+
+fn dema(source: series float, length: simple int) {
+    let ema1: float = ta.ema(source, length);
+    let ema2: float = ta.ema(ema1, length);
+    let result: float = 2 * ema1 - ema2;
+}
+
+fn ema2(source: series float, length: series float) {
+    if length < 1 {
+        runtime.error(
+            "Invalid length ({0}). The value must be greater than or equal to 1.".format(length)
+        );
+    }
+    let alpha: float = 2.0 / (math.max(1.0, length) + 1.0);
+    let result: float = ewma(source, alpha);
+}
+
+fn dema2(source: series float, length: series float) {
+    let ema1: float = ema2(source, length);
+    let ema2: float = ema2(ema1, length);
+    let result: float = 2 * ema1 - ema2;
+}
+
+fn dm(length: simple int) {
+    let demax: float = math.max(ta.change(high), 0);
+    let demin: float = -math.min(ta.change(low), 0);
+    let result: float = ta.sma(demax, length) / (ta.sma(demax, length) + ta.sma(
+        demin,
+        length
+    ));
+}
+
+fn donchian(length: series int) {
+    let highest: float = ta.highest(length);
+    let lowest: float = ta.lowest(length);
+    (highest, lowest, math.avg(highest, lowest));
+}
+
+fn eom(length: simple int, div: simple int = 10000) {
+    let result: float = ta.sma(
+        div * ta.change(hl2) * (high - low) / volume,
+        length
+    );
+}
+
+fn er(source: series float, length: series int) {
+    let absChange: float = math.abs(ta.change(source, length));
+    let sumChanges: float = math.sum(math.abs(ta.change(source)), length);
+    let result: float = sumChanges == 0.0 ? 0.0 : absChange / sumChanges;
+}
+
+fn frama(source: series float, length: series int) {
+    let len: int = math.round(length / 2);
+    let hh: float = ta.highest(len);
+    let ll: float = ta.lowest(len);
+    let n1: float = (hh - ll) / len;
+    let n2: float = (hh[len] - ll[len]) / len;
+    let n3: float = (ta.highest(length) - ta.lowest(length)) / length;
+    let D: float = math.log((n1 + n2) / n3) / math.log(2);
+    let alpha: float = math.exp(-4.6 * (D - 1));
+    let result: float = ewma(source, alpha);
+}
+
+fn ft(source: series float, length: simple int) {
+    let value1: float = 0.0;
+    let fish: float = 0.0;
+    let hh: float = ta.highest(source, length);
+    let ll: float = ta.lowest(source, length);
+    value1 = 0.66 * ((source - ll) / (hh - ll) - 0.5) + 0.67 * nz(value1[1]);
+    let value2: float = value1 > 0.99 ? 0.999 : value1 < -0.99 ? -0.999 : value1;
+    fish = 0.5 * math.log((1 + value2) / (1 - value2)) + 0.5 * nz(fish[1]);
+    let result: float = fish;
+}
+
+fn highestSince(cond: series bool, source: series float = high) {
+    var result: float = na;
+    if cond {
+        result = source;
+    }
+    result = math.max(nz(source, result), nz(result, source));
+}
+
+fn ht(source: series float) {
+    let result: float = 0.0962 * source + 0.5769 * nz(source[2]) - 0.5769 * nz(
+        source[4]
+    ) - 0.0962 * nz(source[6]);
+}
+
+fn midpoint(length: series int) {
+    let result: float = math.avg(ta.highest(length), ta.lowest(length));
+}
+
+fn ichimoku(
+    conLength: series int = 9,
+    baseLength: series int = 26,
+    senkouLength: series int = 52
+) {
+    let tenkan: float = midpoint(conLength);
+    let kijun: float = midpoint(baseLength);
+    let senkouSpan1: float = math.avg(tenkan, kijun);
+    let senkouSpan2: float = midpoint(senkouLength);
+    let chikou: float = close;
+    (tenkan, kijun, senkouSpan1, senkouSpan2, chikou);
+}
+
+fn ift(source: series float) {
+    let exp: float = math.exp(2.0 * source);
+    let result: float = (exp - 1.0) / (1.0 + exp);
+}
+
+fn kama(
+    source: series float,
+    erLen: series int,
+    fastLen: series float,
+    slowLen: series float
+) {
+    let alphaFast: float = 2.0 / (fastLen + 1.0);
+    let alphaSlow: float = 2.0 / (slowLen + 1.0);
+    let alpha: float = math.pow(
+        er(source, erLen) * (alphaFast - alphaSlow) + alphaSlow,
+        2
+    );
+    let result: float = ewma(source, alpha);
+}
+
+fn kvo(fastLen: simple int, slowLen: simple int, trigLen: simple int) {
+    let trend: float = math.sign(ta.change(hlc3)) * volume * 100;
+    let fast: float = ta.ema(trend, fastLen);
+    let slow: float = ta.ema(trend, slowLen);
+    let kvo: float = fast - slow;
+    let trigger: float = ta.ema(kvo, trigLen);
+    (kvo, trigger);
+}
+
+fn lowestSince(cond: series bool, source: series float = low) {
+    var result: float = na;
+    if cond {
+        result = source;
+    }
+    result = math.min(nz(source, result), nz(result, source));
+}
+
+fn macd2(
+    source: series float,
+    fastLen: series float,
+    slowLen: series float,
+    sigLen: series float
+) {
+    let maFast: float = ema2(source, fastLen);
+    let maSlow: float = ema2(source, slowLen);
+    let macd: float = maFast - maSlow;
+    let signal: float = ema2(macd, sigLen);
+    let hist: float = macd - signal;
+    (macd, signal, hist);
+}
+
+fn pmo(
+    source: series float,
+    length1: series float,
+    length2: series float,
+    sigLen: series float
+) {
+    let roc: float = ta.roc(source, 1);
+    let pmo: float = ewma(10.0 * ewma(roc, 2.0 / length1), 2.0 / length2);
+    let signal: float = ema2(pmo, sigLen);
+    (pmo, signal);
+}
+
+fn ppo(
+    source: series float,
+    fastLen: simple int,
+    slowLen: simple int,
+    sigLen: simple int
+) {
+    let maFast: float = ta.ema(source, fastLen);
+    let maSlow: float = ta.ema(source, slowLen);
+    let ppo: float = changePercent(maFast, maSlow);
+    let signal: float = ta.ema(ppo, sigLen);
+    let hist: float = ppo - signal;
+    (ppo, signal, hist);
+}
+
+fn ppo2(
+    source: series float,
+    fastLen: series float,
+    slowLen: series float,
+    sigLen: series float
+) {
+    let maFast: float = ema2(source, fastLen);
+    let maSlow: float = ema2(source, slowLen);
+    let ppo: float = changePercent(maFast, maSlow);
+    let signal: float = ema2(ppo, sigLen);
+    let hist: float = ppo - signal;
+    (ppo, signal, hist);
+}
+
+fn zone(source: series float, length: simple int) {
+    let result: float = 100 * nz(
+        ta.ema(math.sign(ta.change(close)) * source, length) / ta.ema(
+            source,
+            length
+        )
+    );
+}
+
+fn pzo(length: simple int) {
+    let result: float = zone(close, length);
+}
+
+fn relativeVolume(
+    length: simple int,
+    anchorTimeframe: simple String = "1D",
+    isCumulative: simple bool = true,
+    adjustRealtime: simple bool = true
+) {
+    let anchor: bool = timeframe.change(anchorTimeframe);
+    let currVol: float = isCumulative ? calcCumulativeSeries(
+        volume,
+        anchor,
+        adjustRealtime
+    ) : volume;
+    let pastVol: float = averageAtTime(
+        volume,
+        length,
+        anchorTimeframe,
+        isCumulative
+    );
+    let volRatio: float = currVol / pastVol;
+    (currVol, pastVol, volRatio);
+}
+
+fn priceCalc(currentValue: series bool) {
+    let result: bool = switch {
+        close > open => true,
+        close < open => false,
+        close > close[1] => true,
+        close < close[1] => false,
+        => currentValue,
+    };
+}
+
+fn upAndDownVolumeCalc() {
+    var posVol: float = 0.0;
+    var negVol: float = 0.0;
+    var hiVol: float = 0.0;
+    var loVol: float = 0.0;
+    var isBuyVolume: bool = close >= open;
+    let newBar: bool = switch {
+        timeframe.is_ticks => ta.change(
+            request.security("", timeframe.main_period, time)
+        ) > 0,
+        => timeframe.change(timeframe.main_period),
+    };
+    if newBar {
+        posVol = 0.0;
+        negVol = 0.0;
+        hiVol = 0.0;
+        loVol = 0.0;
+    }
+    if timeframe.is_ticks {
+        let avg: float = math.avg(ask, bid);
+        isBuyVolume = switch {
+            close == ask and close == bid => priceCalc(isBuyVolume),
+            close >= ask => true,
+            close <= bid => false,
+            close > avg => true,
+            close < avg => false,
+            => priceCalc(isBuyVolume),
+        };
+    } else {
+        isBuyVolume = priceCalc(isBuyVolume);
+    }
+    if isBuyVolume {
+        posVol += volume;
+    } else {
+        negVol -= volume;
+    }
+    let delta: float = posVol + negVol;
+    hiVol = math.max(delta, hiVol);
+    loVol = math.min(delta, loVol);
+    (posVol, negVol, delta, hiVol, loVol);
+}
+
+fn checkLTF(lowerTimeframe: series String) {
+    if timeframe.in_seconds(lowerTimeframe) > timeframe.in_seconds(
+        timeframe.main_period
+    ) {
+        runtime.error(
+            "Invalid lower timeframe: {2}{0}{2}. The timeframe must be lower than or equal to {2}{1}{2}".format(lowerTimeframe, timeframe.main_period, "'")
+        );
+    }
+}
+
+fn requestUpAndDownVolume(lowerTimeframe: series String) {
+    checkLTF(lowerTimeframe);
+    let (posVol, negVol, delta, _, _) = request.security(
+        symbol_info.tickerid,
+        lowerTimeframe,
+        upAndDownVolumeCalc()
+    );
+    (posVol, negVol, delta);
+}
+
+fn requestVolumeDelta(
+    lowerTimeframe: series String,
+    cumulativePeriod: series String = ""
+) {
+    checkLTF(lowerTimeframe);
+    let (_, _, delta, maxVolume, minVolume) = request.security(
+        symbol_info.tickerid,
+        lowerTimeframe,
+        upAndDownVolumeCalc()
+    );
+    var lastVolume: float = 0.0;
+    let anchorChange: bool = cumulativePeriod.trim().length() == 0 or timeframe.change(
+        cumulativePeriod
+    ) or (not na(lastVolume) and na(lastVolume[1]));
+    let openVolume: float = anchorChange ? 0.0 : lastVolume[1];
+    let hiVolume: float = openVolume + maxVolume;
+    let loVolume: float = openVolume + minVolume;
+    lastVolume = openVolume + delta;
+    (openVolume, hiVolume, loVolume, lastVolume);
+}
+
+fn rma2(source: series float, length: series float) {
+    if length < 1 {
+        runtime.error(
+            "Invalid length ({0}). The value must be greater than or equal to 1.".format(length)
+        );
+    }
+    let alpha: float = 1.0 / length;
+    let result: float = ewma(source, alpha);
+}
+
+fn rms(source: series float, length: series int) {
+    let result: float = math.sqrt(
+        math.sum(math.pow(source, 2), length) / length
+    );
+}
+
+fn rwi(length: simple int) {
+    let divisor: float = ta.atr(length) * math.sqrt(length);
+    let rwiHigh: float = (high - nz(low[length])) / divisor;
+    let rwiLow: float = (nz(high[length]) - low) / divisor;
+    (rwiHigh, rwiLow);
+}
+
+fn specialK(
+    source: series float,
+    sigLen1: series int,
+    sigLen2: series int
+) {
+    let sk: float = ta.sma(ta.roc(source, 10), 10) + ta.sma(
+        ta.roc(source, 40),
+        50
+    ) + ta.sma(ta.roc(source, 195), 130) + 2.0 * (ta.sma(
+        ta.roc(source, 15),
+        10
+    ) + ta.sma(ta.roc(source, 65), 65) + ta.sma(ta.roc(source, 265), 130)) + 3.0 * (ta.sma(
+        ta.roc(
+            source,
+            20
+        ),
+        10
+    ) + ta.sma(
+        ta.roc(
+            source,
+            75
+        ),
+        75
+    ) + ta.sma(
+        ta.roc(
+            source,
+            390
+        ),
+        130
+    )) + 4.0 * (ta.sma(
+        ta.roc(source, 30),
+        15
+    ) + ta.sma(ta.roc(source, 100), 100) + ta.sma(ta.roc(source, 530), 195));
+    let signal: float = ta.sma(ta.sma(sk, sigLen1), sigLen2);
+    (sk, signal);
+}
+
+fn stc(
+    source: series float,
+    fast: simple int,
+    slow: simple int,
+    cycle: simple int,
+    d1: simple int,
+    d2: simple int
+) {
+    let macd: float = ta.ema(source, fast) - ta.ema(source, slow);
+    let k: float = nz(fixnan(ta.stoch(macd, macd, macd, cycle)));
+    let d: float = ta.ema(k, d1);
+    let kd: float = nz(fixnan(ta.stoch(d, d, d, cycle)));
+    let stc: float = ta.ema(kd, d2);
+    let result: float = math.max(math.min(stc, 100), 0);
+}
+
+fn stochFull(
+    periodK: simple int,
+    smoothK: simple int,
+    periodD: simple int
+) {
+    let k: float = ta.sma(ta.stoch(close, high, low, periodK), smoothK);
+    let d: float = ta.sma(k, periodD);
+    (k, d);
+}
+
+fn stochRsi(
+    lengthRsi: simple int,
+    periodK: simple int,
+    smoothK: simple int,
+    periodD: simple int,
+    source: series float = close
+) {
+    let rsi: float = ta.rsi(source, lengthRsi);
+    let k: float = ta.sma(ta.stoch(rsi, rsi, rsi, periodK), smoothK);
+    let d: float = ta.sma(k, periodD);
+    (k, d);
+}
+
+fn supertrend(
+    factor: series float,
+    atrLength: simple int,
+    wicks: simple bool = false
+) {
+    let source: float = hl2;
+    let direction: int = na;
+    let superTrend: float = na;
+    let atr: float = ta.atr(atrLength) * factor;
+    let upperBand: float = source + atr;
+    let lowerBand: float = source - atr;
+    let highPrice: float = wicks ? high : close;
+    let lowPrice: float = wicks ? low : close;
+    let prevLowerBand: float = nz(lowerBand[1]);
+    let prevUpperBand: float = nz(upperBand[1]);
+    lowerBand = lowerBand > prevLowerBand or lowPrice[1] < prevLowerBand ? lowerBand : prevLowerBand;
+    upperBand = upperBand < prevUpperBand or highPrice[1] > prevUpperBand ? upperBand : prevUpperBand;
+    let prevSuperTrend: float = superTrend[1];
+    if na(atr[1]) {
+        direction = 1;
+    } else if prevSuperTrend == prevUpperBand {
+        direction = highPrice > upperBand ? -1 : 1;
+    } else {
+        direction = lowPrice < lowerBand ? 1 : -1;
+    }
+    superTrend = direction == -1 ? lowerBand : upperBand;
+    (superTrend, direction);
+}
+
+fn supertrend2(
+    factor: series float,
+    atrLength: series float,
+    wicks: simple bool = false
+) {
+    let source: float = hl2;
+    let direction: int = na;
+    let superTrend: float = na;
+    let atr: float = atr2(atrLength) * factor;
+    let upperBand: float = source + atr;
+    let lowerBand: float = source - atr;
+    let highPrice: float = wicks ? high : close;
+    let lowPrice: float = wicks ? low : close;
+    let prevLowerBand: float = nz(lowerBand[1]);
+    let prevUpperBand: float = nz(upperBand[1]);
+    lowerBand = lowerBand > prevLowerBand or lowPrice[1] < prevLowerBand ? lowerBand : prevLowerBand;
+    upperBand = upperBand < prevUpperBand or highPrice[1] > prevUpperBand ? upperBand : prevUpperBand;
+    let prevSuperTrend: float = superTrend[1];
+    if na(atr[1]) {
+        direction = 1;
+    } else if prevSuperTrend == prevUpperBand {
+        direction = highPrice > upperBand ? -1 : 1;
+    } else {
+        direction = lowPrice < lowerBand ? 1 : -1;
+    }
+    superTrend = direction == -1 ? lowerBand : upperBand;
+    (superTrend, direction);
+}
+
+fn gd(source: series float, length: simple int, vf: simple float) {
+    let result: float = ta.ema(source, length) * (1 + vf) - ta.ema(
+        ta.ema(source, length),
+        length
+    ) * vf;
+}
+
+fn t3(source: series float, length: simple int, vf: simple float = 0.7) {
+    let result: float = gd(gd(gd(source, length, vf), length, vf), length, vf);
+}
+
+fn gd2(source: series float, length: series float, vf: simple float) {
+    let result: float = ema2(source, length) * (1 + vf) - ema2(
+        ema2(source, length),
+        length
+    ) * vf;
+}
+
+fn t3Alt(
+    source: series float,
+    length: series float,
+    vf: simple float = 0.7
+) {
+    let result: float = gd2(
+        gd2(gd2(source, length, vf), length, vf),
+        length,
+        vf
+    );
+}
+
+fn tema(source: series float, length: simple int) {
+    let ema1: float = ta.ema(source, length);
+    let ema2: float = ta.ema(ema1, length);
+    let ema3: float = ta.ema(ema2, length);
+    let result: float = 3 * (ema1 - ema2) + ema3;
+}
+
+fn tema2(source: series float, length: series float) {
+    let ema1: float = ema2(source, length);
+    let ema2: float = ema2(ema1, length);
+    let ema3: float = ema2(ema2, length);
+    let result: float = 3 * (ema1 - ema2) + ema3;
+}
+
+fn trima(source: series float, length: series int) {
+    let result: float = ta.sma(
+        ta.sma(source, math.ceil(length / 2)),
+        math.floor(length / 2) + 1
+    );
+}
+
+fn trix(
+    source: series float,
+    length: simple int,
+    signalLength: simple int,
+    exponential: simple bool = true
+) {
+    let triple: float = ta.ema(ta.ema(ta.ema(source, length), length), length);
+    let trix: float = ta.roc(triple, 1);
+    let signal: float = exponential ? ta.ema(trix, signalLength) : ta.sma(
+        trix,
+        signalLength
+    );
+    let hist: float = trix - signal;
+    (trix, signal, hist);
+}
+
+fn ulcerIndex(source: series float, length: series int) {
+    let highest: float = ta.highest(source, length);
+    let drawdown: float = changePercent(source, highest);
+    let result: float = rms(drawdown, length);
+}
+
+fn szo(source: series float, length: simple int) {
+    let trend: float = math.sign(ta.change(source));
+    let sentPos: float = tema(trend, length);
+    let result: float = 100 * sentPos / length;
+}
+
+fn uoAverage(
+    bp: series float,
+    trange: series float,
+    length: simple int
+) {
+    let result: float = math.sum(bp, length) / math.sum(trange, length);
+}
+
+fn uo(fastLen: simple int, midLen: simple int, slowLen: simple int) {
+    let tMax: float = math.max(high, close[1]);
+    let tMin: float = math.min(low, close[1]);
+    let tr: float = tMax - tMin;
+    let bp: float = close - tMin;
+    let avg1: float = uoAverage(bp, tr, fastLen);
+    let avg2: float = uoAverage(bp, tr, midLen);
+    let avg3: float = uoAverage(bp, tr, slowLen);
+    let result: float = 100 * (4 * avg1 + 2 * avg2 + avg3) / 7;
+}
+
+fn vhf(source: series float, length: simple int) {
+    let sumChanges: float = math.sum(math.abs(ta.change(source)), length);
+    let result: float = math.abs(
+        ta.highest(source, length) - ta.lowest(source, length)
+    ) / sumChanges;
+}
+
+fn vi(length: simple int) {
+    let divisor = math.sum(ta.atr(1), length);
+    let viPlus = math.sum(math.abs(high - nz(low[1])), length) / divisor;
+    let viMinus = math.sum(math.abs(low - nz(high[1])), length) / divisor;
+    (viPlus, viMinus);
+}
+
+fn vStop(
+    source: series float,
+    atrLength: simple int,
+    atrFactor: series float = 1
+) {
+    let src: float = nz(source, close);
+    let atrM: float = nz(ta.atr(atrLength) * atrFactor, ta.tr(true));
+    var trendUp: bool = true;
+    var max: float = src;
+    var min: float = src;
+    var stop: float = 0.0;
+    max = math.max(max, src);
+    min = math.min(min, src);
+    stop = nz(
+        trendUp ? math.max(stop, max - atrM) : math.min(stop, min + atrM),
+        src
+    );
+    trendUp = src - stop >= 0.0;
+    if trendUp != trendUp[1] {
+        max = src;
+        min = src;
+        stop = trendUp ? max - atrM : min + atrM;
+    }
+    (stop, trendUp);
+}
+
+fn vStop2(
+    source: series float,
+    atrLength: series float,
+    atrFactor: series float = 1
+) {
+    let src: float = nz(source, close);
+    let atrM: float = nz(atr2(atrLength) * atrFactor, ta.tr(true));
+    var trendUp: bool = true;
+    var max: float = src;
+    var min: float = src;
+    var stop: float = 0.0;
+    max = math.max(max, src);
+    min = math.min(min, src);
+    stop = nz(
+        trendUp ? math.max(stop, max - atrM) : math.min(stop, min + atrM),
+        src
+    );
+    trendUp = src - stop >= 0.0;
+    if trendUp != trendUp[1] {
+        max = src;
+        min = src;
+        stop = trendUp ? max - atrM : min + atrM;
+    }
+    (stop, trendUp);
+}
+
+fn vzo(length: simple int) {
+    let result: float = zone(volume, length);
+}
+
+fn flag(source: series float, n: series int, direction: simple int) {
+    let src: float = source * direction;
+    let flag: bool = true;
+    let flag0: bool = true;
+    let flag1: bool = true;
+    let flag2: bool = true;
+    let flag3: bool = true;
+    let flag4: bool = true;
+    for i = 1 to n {
+        flag = flag and (src[n - i] < src[n]);
+        flag0 = flag0 and (src[n + i] < src[n]);
+        flag1 = flag1 and (src[n + 1] <= src[n] and src[n + i + 1] < src[n]);
+        flag2 = flag2 and (src[n + 1] <= src[n] and src[n + 2] <= src[n] and src[n + i + 2] < src[n]);
+        flag3 = flag3 and (src[n + 1] <= src[n] and src[n + 2] <= src[n] and src[n + 3] <= src[n] and src[n + i + 3] < src[n]);
+        flag4 = flag4 and (src[n + 1] <= src[n] and src[n + 2] <= src[n] and src[n + 3] <= src[n] and src[n + 4] <= src[n] and src[n + i + 4] < src[n]);
+    }
+    let flags: bool = flag0 or flag1 or flag2 or flag3 or flag4;
+    let result: bool = (flag and flags);
+}
+
+fn williamsFractal(period: series int) {
+    let upFractal: bool = flag(high, period, 1);
+    let downFractal: bool = flag(low, period, -1);
+    (upFractal, downFractal);
+}
+
+fn wpo(length: simple int) {
+    let tt: float = 2 * math.pi / math.asin(close[1] / high);
+    let ti: float = math.sign(ta.change(close)) * tt;
+    let result: float = ta.ema(ti, length);
+}
+
+fn calcRatingMA(ma: series float, src: series float): float {
+    math.sign(src - ma);
+}
+
+fn calcRating(src, bullCond: series bool, bearCond: series bool): float {
+    na(src) ? na : bullCond ? 1.0 : bearCond ? -1.0 : 0.0;
+}
+
+fn calcRatingAll() {
+    let (con, base, lead1, lead2, _) = ichimoku();
+    let (kStoch, dStoch) = stochFull(14, 3, 3);
+    let (kStochRsi, dStochRsi) = stochRsi(14, 14, 3, 3);
+    let (diP, diN, adx) = ta.dmi(14, 14);
+    let (macd, signal, _) = ta.macd(close, 12, 26, 9);
+    let bullPower: float = high - ta.ema(close, 13);
+    let bearPower: float = low - ta.ema(close, 13);
+    let rsi: float = ta.rsi(close, 14);
+    let cci: float = ta.cci(close, 20);
+    let mom: float = ta.mom(close, 10);
+    let priceAvg: float = ta.ema(close, 50);
+    let downTrend: bool = close < priceAvg;
+    let upTrend: bool = close > priceAvg;
+    let uo: float = uo(7, 14, 28);
+    let wr: float = ta.wpr(14);
+    let ao: float = ao();
+    var indRatings: Array<float> = Array.new<float>();
+    indRatings.clear();
+    indRatings.push(calcRatingMA(ta.sma(close, 10), close));
+    indRatings.push(calcRatingMA(ta.sma(close, 20), close));
+    indRatings.push(calcRatingMA(ta.sma(close, 30), close));
+    indRatings.push(calcRatingMA(ta.sma(close, 50), close));
+    indRatings.push(calcRatingMA(ta.sma(close, 100), close));
+    indRatings.push(calcRatingMA(ta.sma(close, 200), close));
+    indRatings.push(calcRatingMA(ta.ema(close, 10), close));
+    indRatings.push(calcRatingMA(ta.ema(close, 20), close));
+    indRatings.push(calcRatingMA(ta.ema(close, 30), close));
+    indRatings.push(calcRatingMA(ta.ema(close, 50), close));
+    indRatings.push(calcRatingMA(ta.ema(close, 100), close));
+    indRatings.push(calcRatingMA(ta.ema(close, 200), close));
+    indRatings.push(calcRatingMA(ta.hma(close, 9), close));
+    indRatings.push(calcRatingMA(ta.vwma(close, 20), close));
+    indRatings.push(
+        calcRating(
+            lead2,
+            lead1[26] > lead2[26] and base > lead1[26] and con > base and close > con,
+            lead1[26] < lead2[26] and base < lead1[26] and con < base and close < con
+        )
+    );
+    let ratingMA: float = indRatings.avg();
+    indRatings.clear();
+    indRatings.push(
+        calcRating(
+            rsi[1],
+            rsi < 30 and rsi[1] < rsi,
+            rsi > 70 and rsi[1] > rsi
+        )
+    );
+    indRatings.push(
+        calcRating(
+            dStoch[1],
+            kStoch < 20 and dStoch < 20 and kStoch > dStoch,
+            kStoch > 80 and dStoch > 80 and kStoch < dStoch
+        )
+    );
+    indRatings.push(
+        calcRating(
+            cci[1],
+            cci < -100 and cci > cci[1],
+            cci > 100 and cci < cci[1]
+        )
+    );
+    indRatings.push(
+        calcRating(
+            adx,
+            adx > 20 and adx > adx[1] and diP > diN,
+            adx > 20 and adx > adx[1] and diP < diN
+        )
+    );
+    indRatings.push(
+        calcRating(
+            ao[1],
+            ta.cross_over(ao, 0) or (ao > 0 and ao[1] > 0 and ao > ao[1] and ao[2] > ao[1]),
+            ta.cross_under(ao, 0) or (ao < 0 and ao[1] < 0 and ao < ao[1] and ao[2] < ao[1])
+        )
+    );
+    indRatings.push(calcRating(mom[1], mom > mom[1], mom < mom[1]));
+    indRatings.push(calcRating(signal, macd > signal, macd < signal));
+    indRatings.push(
+        calcRating(
+            priceAvg,
+            downTrend and kStochRsi < 20 and dStochRsi < 20 and kStochRsi > dStochRsi,
+            upTrend and kStochRsi > 80 and dStochRsi > 80 and kStochRsi < dStochRsi
+        )
+    );
+    indRatings.push(
+        calcRating(wr[1], wr < -80 and wr > wr[1], wr > -20 and wr < wr[1])
+    );
+    indRatings.push(
+        calcRating(
+            priceAvg,
+            upTrend and bearPower < 0 and bearPower > bearPower[1],
+            downTrend and bullPower > 0 and bullPower < bullPower[1]
+        )
+    );
+    indRatings.push(calcRating(uo, uo > 70, uo < 30));
+    let ratingOther: float = indRatings.avg();
+    let total: float = nz(ratingMA, 0) + nz(ratingOther, 0);
+    let ratingTotal: float = switch {
+        not na(ratingMA) and not na(ratingOther) => total / 2,
+        not na(ratingMA) or not na(ratingOther) => total,
+        => na,
+    };
+    (ratingTotal, ratingOther, ratingMA);
+}
+
+fn countRising(plot: series float) {
+    let vPlot: float = math.abs(plot);
+    var result: int = 0;
+    result = switch {
+        vPlot == 0 => 0,
+        vPlot >= vPlot[1] => math.min(5, result + 1),
+        vPlot < vPlot[1] => math.max(1, result - 1),
+    };
+    result;
+}
+
+fn ratingStatus(
+    ratingValue: series float,
+    strongBound: series float = 0.5,
+    weakBound: series float = 0.1
+) {
+    let result: String = switch {
+        na(ratingValue) => "-",
+        ratingValue < -strongBound => "Strong\nSell",
+        ratingValue < -weakBound => "Sell",
+        ratingValue > strongBound => "Strong\nBuy ",
+        ratingValue > weakBound => "Buy",
+        => "Neutral",
+    };
+}
+let res = input.timeframe("", title: "Indicator Timeframe");
+let ratingSignal = input.string(
+    defval: "All",
+    title: "Rating is based on",
+    options: ["MAs", "Oscillators", "All"]
+);
+
+let StrongBound = 0.5;
+let WeakBound = 0.1;
+
+fn getSignal(ratingTotal, ratingOther, ratingMA) {
+    if ratingSignal == "MAs" {
+        ratingMA;
+    } else if ratingSignal == "Oscillators" {
+        ratingOther;
+    } else {
+        ratingTotal;
+    }
+}
+
+let (ratingTotal, ratingOther, ratingMA) = request.security(
+    symbol_info.tickerid,
+    res,
+    calcRatingAll()
+);
+let tradeSignal = getSignal(ratingTotal, ratingOther, ratingMA);
+
+fn dynSLpoints(factor) {
+    factor * ta.atr(14) / symbol_info.min_tick;
+}
+
+if tradeSignal > StrongBound {
+    strategy.entry("long", Direction.Long);
+}
+if tradeSignal < -StrongBound {
+    strategy.entry("short", Direction.Short);
+}
+strategy.exit(
+    "sl/tp",
+    loss: dynSLpoints(3),
+    trail_points: dynSLpoints(5),
+    trail_offset: dynSLpoints(2)
+);

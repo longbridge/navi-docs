@@ -1,0 +1,13 @@
+﻿indicator("Negative Volume Index", "NVI", timeframe: "", timeframe_gaps: true);
+
+let maLengthInput: int = input.int(255, "EMA length", 1);
+
+let nvi: float = ta.nvi * 1000.0;
+let ema: float = ta.ema(nvi, maLengthInput);
+
+plot(nvi, "NVI");
+plot(ema, "NVI-based EMA", #ff9800);
+
+if ta.cum(nz(volume)) == 0.0 and bar_state.is_last_confirmed_history {
+    runtime.error("No volume is provided by the data vendor.");
+}

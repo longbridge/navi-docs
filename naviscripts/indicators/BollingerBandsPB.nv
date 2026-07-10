@@ -1,0 +1,59 @@
+﻿indicator(
+    title: "Bollinger Bands %b",
+    short_title: "BB %b",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+
+let TT_LENGTH: String = "The time period to be used in calculating the SMA which creates the base for the Upper and Lower Bands";
+let TT_SOURCE: String = "Determines what data from each bar will be used in calculations.";
+let TT_MULT: String = "The number of Standard Deviations away from the SMA that the Upper and Lower Bands should be.";
+
+let length = input.int(20, "Length", minval: 1, tooltip: TT_LENGTH);
+let src = input(close, "Source", tooltip: TT_SOURCE);
+let mult = input.float(
+    2.0,
+    "StdDev",
+    minval: 0.001,
+    maxval: 50,
+    tooltip: TT_MULT
+);
+
+let basis = ta.sma(src, length);
+let dev = mult * ta.stdev(src, length);
+let upper = basis + dev;
+let lower = basis - dev;
+let bbr = (src - lower) / (upper - lower);
+plot(bbr, "Bollinger Bands %b", color: #2962FF);
+
+let bandTop = hline(100, display: PlotDisplay.NONE, editable: false);
+let band1 = hline(
+    1,
+    "Overbought",
+    color: Color.new(#F23645, 50),
+    line_style: HLineStyle.Dashed
+);
+hline(0.5, "Middle Band", color: Color.new(#2962FF, 50));
+let band0 = hline(
+    0,
+    "Oversold",
+    Color.new(#089981, 50),
+    line_style: HLineStyle.Dashed
+);
+let bandBottom = hline(-100, display: PlotDisplay.NONE, editable: false);
+
+fill(band1, band0, title: "Middle Background", color: Color.new(#2962FF, 90));
+fill(
+    bandTop,
+    band1,
+    title: "Overbought background",
+    color: Color.new(#F23645, 90)
+);
+fill(
+    band0,
+    bandBottom,
+    title: "Oversold background",
+    color: Color.new(#089981, 90)
+);

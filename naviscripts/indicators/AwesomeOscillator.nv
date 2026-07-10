@@ -1,0 +1,21 @@
+﻿indicator(
+    title: "Awesome Oscillator",
+    short_title: "AO",
+    timeframe: "",
+    timeframe_gaps: true
+);
+let ao = ta.sma(hl2, 5) - ta.sma(hl2, 34);
+let diff = ao - ao[1];
+plot(ao, "AO", color: diff <= 0 ? #F44336 : #009688, style: PlotStyle.Columns);
+let changeToGreen = ta.cross_over(diff, 0);
+let changeToRed = ta.cross_under(diff, 0);
+alert_condition(
+    changeToGreen,
+    title: "AO color changed to green",
+    message: "Awesome Oscillator's color has changed to green"
+);
+alert_condition(
+    changeToRed,
+    title: "AO color changed to red",
+    message: "Awesome Oscillator's color has changed to red"
+);

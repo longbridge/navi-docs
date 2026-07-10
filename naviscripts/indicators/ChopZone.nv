@@ -1,0 +1,37 @@
+﻿indicator(
+    title: "Chop Zone",
+    format: Format.Price,
+    precision: 0,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let colorTurquoise = #26C6DA;
+let colorDarkGreen = #43A047;
+let colorPaleGreen = #A5D6A7;
+let colorLime = #009688;
+let colorDarkRed = #D50000;
+let colorRed = #E91E63;
+let colorOrange = #FF6D00;
+let colorLightOrange = #FFB74D;
+let colorYellow = #FDD835;
+let source = close;
+let avg = hlc3;
+let pi = math.atan(1) * 4;
+let periods = 30;
+let highestHigh = ta.highest(periods);
+let lowestLow = ta.lowest(periods);
+let span = 25 / (highestHigh - lowestLow) * lowestLow;
+let ema34 = ta.ema(source, 34);
+let x1_ema34 = 0;
+let x2_ema34 = 1;
+let y1_ema34 = 0;
+let y2_ema34 = (ema34[1] - ema34) / avg * span;
+let c_ema34 = math.sqrt(
+    (x2_ema34 - x1_ema34) * (x2_ema34 - x1_ema34) + (y2_ema34 - y1_ema34) * (y2_ema34 - y1_ema34)
+);
+let emaAngle_1 = math.round(
+    180 * math.acos((x2_ema34 - x1_ema34) / c_ema34) / pi
+);
+let emaAngle = y2_ema34 > 0 ? -emaAngle_1 : emaAngle_1;
+let chopZoneColor = emaAngle >= 5 ? colorTurquoise : emaAngle < 5 and emaAngle >= 3.57 ? colorDarkGreen : emaAngle < 3.57 and emaAngle >= 2.14 ? colorPaleGreen : emaAngle < 2.14 and emaAngle >= .71 ? colorLime : emaAngle <= -1 * 5 ? colorDarkRed : emaAngle > -1 * 5 and emaAngle <= -1 * 3.57 ? colorRed : emaAngle > -1 * 3.57 and emaAngle <= -1 * 2.14 ? colorOrange : emaAngle > -1 * 2.14 and emaAngle <= -1 * .71 ? colorLightOrange : colorYellow;
+plot(1, "Chop Zone", color: chopZoneColor, style: PlotStyle.Columns);
