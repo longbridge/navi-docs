@@ -148,6 +148,27 @@ body {
   letter-spacing: 0;
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+[role="option"] {
+  line-height: 1;
+}
+
+input,
+select,
+textarea {
+  line-height: 20px;
+}
+
 .VPNavBar,
 .VPNavBar.has-sidebar,
 .VPNavBar.home.top {
@@ -332,7 +353,19 @@ html.dark .VPHome .VPFeature:hover {
 
 .VPSidebarItem .item {
   min-height: 36px;
+  padding: 0 12px;
   border-radius: 8px;
+}
+
+.VPSidebarItem .item .text {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  line-height: 20px;
+}
+
+.VPSidebarItem.level-0 > .item .text {
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .VPSidebarItem .item:hover {
