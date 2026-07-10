@@ -185,6 +185,18 @@ export interface PropertyDescriptor {
 
 const DEFAULT_STOCK = STOCKS[0]
 const DEFAULT_TIMEFRAME: SecurityTimeframe = 'D'
+const MARKET_UP_COLOR = 0x00ADA2FF
+const MARKET_DOWN_COLOR = 0xFF3A75FF
+
+function withMarketColors(theme: any): any {
+  return {
+    ...theme,
+    bull: MARKET_UP_COLOR,
+    bear: MARKET_DOWN_COLOR,
+    bull_text: MARKET_UP_COLOR,
+    bear_text: MARKET_DOWN_COLOR,
+  }
+}
 
 export interface UseWasm {
   engine: ShallowRef<PlaygroundEngine | null>
@@ -211,7 +223,7 @@ export function useWasm(): UseWasm {
 
   function setTheme(dark: boolean) {
     if (!engine.value || !wasmChart) return
-    engine.value.chart.setTheme(dark ? wasmChart.darkTheme() : wasmChart.lightTheme())
+    engine.value.chart.setTheme(withMarketColors(dark ? wasmChart.darkTheme() : wasmChart.lightTheme()))
   }
 
   async function init(canvas: HTMLCanvasElement) {
@@ -256,7 +268,7 @@ export function useWasm(): UseWasm {
         canvas,
         localProvider,
         locale,
-        isDark ? chartWasm.darkTheme() : chartWasm.lightTheme(),
+        withMarketColors(isDark ? chartWasm.darkTheme() : chartWasm.lightTheme()),
       )
       chart.setSymbol(DEFAULT_STOCK.symbol)
       chart.setTimeframe(DEFAULT_TIMEFRAME)

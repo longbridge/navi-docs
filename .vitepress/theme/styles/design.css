@@ -7,6 +7,8 @@
   --lb-coral-bright: #ff3a75;
   --lb-warning: #ff9728;
   --lb-error: #ff3a3a;
+  --up-color: #00ada2;
+  --down-color: #ff3a75;
   --lb-navy: #0a0e19;
   --lb-text: #3c3c43;
   --lb-muted: #82888d;
@@ -446,18 +448,47 @@ html.dark .vp-doc h1 {
 
 .vp-doc a {
   color: var(--vp-c-brand-1);
-  font-weight: 700;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  border-bottom: 1px solid currentColor;
+  font-weight: 600;
+  text-decoration: none;
+  text-underline-offset: 0;
+  transition: color 0.16s ease, border-color 0.16s ease;
+}
+
+.vp-doc a:hover {
+  color: var(--vp-c-brand-2);
 }
 
 .vp-doc :not(pre) > code {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.55em;
+  padding: 0 0.42em;
   border: 1px solid var(--vp-c-border);
   border-radius: 4px;
   background: var(--vp-c-bg-soft);
   color: var(--vp-c-text-1);
   font-family: var(--vp-font-family-mono);
   font-size: 0.82em;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: 0.08em;
+}
+
+.vp-doc a > code {
+  border-color: rgba(0, 173, 162, 0.28);
+  background: rgba(0, 173, 162, 0.08);
+  color: var(--vp-c-brand-1);
+}
+
+.vp-doc a:hover > code {
+  border-color: var(--vp-c-brand-2);
+  color: var(--vp-c-brand-2);
+}
+
+html.dark .vp-doc a > code {
+  border-color: rgba(0, 240, 196, 0.32);
+  background: rgba(0, 240, 196, 0.1);
 }
 
 .vp-doc div[class*="language-"] {
