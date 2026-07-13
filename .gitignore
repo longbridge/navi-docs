@@ -2,5 +2,9 @@ node_modules/
 dist/
 .vitepress/dist/
 .vitepress/cache/
+.next/
+.source/
+out/
+*.tsbuildinfo
 stdlib-docs*.json
 .DS_Store

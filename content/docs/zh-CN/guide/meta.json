@@ -1,0 +1,20 @@
+{
+  "title": "文档",
+  "pages": [
+    "---Getting Started---",
+    "introduction",
+    "quick-start",
+    "ai-assistant",
+    "---Language---",
+    "language-basics",
+    "history-reference",
+    "collections",
+    "types-and-variables",
+    "control-structures",
+    "functions-and-methods",
+    "custom-types",
+    "request-security",
+    "doc-annotations",
+    "examples"
+  ]
+}

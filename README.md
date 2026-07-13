@@ -20,9 +20,9 @@ npx skills add longbridge/navi --skill navi
 
 ```bash
 npm install
-npm run build    # build static site → .vitepress/dist/
-npm run dev      # start dev server at http://localhost:5173
-npm run preview  # preview the production build
+npm run build    # build the static Fumadocs site → out/
+npm run dev      # start the Next.js development server at http://localhost:3000
+npm run preview  # serve the exported production site
 ```
 
 ## Localization

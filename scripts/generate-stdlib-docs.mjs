@@ -1,5 +1,5 @@
 /**
- * Generate localized VitePress markdown pages from locale-specific StdlibDocs JSON.
+ * Generate localized Fumadocs markdown pages from locale-specific StdlibDocs JSON.
  *
  * Usage:
  *   node scripts/generate-stdlib-docs.mjs
@@ -19,7 +19,7 @@ const websiteDir = resolve(__dirname, "..");
 const LOCALE_CONFIGS = {
   en: {
     jsonPath: resolve(websiteDir, "stdlib-docs.en.json"),
-    outDir: resolve(websiteDir, "api", "stdlib"),
+    outDir: resolve(websiteDir, "content", "docs", "en", "api", "stdlib"),
     linkPrefix: "",
     strings: {
       title: "Standard Library",
@@ -53,7 +53,7 @@ const LOCALE_CONFIGS = {
   },
   "zh-CN": {
     jsonPath: resolve(websiteDir, "stdlib-docs.zh-CN.json"),
-    outDir: resolve(websiteDir, "zh-CN", "api", "stdlib"),
+    outDir: resolve(websiteDir, "content", "docs", "zh-CN", "api", "stdlib"),
     linkPrefix: "/zh-CN",
     strings: {
       title: "标准库",
@@ -87,7 +87,7 @@ const LOCALE_CONFIGS = {
   },
   "zh-HK": {
     jsonPath: resolve(websiteDir, "stdlib-docs.zh-HK.json"),
-    outDir: resolve(websiteDir, "zh-HK", "api", "stdlib"),
+    outDir: resolve(websiteDir, "content", "docs", "zh-HK", "api", "stdlib"),
     linkPrefix: "/zh-HK",
     strings: {
       title: "標準庫",
@@ -617,7 +617,7 @@ function generateTypePage(typeName, typeDef, moduleName) {
   const staticMethods  = typeDef.staticMethods ?? [];
   const staticProps    = typeDef.staticProperties ?? [];
 
-  // Collect vue refs for multi-overload methods
+  // Track multi-overload methods for deterministic rendering.
   const multiOverloads = [];
   let ovIdx = 0;
   for (const f of [...staticMethods, ...regularMethods]) {
@@ -628,15 +628,6 @@ function generateTypePage(typeName, typeDef, moduleName) {
   lines.push("---");
   lines.push(`title: "${displayTitlePlain}"`);
   lines.push("---");
-
-  if (multiOverloads.length > 0) {
-    lines.push("");
-    lines.push("<script setup>");
-    lines.push("import { ref } from 'vue'");
-    for (const { refName } of multiOverloads)
-      lines.push(`const ${refName} = ref(0)`);
-    lines.push("</script>");
-  }
 
   lines.push("");
   lines.push(`# ${displayTitle}`);
@@ -779,26 +770,16 @@ function generateOverloadBody(ov, moduleName) {
 }
 
 /**
- * Generate the markdown content for a multi-overload function, using
- * <OverloadTabs v-model> + <div v-show> blocks. The tab labels show the
- * full signature with syntax highlighting; tab bodies show only the
- * description, parameter table, and return info.
+ * Generate each overload as a normal Markdown section. This keeps generated
+ * reference pages framework-neutral and works with Fumadocs out of the box.
  */
-function generateMultiOverload(moduleName, funcName, overloads, refName) {
+function generateMultiOverload(moduleName, funcName, overloads) {
   const lines = [];
-
-  // Plain-text labels with full signatures
-  const labels = overloads.map((ov) => overloadLabel(moduleName, funcName, ov));
-  const labelsJson = JSON.stringify(labels).replace(/'/g, "&#39;");
-  lines.push(`<OverloadTabs v-model="${refName}" :labels='${labelsJson}' />`);
-  lines.push("");
 
   for (let i = 0; i < overloads.length; i++) {
     const ov = overloads[i];
-    lines.push(`<div v-show="${refName} === ${i}">`);
-    lines.push("");
-    lines.push(generateOverloadBody(ov, moduleName));
-    lines.push("</div>");
+    if (i > 0) lines.push("---", "");
+    lines.push(generateSingleOverload(moduleName, funcName, ov));
     lines.push("");
   }
 
@@ -838,15 +819,6 @@ function generateModulePage(moduleName, module) {
   lines.push(`title: "${moduleName}"`);
   lines.push("---");
 
-  if (multiOverloads.length > 0) {
-    lines.push("");
-    lines.push("<script setup>");
-    lines.push("import { ref } from 'vue'");
-    for (const { refName } of multiOverloads) {
-      lines.push(`const ${refName} = ref(0)`);
-    }
-    lines.push("</script>");
-  }
   lines.push("");
   lines.push(`# ${moduleName}`);
   lines.push("");

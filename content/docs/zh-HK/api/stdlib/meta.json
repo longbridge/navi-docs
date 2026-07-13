@@ -1,0 +1,22 @@
+{
+  "title": "Standard Library",
+  "pages": [
+    "index",
+    "prelude",
+    "ta",
+    "math",
+    "input",
+    "request",
+    "strategy",
+    "strategy_open_trades",
+    "strategy_closed_trades",
+    "strategy_risk",
+    "chart",
+    "bar_state",
+    "symbol_info",
+    "timeframe",
+    "session",
+    "runtime",
+    "log"
+  ]
+}

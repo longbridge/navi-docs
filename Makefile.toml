@@ -73,7 +73,7 @@ workspace = false
 cwd = "${SITE}"
 script_runner = "@shell"
 script = [
-    "git add wasm-pkg/ api/stdlib/ zh-CN/api/stdlib/ zh-HK/api/stdlib/ public/navi-authoring-skill.zip stdlib-sidebar.json",
+    "git add wasm-pkg/ content/docs/*/api/stdlib/ public/navi-authoring-skill.zip",
     'git diff --cached --quiet || git commit -m "chore: update generated assets"',
 ]
 
