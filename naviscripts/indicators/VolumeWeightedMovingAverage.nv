@@ -1,0 +1,12 @@
+﻿indicator(
+    title: "Volume Weighted Moving Average",
+    short_title: "VWMA",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let len = input.int(20, "Length", minval: 1);
+let src = input(close, "Source");
+let ma = ta.vwma(src, len);
+let offset = input.int(0, "Offset", minval: -500, maxval: 500);
+plot(ma, title: "VWMA", color: #2962FF, offset: offset);

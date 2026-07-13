@@ -1,0 +1,39 @@
+﻿indicator(
+    "Trend Strength Index",
+    short_title: "TSI",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+
+let period = input.int(14, "Length", minval: 2);
+let tsi = ta.correlation(close, bar_index, period);
+
+let bullishColorInput = input.color(Color.new(#089981, 90), "Bullish Color");
+let bearishColorInput = input.color(Color.new(#F23645, 90), "Bearish Color");
+
+let tsiPlot = plot(tsi, "Trend Strength Index", color: #7E57C2);
+hline(0, "TSI Middle Band", color: Color.new(#787B86, 50));
+hline(1, "TSI Bullish Band", color: Color.new(bullishColorInput, 0));
+hline(-1, "TSI Bearish Band", color: Color.new(bearishColorInput, 0));
+
+let midLinePlot = plot(0, color: na, editable: false, display: PlotDisplay.NONE);
+fill(
+    tsiPlot,
+    midLinePlot,
+    1,
+    0,
+    top_color: bullishColorInput,
+    bottom_color: Color.new(bullishColorInput, 100),
+    title: "Bullish Gradient Fill"
+);
+fill(
+    tsiPlot,
+    midLinePlot,
+    0,
+    -1,
+    top_color: Color.new(bearishColorInput, 100),
+    bottom_color: bearishColorInput,
+    title: "Bearish Gradient Fill"
+);

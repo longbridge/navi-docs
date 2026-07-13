@@ -1,0 +1,10 @@
+﻿indicator(title: "Coppock Curve", timeframe: "", timeframe_gaps: true);
+let wmaLength = input(title: "WMA Length", defval: 10);
+let longRoCLength = input(title: "Long RoC Length", defval: 14);
+let shortRoCLength = input(title: "Short RoC Length", defval: 11);
+let source = close;
+let curve = ta.wma(
+    ta.roc(source, longRoCLength) + ta.roc(source, shortRoCLength),
+    wmaLength
+);
+plot(curve, "Coppock Curve");

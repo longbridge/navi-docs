@@ -1,0 +1,52 @@
+﻿strategy(title: "Keltner Channels Strategy", overlay: true);
+let length = input.int(20, minval: 1);
+let mult = input.float(2.0, "Multiplier");
+let src = input(close, title: "Source");
+let exp = input(true, "Use Exponential MA", display: PlotDisplay.NONE);
+let BandsStyle = input.string(
+    "Average True Range",
+    options: ["Average True Range", "True Range", "Range"],
+    title: "Bands Style",
+    display: PlotDisplay.NONE
+);
+let atrlength = input(10, "ATR Length", display: PlotDisplay.NONE);
+fn esma(source, length) {
+    let s = ta.sma(source, length);
+    let e = ta.ema(source, length);
+    exp ? e : s;
+}
+let ma = esma(src, length);
+let rangema = BandsStyle == "True Range" ? ta.tr(true) : BandsStyle == "Average True Range" ? ta.atr(
+    atrlength
+) : ta.rma(high - low, length);
+let upper = ma + rangema * mult;
+let lower = ma - rangema * mult;
+let crossUpper = ta.cross_over(src, upper);
+let crossLower = ta.cross_under(src, lower);
+let bprice = 0.0;
+bprice = crossUpper ? high + symbol_info.min_tick : nz(bprice[1]);
+let sprice = 0.0;
+sprice = crossLower ? low - symbol_info.min_tick : nz(sprice[1]);
+let crossBcond = false;
+crossBcond = crossUpper ? true : crossBcond[1];
+let crossScond = false;
+crossScond = crossLower ? true : crossScond[1];
+let cancelBcond = crossBcond and (src < ma or high >= bprice);
+let cancelScond = crossScond and (src > ma or low <= sprice);
+if (cancelBcond) {
+    strategy.cancel("KltChLE");
+}
+if (crossUpper) {
+    strategy.entry("KltChLE", Direction.Long, stop: bprice, comment: "KltChLE");
+}
+if (cancelScond) {
+    strategy.cancel("KltChSE");
+}
+if (crossLower) {
+    strategy.entry(
+        "KltChSE",
+        Direction.Short,
+        stop: sprice,
+        comment: "KltChSE"
+    );
+}

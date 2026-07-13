@@ -1,0 +1,66 @@
+﻿strategy(
+    "Greedy Strategy",
+    pyramiding: 100,
+    calc_on_order_fills: false,
+    overlay: true
+);
+let tp = input(10, "Take profit");
+let sl = input(10, "Stop loss");
+let maxidf = input(title: "Max intraday filled orders", defval: 5);
+strategy.risk.max_intraday_filled_orders(maxidf);
+let upGap = open > high[1];
+let dnGap = open < low[1];
+let dn = strategy.position_size < 0 and open > close;
+let up = strategy.position_size > 0 and open < close;
+if upGap {
+    strategy.entry("GapUp", Direction.Long, stop: high[1]);
+} else {
+    strategy.cancel("GapUp");
+}
+if dn {
+    strategy.entry("Dn", Direction.Short, stop: close);
+} else {
+    strategy.cancel("Dn");
+}
+if dnGap {
+    strategy.entry("GapDn", Direction.Short, stop: low[1]);
+} else {
+    strategy.cancel("GapDn");
+}
+if up {
+    strategy.entry("Up", Direction.Long, stop: close);
+} else {
+    strategy.cancel("Up");
+}
+let XQty = strategy.position_size < 0 ? -strategy.position_size : strategy.position_size;
+let dir = strategy.position_size < 0 ? -1 : 1;
+let lmP = strategy.position_avg_price + dir * tp * symbol_info.min_tick;
+let slP = strategy.position_avg_price - dir * sl * symbol_info.min_tick;
+let nav: float = na;
+let revCond = strategy.position_size > 0 ? dnGap : (strategy.position_size < 0 ? upGap : false);
+if not revCond and XQty > 0 {
+    strategy.order(
+        "TP",
+        strategy.position_size < 0 ? Direction.Long : Direction.Short,
+        XQty,
+        lmP,
+        nav,
+        "TPSL",
+        OcaType.Reduce,
+        "TPSL"
+    );
+    strategy.order(
+        "SL",
+        strategy.position_size < 0 ? Direction.Long : Direction.Short,
+        XQty,
+        nav,
+        slP,
+        "TPSL",
+        OcaType.Reduce,
+        "TPSL"
+    );
+}
+if XQty == 0 or revCond {
+    strategy.cancel("TP");
+    strategy.cancel("SL");
+}

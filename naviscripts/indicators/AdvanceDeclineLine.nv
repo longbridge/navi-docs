@@ -1,0 +1,15 @@
+﻿indicator(
+    title: "Advance Decline line",
+    short_title: "ADL",
+    format: Format.Price,
+    precision: 2
+);
+fn adlCalc(difference) {
+    ta.cum(difference > 0 ? math.sqrt(difference) : -math.sqrt(-difference));
+}
+let adl = request.security(
+    "(USI:ADVN.NY - USI:DECL.NY) / (USI:UNCH.NY + 1)",
+    timeframe.period,
+    adlCalc(close)
+);
+plot(adl, "Advance Decline line");

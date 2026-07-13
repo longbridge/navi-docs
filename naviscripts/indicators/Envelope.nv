@@ -1,0 +1,19 @@
+﻿indicator(
+    title: "Envelope",
+    short_title: "Env",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let len = input.int(20, title: "Length", minval: 1);
+let percent = input(10.0, "Percent");
+let src = input(close, title: "Source");
+let exponential = input(false, "Exponential");
+let basis = exponential ? ta.ema(src, len) : ta.sma(src, len);
+let k = percent / 100.0;
+let upper = basis * (1 + k);
+let lower = basis * (1 - k);
+plot(basis, "Basis", color: #FF6D00);
+let u = plot(upper, "Upper", color: #2962FF);
+let l = plot(lower, "Lower", color: #2962FF);
+fill(u, l, color: Color.rgb(33, 150, 243, 95), title: "Background");

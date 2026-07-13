@@ -1,0 +1,18 @@
+﻿strategy("ChannelBreakOutStrategy", overlay: true);
+let length = input.int(title: "Length", minval: 1, maxval: 1000, defval: 5);
+let upBound = ta.highest(high, length);
+let downBound = ta.lowest(low, length);
+if (not na(close[length])) {
+    strategy.entry(
+        "ChBrkLE",
+        Direction.Long,
+        stop: upBound + symbol_info.min_tick,
+        comment: "ChBrkLE"
+    );
+}
+strategy.entry(
+    "ChBrkSE",
+    Direction.Short,
+    stop: downBound - symbol_info.min_tick,
+    comment: "ChBrkSE"
+);

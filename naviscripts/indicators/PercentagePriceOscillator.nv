@@ -1,0 +1,45 @@
+﻿indicator(
+    "Percentage Price Oscillator",
+    "PPO",
+    false,
+    Format.Percent,
+    2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+
+let sourceInput: float = input.source(close, "Source");
+let fastLenInput: int = input.int(12, "Fast length", 1);
+let slowLenInput: int = input.int(26, "Slow length", 1);
+let sigLenInput: int = input.int(9, "Signal length", 1);
+let oscTypeInput: String = input.string(
+    "EMA",
+    "Oscillator MA type",
+    ["EMA", "SMA"],
+    display: PlotDisplay.NONE
+);
+let sigTypeInput: String = input.string(
+    "EMA",
+    "Signal MA type",
+    ["EMA", "SMA"],
+    display: PlotDisplay.NONE
+);
+
+fn ma(source: float, length: int, maType: simple String) {
+    switch maType {
+        "EMA" => ta.ema(source, length),
+        "SMA" => ta.sma(source, length),
+    }
+}
+
+let maFast: float = ma(sourceInput, fastLenInput, oscTypeInput);
+let maSlow: float = ma(sourceInput, slowLenInput, oscTypeInput);
+let ppo: float = 100.0 * (maFast - maSlow) / maSlow;
+let signal: float = ma(ppo, sigLenInput, sigTypeInput);
+let hist: float = ppo - signal;
+let hColor: Color = hist >= 0 ? hist > hist[1] ? #26a69a : #b2dfdb : hist > hist[1] ? #ffcdd2 : #ff5252;
+
+hline(0, "Zero", #787b8680);
+plot(hist, "Histogram", hColor, style: PlotStyle.Columns);
+plot(ppo, "PPO");
+plot(signal, "Signal line", #ff6d00);

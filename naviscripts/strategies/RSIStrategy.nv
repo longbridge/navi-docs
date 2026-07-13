@@ -1,0 +1,16 @@
+﻿strategy("RSI Strategy", overlay: true);
+let length = input(14, "Length");
+let overSold = input(30, "Oversold");
+let overBought = input(70, "Overbought");
+let price = close;
+let vrsi = ta.rsi(price, length);
+let co = ta.cross_over(vrsi, overSold);
+let cu = ta.cross_under(vrsi, overBought);
+if (not na(vrsi)) {
+    if (co) {
+        strategy.entry("RsiLE", Direction.Long, comment: "RsiLE");
+    }
+    if (cu) {
+        strategy.entry("RsiSE", Direction.Short, comment: "RsiSE");
+    }
+}

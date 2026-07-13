@@ -1,0 +1,19 @@
+﻿strategy(
+    "Supertrend Strategy",
+    overlay: true,
+    default_qty_type: DefaultQtyType.PercentOfEquity,
+    default_qty_value: 15
+);
+
+let atrPeriod = input(10, "ATR Length");
+let factor = input.float(3.0, "Factor", step: 0.01);
+
+let (_, direction) = ta.supertrend(factor, atrPeriod);
+
+if ta.change(direction) < 0 {
+    strategy.entry("My Long Entry Id", Direction.Long);
+}
+
+if ta.change(direction) > 0 {
+    strategy.entry("My Short Entry Id", Direction.Short);
+}

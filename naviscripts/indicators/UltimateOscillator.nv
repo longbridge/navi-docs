@@ -1,0 +1,23 @@
+﻿indicator(
+    title: "Ultimate Oscillator",
+    short_title: "UO",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length1 = input.int(7, minval: 1, title: "Fast Length");
+let length2 = input.int(14, minval: 1, title: "Middle Length");
+let length3 = input.int(28, minval: 1, title: "Slow Length");
+fn average(bp, tr_, length) {
+    math.sum(bp, length) / math.sum(tr_, length);
+}
+let high_ = math.max(high, close[1]);
+let low_ = math.min(low, close[1]);
+let bp = close - low_;
+let tr_ = high_ - low_;
+let avg7 = average(bp, tr_, length1);
+let avg14 = average(bp, tr_, length2);
+let avg28 = average(bp, tr_, length3);
+let out = 100 * (4 * avg7 + 2 * avg14 + avg28) / 7;
+plot(out, color: #F44336, title: "Oscillator");

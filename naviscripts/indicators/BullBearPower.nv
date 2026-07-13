@@ -1,0 +1,12 @@
+﻿indicator("Bull Bear Power", short_title: "BBP");
+let lengthInput = input.int(13, title: "Length");
+let bullPower = high - ta.ema(close, lengthInput);
+let bearPower = low - ta.ema(close, lengthInput);
+let bbp = bullPower + bearPower;
+plot(
+    bbp,
+    color: bbp >= 0 ? #089981 : #f23645,
+    title: "BBPower",
+    style: PlotStyle.Columns
+);
+hline(0, "Zero line");

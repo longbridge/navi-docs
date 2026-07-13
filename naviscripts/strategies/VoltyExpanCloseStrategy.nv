@@ -1,0 +1,18 @@
+﻿strategy("Volty Expan Close Strategy", overlay: true);
+let length = input(5, "Length");
+let numATRs = input(0.75, "ATR Mult");
+let atrs = ta.sma(ta.tr, length) * numATRs;
+if (not na(close[length])) {
+    strategy.entry(
+        "VltClsLE",
+        Direction.Long,
+        stop: close + atrs,
+        comment: "VltClsLE"
+    );
+    strategy.entry(
+        "VltClsSE",
+        Direction.Short,
+        stop: close - atrs,
+        comment: "VltClsSE"
+    );
+}

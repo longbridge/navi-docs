@@ -1,0 +1,57 @@
+﻿indicator(
+    short_title: "BB",
+    title: "Bollinger Bands",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+
+let TT_LENGTH = "The time period to be used in calculating the MA which creates the base for the Upper and Lower Bands.";
+let TT_MA_TYPE = "Determines the type of Moving Average that is applied to the basis plot line.";
+let TT_SOURCE = "Determines what data from each bar will be used in calculations.";
+let TT_MULT = "The number of Standard Deviations away from the MA that the Upper and Lower Bands should be.";
+let TT_OFFSET = "Changing this number will move the Bollinger Bands either Forwards or Backwards relative to the current market.";
+
+let length = input.int(20, "Length", minval: 1, tooltip: TT_LENGTH);
+let maType = input.string(
+    "SMA",
+    "Basis MA Type",
+    options: ["SMA", "EMA", "SMMA (RMA)", "WMA", "VWMA"],
+    tooltip: TT_MA_TYPE
+);
+let src = input(close, "Source", tooltip: TT_SOURCE);
+let mult = input.float(
+    2.0,
+    "StdDev",
+    minval: 0.001,
+    maxval: 50,
+    tooltip: TT_MULT
+);
+let offset = input.int(
+    0,
+    "Offset",
+    minval: -500,
+    maxval: 500,
+    tooltip: TT_OFFSET,
+    display: PlotDisplay.NONE
+);
+
+fn ma(source, length, _type) {
+    switch _type {
+        "SMA" => ta.sma(source, length),
+        "EMA" => ta.ema(source, length),
+        "SMMA (RMA)" => ta.rma(source, length),
+        "WMA" => ta.wma(source, length),
+        "VWMA" => ta.vwma(source, length),
+    }
+}
+
+let basis = ma(src, length, maType);
+let dev = mult * ta.stdev(src, length);
+let upper = basis + dev;
+let lower = basis - dev;
+
+plot(basis, "Basis", color: #2962FF, offset: offset);
+let p1 = plot(upper, "Upper", color: #F23645, offset: offset);
+let p2 = plot(lower, "Lower", color: #089981, offset: offset);
+fill(p1, p2, title: "Background", color: Color.rgb(33, 150, 243, 95));

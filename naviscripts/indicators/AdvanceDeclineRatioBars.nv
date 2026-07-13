@@ -1,0 +1,15 @@
+﻿indicator(
+    "Advance/Decline Ratio (Bars)",
+    short_title: "ADR_B",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input.int(9, minval: 1);
+let isUp = (close - open) >= 0.0;
+let upBars = math.sum(isUp ? 1 : 0, length);
+let downBars = math.sum(not isUp ? 1 : 0, length);
+let ad = downBars == 0 ? upBars : upBars / downBars;
+plot(ad, "ADR_B", #2962FF);
+hline(1.0, "Equality line", #787B86);

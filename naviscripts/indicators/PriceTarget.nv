@@ -1,0 +1,122 @@
+﻿indicator("Price Target", overlay: true);
+
+let posColorInput = input.color(Color.new(#089981, 90), "Positive Color");
+let negColorInput = input.color(Color.new(#f23645, 90), "Negative Color");
+
+let YearFromNow: int = symbol_info.target_price_date + timeframe.in_seconds("12M") * 1000;
+
+fn changePercentString(value) {
+    let round = (value / close) * 100 - 100;
+    (round >= 0 ? "+" : "") + String.from(round, Format.Percent);
+}
+
+fn deletePastDrawings() {
+    for _label in Label.all {
+        _label.delete();
+    }
+    for _line in Line.all {
+        _line.delete();
+    }
+}
+
+fn calcColor(price, comparedTo = close, transp = 0) {
+    Color.new(price >= comparedTo ? posColorInput : negColorInput, transp);
+}
+
+fn drawTarget(price, labelText, currLine) {
+    let priceChange = changePercentString(price);
+    Label.new(
+        YearFromNow,
+        price,
+        labelText + " " + priceChange,
+        color: calcColor(price),
+        text_color: Color.WHITE,
+        xloc: XLoc.BarTime,
+        style: LabelStyle.Right
+    );
+    let l = Line.new(
+        time,
+        close,
+        YearFromNow,
+        price,
+        color: calcColor(price),
+        xloc: XLoc.BarTime,
+        style: LineStyle.Dotted
+    );
+    LineFill.new(currLine, l, price > close ? posColorInput : negColorInput);
+}
+fn updateTarget() {
+    for la in Label.all {
+        let text_ = la.get_text();
+        if text_.contains("Max") {
+            la.set_text(
+                "Max" + " " + changePercentString(symbol_info.target_price_high)
+            );
+        } else if text_.contains("Avg") {
+            la.set_text(
+                "Avg" + " " + changePercentString(symbol_info.target_price_average)
+            );
+        } else if text_.contains("Low") {
+            la.set_text(
+                "Low" + " " + changePercentString(symbol_info.target_price_low)
+            );
+        }
+    }
+}
+var targetShown = false;
+var closeDuringPrediction: float = na;
+
+if not na(symbol_info.target_price_date) and na(symbol_info.target_price_date[1]) {
+    targetShown = true;
+    closeDuringPrediction = close;
+    deletePastDrawings();
+    let currLine = Line.new(
+        time,
+        close,
+        YearFromNow,
+        close,
+        XLoc.BarTime,
+        color: Color.BLUE,
+        style: LineStyle.Dotted
+    );
+    drawTarget(symbol_info.target_price_high, "Max", currLine);
+    drawTarget(symbol_info.target_price_average, "Avg", currLine);
+    drawTarget(symbol_info.target_price_low, "Min", currLine);
+    let nameLabel = Label.new(
+        bar_index,
+        close,
+        "⬤",
+        color: Color.new(#2962ff, 100),
+        style: LabelStyle.LabelCenter,
+        text_color: Color.new(#2962ff, 0),
+        tooltip: "The {0} analysts offering 1 year price forecasts for {1} have a max estimate of {2} and a min estimate of {3}.".format(symbol_info.target_price_estimates, symbol_info.ticker, symbol_info.target_price_high, symbol_info.target_price_low)
+    );
+}
+updateTarget();
+if bar_state.is_last and not targetShown {
+    let t = Table.new(Position.TopRight, 1, 1, chart.fg_color);
+    let warningText = "No analyst predictions found.";
+    if bar_state.is_confirmed {
+        warningText += "\nIf there are any new predictions for this symbol, they should appear once the market opens.";
+    }
+    t.cell(0, 0, warningText, text_color: chart.bg_color);
+}
+
+plot(
+    symbol_info.target_price_high,
+    "Max",
+    color: calcColor(symbol_info.target_price_high, closeDuringPrediction),
+    display: PlotDisplay.PRICE_SCALE
+);
+plot(
+    symbol_info.target_price_average,
+    "Avg",
+    color: calcColor(symbol_info.target_price_average, closeDuringPrediction),
+    display: PlotDisplay.PRICE_SCALE
+);
+plot(
+    symbol_info.target_price_low,
+    "Min",
+    color: calcColor(symbol_info.target_price_low, closeDuringPrediction),
+    display: PlotDisplay.PRICE_SCALE
+);

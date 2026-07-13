@@ -1,0 +1,14 @@
+﻿indicator(
+    title: "Aroon",
+    short_title: "Aroon",
+    overlay: false,
+    format: Format.Percent,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input.int(14, minval: 1);
+let upper = 100 * (ta.highest_bars(high, length + 1) + length) / length;
+let lower = 100 * (ta.lowest_bars(low, length + 1) + length) / length;
+plot(upper, "Aroon Up", color: #FB8C00);
+plot(lower, "Aroon Down", color: #2962FF);

@@ -1,0 +1,13 @@
+﻿strategy("MACD Strategy", overlay: true);
+let fastLength = input(12, "Fast length");
+let slowlength = input(26, "Slow length");
+let MACDLength = input(9, "MACD length");
+let MACD = ta.ema(close, fastLength) - ta.ema(close, slowlength);
+let aMACD = ta.ema(MACD, MACDLength);
+let delta = MACD - aMACD;
+if (ta.cross_over(delta, 0)) {
+    strategy.entry("MacdLE", Direction.Long, comment: "MacdLE");
+}
+if (ta.cross_under(delta, 0)) {
+    strategy.entry("MacdSE", Direction.Short, comment: "MacdSE");
+}

@@ -1,0 +1,24 @@
+﻿indicator(
+    title: "Williams Alligator",
+    short_title: "Alligator",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+fn smma(src, length) {
+    let smma = 0.0;
+    smma = na(smma[1]) ? ta.sma(src, length) : (smma[1] * (length - 1) + src) / length;
+    smma;
+}
+let jawLength = input.int(13, minval: 1, title: "Jaw Length");
+let teethLength = input.int(8, minval: 1, title: "Teeth Length");
+let lipsLength = input.int(5, minval: 1, title: "Lips Length");
+let jawOffset = input(8, title: "Jaw Offset");
+let teethOffset = input(5, title: "Teeth Offset");
+let lipsOffset = input(3, title: "Lips Offset");
+let jaw = smma(hl2, jawLength);
+let teeth = smma(hl2, teethLength);
+let lips = smma(hl2, lipsLength);
+plot(jaw, "Jaw", offset: jawOffset, color: #2962FF);
+plot(teeth, "Teeth", offset: teethOffset, color: #E91E63);
+plot(lips, "Lips", offset: lipsOffset, color: #66BB6A);

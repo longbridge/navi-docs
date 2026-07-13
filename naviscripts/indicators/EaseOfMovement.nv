@@ -1,0 +1,16 @@
+﻿indicator(
+    title: "Ease of Movement",
+    short_title: "EOM",
+    format: Format.Volume,
+    timeframe: "",
+    timeframe_gaps: true
+);
+var cumVol = 0.;
+cumVol += nz(volume);
+if bar_state.is_last and cumVol == 0 {
+    runtime.error("No volume is provided by the data vendor.");
+}
+let length = input.int(14, minval: 1);
+let div = input.int(10000, title: "Divisor", minval: 1);
+let eom = ta.sma(div * ta.change(hl2) * (high - low) / volume, length);
+plot(eom, "EOM", color: #43A047);

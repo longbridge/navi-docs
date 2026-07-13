@@ -1,0 +1,33 @@
+﻿indicator(
+    title: "Keltner Channels",
+    short_title: "KC",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input.int(20, minval: 1);
+let mult = input(2.0, "Multiplier");
+let src = input(close, title: "Source");
+let exp = input(true, "Use Exponential MA", display: PlotDisplay.NONE);
+let BandsStyle = input.string(
+    "Average True Range",
+    options: ["Average True Range", "True Range", "Range"],
+    title: "Bands Style",
+    display: PlotDisplay.NONE
+);
+let atrlength = input(10, "ATR Length", display: PlotDisplay.NONE);
+fn esma(source, length) {
+    let s = ta.sma(source, length);
+    let e = ta.ema(source, length);
+    exp ? e : s;
+}
+let ma = esma(src, length);
+let rangema = BandsStyle == "True Range" ? ta.tr(true) : BandsStyle == "Average True Range" ? ta.atr(
+    atrlength
+) : ta.rma(high - low, length);
+let upper = ma + rangema * mult;
+let lower = ma - rangema * mult;
+let u = plot(upper, color: #2962FF, title: "Upper");
+plot(ma, color: #2962FF, title: "Basis");
+let l = plot(lower, color: #2962FF, title: "Lower");
+fill(u, l, color: Color.rgb(33, 150, 243, 95), title: "Background");

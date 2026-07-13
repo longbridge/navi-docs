@@ -1,0 +1,444 @@
+﻿
+indicator(
+    "Pivot Points Standard",
+    "Pivots",
+    overlay: true,
+    max_lines_count: 500,
+    max_labels_count: 500
+);
+
+let pivotTypeInput = input.string(
+    title: "Type",
+    defval: "Traditional",
+    options: [
+        "Traditional",
+        "Fibonacci",
+        "Woodie",
+        "Classic",
+        "DM",
+        "Camarilla"
+    ]
+);
+let pivotAnchorInput = input.string(
+    title: "Pivots Timeframe",
+    defval: "Auto",
+    options: [
+        "Auto",
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Quarterly",
+        "Yearly",
+        "Biyearly",
+        "Triyearly",
+        "Quinquennially",
+        "Decennially"
+    ]
+);
+let maxHistoricalPivotsInput = input.int(
+    title: "Number of Pivots Back",
+    defval: 15,
+    minval: 1,
+    maxval: 200,
+    display: PlotDisplay.NONE
+);
+let isDailyBasedInput = input.bool(
+    title: "Use Daily-based Values",
+    defval: true,
+    display: PlotDisplay.NONE,
+    tooltip: "When this option is unchecked, Pivot Points will use intraday data while calculating on intraday charts. If Extended Hours are displayed on the chart, they will be taken into account during the pivot level calculation. If intraday OHLC values are different from daily-based values (normal for stocks), the pivot levels will also differ."
+);
+let showLabelsInput = input.bool(
+    title: "Show Labels",
+    defval: true,
+    group: "labels",
+    display: PlotDisplay.NONE
+);
+let showPricesInput = input.bool(
+    title: "Show Prices",
+    defval: true,
+    group: "labels",
+    display: PlotDisplay.NONE
+);
+let positionLabelsInput = input.string(
+    "Left",
+    "Labels Position",
+    options: ["Left", "Right"],
+    group: "labels",
+    display: PlotDisplay.NONE,
+    active: showLabelsInput or showPricesInput
+);
+let linewidthInput = input.int(
+    title: "line Width",
+    defval: 1,
+    minval: 1,
+    maxval: 100,
+    group: "levels",
+    display: PlotDisplay.NONE
+);
+
+let DEFAULT_COLOR = #FB8C00;
+
+let showLevel2and3 = pivotTypeInput != "DM";
+let showLevel4 = pivotTypeInput != "DM" and pivotTypeInput != "Fibonacci";
+let showLevel5 = pivotTypeInput == "Traditional" or pivotTypeInput == "Camarilla";
+
+let pColorInput = input.color(
+    DEFAULT_COLOR,
+    "P‏  ‏  ‏",
+    inline: "P",
+    group: "levels",
+    display: PlotDisplay.NONE
+);
+let pShowInput = input.bool(
+    true,
+    "",
+    inline: "P",
+    group: "levels",
+    display: PlotDisplay.NONE
+);
+let s1ColorInput = input.color(
+    DEFAULT_COLOR,
+    "S1",
+    inline: "S1/R1",
+    group: "levels",
+    display: PlotDisplay.NONE
+);
+let s1ShowInput = input.bool(
+    true,
+    "",
+    inline: "S1/R1",
+    group: "levels",
+    display: PlotDisplay.NONE
+);
+let r1ColorInput = input.color(
+    DEFAULT_COLOR,
+    "‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏R1",
+    inline: "S1/R1",
+    group: "levels",
+    display: PlotDisplay.NONE
+);
+let r1ShowInput = input.bool(
+    true,
+    "",
+    inline: "S1/R1",
+    group: "levels",
+    display: PlotDisplay.NONE
+);
+let s2ColorInput = input.color(
+    DEFAULT_COLOR,
+    "S2",
+    inline: "S2/R2",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel2and3
+);
+let s2ShowInput = input.bool(
+    true,
+    "",
+    inline: "S2/R2",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel2and3
+);
+let r2ColorInput = input.color(
+    DEFAULT_COLOR,
+    "‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏R2",
+    inline: "S2/R2",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel2and3
+);
+let r2ShowInput = input.bool(
+    true,
+    "",
+    inline: "S2/R2",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel2and3
+);
+let s3ColorInput = input.color(
+    DEFAULT_COLOR,
+    "S3",
+    inline: "S3/R3",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel2and3
+);
+let s3ShowInput = input.bool(
+    true,
+    "",
+    inline: "S3/R3",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel2and3
+);
+let r3ColorInput = input.color(
+    DEFAULT_COLOR,
+    "‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏R3",
+    inline: "S3/R3",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel2and3
+);
+let r3ShowInput = input.bool(
+    true,
+    "",
+    inline: "S3/R3",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel2and3
+);
+let s4ColorInput = input.color(
+    DEFAULT_COLOR,
+    "S4",
+    inline: "S4/R4",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel4
+);
+let s4ShowInput = input.bool(
+    true,
+    "",
+    inline: "S4/R4",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel4
+);
+let r4ColorInput = input.color(
+    DEFAULT_COLOR,
+    "‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏R4",
+    inline: "S4/R4",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel4
+);
+let r4ShowInput = input.bool(
+    true,
+    "",
+    inline: "S4/R4",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel4
+);
+let s5ColorInput = input.color(
+    DEFAULT_COLOR,
+    "S5",
+    inline: "S5/R5",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel5
+);
+let s5ShowInput = input.bool(
+    true,
+    "",
+    inline: "S5/R5",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel5
+);
+let r5ColorInput = input.color(
+    DEFAULT_COLOR,
+    "‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏R5",
+    inline: "S5/R5",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel5
+);
+let r5ShowInput = input.bool(
+    true,
+    "",
+    inline: "S5/R5",
+    group: "levels",
+    display: PlotDisplay.NONE,
+    active: showLevel5
+);
+
+struct graphicSettings {
+    levelName: String,
+    levelColor: Color,
+    showLevel: bool,
+}
+
+var graphicSettingsArray = Array.from(
+    graphicSettings.new(" P", pColorInput, pShowInput),
+    graphicSettings.new("R1", r1ColorInput, r1ShowInput),
+    graphicSettings.new("S1", s1ColorInput, s1ShowInput),
+    graphicSettings.new("R2", r2ColorInput, r2ShowInput),
+    graphicSettings.new("S2", s2ColorInput, s2ShowInput),
+    graphicSettings.new("R3", r3ColorInput, r3ShowInput),
+    graphicSettings.new("S3", s3ColorInput, s3ShowInput),
+    graphicSettings.new("R4", r4ColorInput, r4ShowInput),
+    graphicSettings.new("S4", s4ColorInput, s4ShowInput),
+    graphicSettings.new("R5", r5ColorInput, r5ShowInput),
+    graphicSettings.new("S5", s5ColorInput, s5ShowInput)
+);
+
+let autoAnchor = switch {
+    timeframe.is_intraday => timeframe.multiplier <= 15 ? "1D" : "1W",
+    timeframe.is_daily => "1M",
+    => "12M",
+};
+let pivotTimeframe = switch pivotAnchorInput {
+    "Auto" => autoAnchor,
+    "Daily" => "1D",
+    "Weekly" => "1W",
+    "Monthly" => "1M",
+    "Quarterly" => "3M",
+    => "12M",
+};
+
+let pivotYearMultiplier = switch pivotAnchorInput {
+    "Biyearly" => 2,
+    "Triyearly" => 3,
+    "Quinquennially" => 5,
+    "Decennially" => 10,
+    => 1,
+};
+
+let numOfPivotLevels = switch pivotTypeInput {
+    "Traditional" => 11,
+    "Camarilla" => 11,
+    "Woodie" => 9,
+    "Classic" => 9,
+    "Fibonacci" => 7,
+    "DM" => 3,
+};
+struct pivotGraphic {
+    pivotLine: Line,
+    pivotLabel: Label,
+}
+
+method delete(graphic: pivotGraphic) {
+    graphic.pivotLine.delete();
+    graphic.pivotLabel.delete();
+}
+
+var drawnGraphics = Matrix.new<pivotGraphic>();
+
+let localPivotTimeframeChange = timeframe.change(pivotTimeframe) and year % pivotYearMultiplier == 0;
+let securityPivotTimeframeChange = timeframe.change(timeframe.period) and year % pivotYearMultiplier == 0;
+
+fn pivotTimeframeChangeCounter(condition) {
+    var count = 0;
+    if condition and bar_index > 0 {
+        count += 1;
+    }
+    count;
+}
+
+fn toPivotType(s: String): ta.PivotType {
+    switch s {
+        "Fibonacci" => ta.PivotType.Fibonacci,
+        "Woodie" => ta.PivotType.Woodie,
+        "Classic" => ta.PivotType.Classic,
+        "DM" => ta.PivotType.DM,
+        "Camarilla" => ta.PivotType.Camarilla,
+        => ta.PivotType.Traditional,
+    }
+}
+
+let localPivots = ta.pivot_point_levels(
+    toPivotType(pivotTypeInput),
+    localPivotTimeframeChange
+);
+let securityPivotPointsArray = ta.pivot_point_levels(
+    toPivotType(pivotTypeInput),
+    securityPivotTimeframeChange
+);
+
+let securityTimeframe = timeframe.is_intraday ? "1D" : timeframe.period;
+let (securityPivots, securityPivotCounter) = request.security(
+    symbol_info.tickerid,
+    pivotTimeframe,
+    (
+        securityPivotPointsArray,
+        pivotTimeframeChangeCounter(securityPivotTimeframeChange)
+    ),
+    lookahead: BarmergeLookahead.On
+);
+let pivotPointsArray = isDailyBasedInput ? securityPivots : localPivots;
+
+fn affixOldPivots(endTime) {
+    if drawnGraphics.rows() > 0 {
+        let lastGraphics = drawnGraphics.row(drawnGraphics.rows() - 1);
+        for graphic in lastGraphics {
+            graphic.pivotLine.set_x2(endTime);
+            if positionLabelsInput == "Right" {
+                graphic.pivotLabel.set_x(endTime);
+            }
+        }
+    }
+}
+
+fn drawNewPivots(startTime) {
+    let newGraphics = Array.new<pivotGraphic>();
+    for (index, coord) in pivotPointsArray {
+        let levelSettings = graphicSettingsArray.get(index);
+        if not na(coord) and levelSettings.showLevel {
+            let lineEndTime = startTime + timeframe.in_seconds(pivotTimeframe) * 1000 * pivotYearMultiplier;
+            let pivotLine = Line.new(
+                startTime,
+                coord,
+                lineEndTime,
+                coord,
+                xloc: XLoc.BarTime,
+                color: levelSettings.levelColor,
+                width: linewidthInput
+            );
+            let pivotLabel = Label.new(
+                x: positionLabelsInput == "Left" ? startTime : lineEndTime,
+                y: coord,
+                text: (showLabelsInput ? levelSettings.levelName + " " : "") + (showPricesInput ? "(" + String.from(coord, Format.Mintick) + ")" : ""),
+                style: positionLabelsInput == "Left" ? LabelStyle.Right : LabelStyle.Left,
+                text_color: levelSettings.levelColor,
+                color: #00000000,
+                xloc: XLoc.BarTime
+            );
+            newGraphics.push(pivotGraphic.new(pivotLine, pivotLabel));
+        }
+    }
+    drawnGraphics.add_row(values: newGraphics);
+    if drawnGraphics.rows() > maxHistoricalPivotsInput {
+        let oldGraphics = drawnGraphics.remove_row(0);
+        for graphic in oldGraphics {
+            graphic.delete();
+        }
+    }
+}
+
+let localPivotDrawConditionStatic = not isDailyBasedInput and localPivotTimeframeChange;
+let securityPivotDrawConditionStatic = isDailyBasedInput and securityPivotCounter != securityPivotCounter[1];
+
+var isMultiYearly = Array.from(
+    "Biyearly",
+    "Triyearly",
+    "Quinquennially",
+    "Decennially"
+).includes(pivotAnchorInput);
+let localPivotDrawConditionDeveloping = not isDailyBasedInput and time_close == time_close(
+    pivotTimeframe
+) and not isMultiYearly;
+let securityPivotDrawConditionDeveloping = false;
+
+if (securityPivotDrawConditionStatic or localPivotDrawConditionStatic) {
+    affixOldPivots(time);
+    drawNewPivots(time);
+}
+
+var FIRST_BAR_TIME = time;
+if (bar_state.is_last_confirmed_history and drawnGraphics.columns() == 0) {
+    if not na(securityPivots) and securityPivotCounter > 0 {
+        if isDailyBasedInput {
+            drawNewPivots(FIRST_BAR_TIME);
+        } else {
+            runtime.error(
+                "Not enough intraday data to calculate Pivot Points. Lower the Pivots Timeframe or turn on the 'Use Daily-based Values' option in the indicator settings."
+            );
+        }
+    } else {
+        runtime.error(
+            "Not enough data to calculate Pivot Points. Lower the Pivots Timeframe in the indicator settings."
+        );
+    }
+}

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 130"
+     font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace" font-size="12">
+  <defs><style>
+    .t { fill: #334155 } .b { fill: #f1f5f9; stroke: #cbd5e1 } .a { fill: #94a3b8 }
+  </style></defs>
+  <!-- Row 1 -->
+  <rect class="b" x="0" y="8" width="100" height="36" rx="6"/>
+  <text class="t" x="50" y="31" text-anchor="middle">Pine Source</text>
+  <polygon class="a" points="120,26 110,21 110,31"/>
+  <rect class="b" x="130" y="8" width="72" height="36" rx="6"/>
+  <text class="t" x="166" y="31" text-anchor="middle">Parser</text>
+  <polygon class="a" points="222,26 212,21 212,31"/>
+  <rect class="b" x="232" y="8" width="56" height="36" rx="6"/>
+  <text class="t" x="260" y="31" text-anchor="middle">AST</text>
+  <polygon class="a" points="308,26 298,21 298,31"/>
+  <rect class="b" x="318" y="8" width="130" height="36" rx="6"/>
+  <text class="t" x="383" y="31" text-anchor="middle">Visitor (types)</text>
+  <polygon class="a" points="468,26 458,21 458,31"/>
+  <rect class="b" x="478" y="8" width="170" height="36" rx="6"/>
+  <text class="t" x="563" y="31" text-anchor="middle">Compiler (optimize)</text>
+  <!-- Arrow down: Compiler bottom=44, arrow at 56~66, Program top=78. Gap: 12px each side -->
+  <polygon class="a" points="563,66 558,56 568,56"/>
+  <!-- Row 2 -->
+  <rect class="b" x="478" y="78" width="170" height="36" rx="6"/>
+  <text class="t" x="563" y="101" text-anchor="middle">Program</text>
+  <polygon class="a" points="458,96 468,91 468,101"/>
+  <rect class="b" x="318" y="78" width="130" height="36" rx="6"/>
+  <text class="t" x="383" y="101" text-anchor="middle">VM (per bar)</text>
+  <polygon class="a" points="298,96 308,91 308,101"/>
+  <rect class="b" x="130" y="78" width="158" height="36" rx="6"/>
+  <text class="t" x="209" y="101" text-anchor="middle">Chart + Events</text>
+</svg>

@@ -1,0 +1,81 @@
+﻿indicator(
+    "Pivot Points High Low",
+    short_title: "Pivots HL",
+    overlay: true,
+    max_labels_count: 500
+);
+
+let lengthGroupTitle = "LENGTH LEFT / RIGHT";
+let colorGroupTitle = "Text Color / label Color";
+let leftLenH = input.int(
+    title: "Pivot High",
+    defval: 10,
+    minval: 1,
+    inline: "Pivot High",
+    group: lengthGroupTitle
+);
+let rightLenH = input.int(
+    title: "/",
+    defval: 10,
+    minval: 1,
+    inline: "Pivot High",
+    group: lengthGroupTitle
+);
+let textColorH = input(
+    title: "Pivot High",
+    defval: Color.BLACK,
+    inline: "Pivot High",
+    group: colorGroupTitle
+);
+let labelColorH = input(
+    title: "",
+    defval: Color.WHITE,
+    inline: "Pivot High",
+    group: colorGroupTitle
+);
+
+let leftLenL = input.int(
+    title: "Pivot Low",
+    defval: 10,
+    minval: 1,
+    inline: "Pivot Low",
+    group: lengthGroupTitle
+);
+let rightLenL = input.int(
+    title: "/",
+    defval: 10,
+    minval: 1,
+    inline: "Pivot Low",
+    group: lengthGroupTitle
+);
+let textColorL = input(
+    title: "Pivot Low",
+    defval: Color.BLACK,
+    inline: "Pivot Low",
+    group: colorGroupTitle
+);
+let labelColorL = input(
+    title: "",
+    defval: Color.WHITE,
+    inline: "Pivot Low",
+    group: colorGroupTitle
+);
+
+let ph = ta.pivot_high(leftLenH, rightLenH);
+let pl = ta.pivot_low(leftLenL, rightLenL);
+
+fn drawLabel(_offset, _pivot, _style, _color, _textColor) {
+    if not na(_pivot) {
+        Label.new(
+            bar_index[_offset],
+            _pivot,
+            String.from(_pivot, Format.Mintick),
+            style: _style,
+            color: _color,
+            text_color: _textColor
+        );
+    }
+}
+
+drawLabel(rightLenH, ph, LabelStyle.Down, labelColorH, textColorH);
+drawLabel(rightLenL, pl, LabelStyle.Up, labelColorL, textColorL);

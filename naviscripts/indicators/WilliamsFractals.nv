@@ -1,0 +1,63 @@
+﻿indicator(
+    "Williams Fractals",
+    short_title: "Fractals",
+    format: Format.Price,
+    precision: 0,
+    overlay: true
+);
+let n = input.int(title: "Periods", defval: 2, minval: 2);
+
+let upflagDownFrontier: bool = true;
+let upflagUpFrontier0: bool = true;
+let upflagUpFrontier1: bool = true;
+let upflagUpFrontier2: bool = true;
+let upflagUpFrontier3: bool = true;
+let upflagUpFrontier4: bool = true;
+
+for i = 1 to n {
+    upflagDownFrontier = upflagDownFrontier and (high[n - i] < high[n]);
+    upflagUpFrontier0 = upflagUpFrontier0 and (high[n + i] < high[n]);
+    upflagUpFrontier1 = upflagUpFrontier1 and (high[n + 1] <= high[n] and high[n + i + 1] < high[n]);
+    upflagUpFrontier2 = upflagUpFrontier2 and (high[n + 1] <= high[n] and high[n + 2] <= high[n] and high[n + i + 2] < high[n]);
+    upflagUpFrontier3 = upflagUpFrontier3 and (high[n + 1] <= high[n] and high[n + 2] <= high[n] and high[n + 3] <= high[n] and high[n + i + 3] < high[n]);
+    upflagUpFrontier4 = upflagUpFrontier4 and (high[n + 1] <= high[n] and high[n + 2] <= high[n] and high[n + 3] <= high[n] and high[n + 4] <= high[n] and high[n + i + 4] < high[n]);
+}
+let flagUpFrontier = upflagUpFrontier0 or upflagUpFrontier1 or upflagUpFrontier2 or upflagUpFrontier3 or upflagUpFrontier4;
+
+let upFractal = (upflagDownFrontier and flagUpFrontier);
+
+let downflagDownFrontier: bool = true;
+let downflagUpFrontier0: bool = true;
+let downflagUpFrontier1: bool = true;
+let downflagUpFrontier2: bool = true;
+let downflagUpFrontier3: bool = true;
+let downflagUpFrontier4: bool = true;
+
+for i = 1 to n {
+    downflagDownFrontier = downflagDownFrontier and (low[n - i] > low[n]);
+    downflagUpFrontier0 = downflagUpFrontier0 and (low[n + i] > low[n]);
+    downflagUpFrontier1 = downflagUpFrontier1 and (low[n + 1] >= low[n] and low[n + i + 1] > low[n]);
+    downflagUpFrontier2 = downflagUpFrontier2 and (low[n + 1] >= low[n] and low[n + 2] >= low[n] and low[n + i + 2] > low[n]);
+    downflagUpFrontier3 = downflagUpFrontier3 and (low[n + 1] >= low[n] and low[n + 2] >= low[n] and low[n + 3] >= low[n] and low[n + i + 3] > low[n]);
+    downflagUpFrontier4 = downflagUpFrontier4 and (low[n + 1] >= low[n] and low[n + 2] >= low[n] and low[n + 3] >= low[n] and low[n + 4] >= low[n] and low[n + i + 4] > low[n]);
+}
+let flagDownFrontier = downflagUpFrontier0 or downflagUpFrontier1 or downflagUpFrontier2 or downflagUpFrontier3 or downflagUpFrontier4;
+
+let downFractal = (downflagDownFrontier and flagDownFrontier);
+
+plot_shape(
+    downFractal,
+    style: Shape.TriangleDown,
+    location: Location.BelowBar,
+    offset: -n,
+    color: #F44336,
+    size: Size.Small
+);
+plot_shape(
+    upFractal,
+    style: Shape.TriangleUp,
+    location: Location.AboveBar,
+    offset: -n,
+    color: #009688,
+    size: Size.Small
+);

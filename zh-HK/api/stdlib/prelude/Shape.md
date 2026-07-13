@@ -1,0 +1,26 @@
+---
+title: "Shape"
+---
+
+# Shape
+
+plot_shape() 繪製的圖形。
+
+**種類:** enum
+
+**成員**
+
+| 名稱 | 說明 |
+| --- | --- |
+| `ArrowDown` | 向下箭頭。 |
+| `ArrowUp` | 向上箭頭。 |
+| `Circle` | 圓形。 |
+| `Cross` | 十字。 |
+| `Diamond` | 菱形。 |
+| `Flag` | 旗形。 |
+| `LabelDown` | 向下標籤。 |
+| `LabelUp` | 向上標籤。 |
+| `Square` | 方形。 |
+| `TriangleDown` | 向下三角形。 |
+| `TriangleUp` | 向上三角形。 |
+| `XCross` | X 形。 |

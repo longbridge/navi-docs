@@ -1,0 +1,17 @@
+{
+  "name": "navi-lsp-wasm",
+  "type": "module",
+  "description": "WASM language analysis bindings for Navi — full LSP capabilities without a server",
+  "version": "0.2.0",
+  "license": "LGPL-3.0",
+  "files": [
+    "navi_lsp_wasm_bg.wasm",
+    "navi_lsp_wasm.js",
+    "navi_lsp_wasm.d.ts"
+  ],
+  "main": "navi_lsp_wasm.js",
+  "types": "navi_lsp_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

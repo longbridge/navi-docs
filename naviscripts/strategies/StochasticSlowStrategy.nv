@@ -1,0 +1,18 @@
+﻿strategy("Stochastic Slow Strategy", overlay: true);
+let length = input.int(14, "Length", minval: 1);
+let OverBought = input(80, "Overbought");
+let OverSold = input(20, "Oversold");
+let smoothK = 3;
+let smoothD = 3;
+let k = ta.sma(ta.stoch(close, high, low, length), smoothK);
+let d = ta.sma(k, smoothD);
+let co = ta.cross_over(k, d);
+let cu = ta.cross_under(k, d);
+if (not na(k) and not na(d)) {
+    if (co and k < OverSold) {
+        strategy.entry("StochLE", Direction.Long, comment: "StochLE");
+    }
+    if (cu and k > OverBought) {
+        strategy.entry("StochSE", Direction.Short, comment: "StochSE");
+    }
+}

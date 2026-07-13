@@ -1,0 +1,21 @@
+﻿indicator(
+    "RCI Ribbon",
+    "RCI Ribbon",
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+
+let source = input.source(close, title: "Source");
+let shortLength = input.int(10, title: "Short RCI Length", minval: 1);
+let middleLength = input.int(30, title: "Middle RCI Length", minval: 1);
+let longLength = input.int(50, title: "Long RCI Length", minval: 1);
+
+plot(ta.rci(source, shortLength), title: "Short RCI", color: Color.BLUE);
+plot(ta.rci(source, middleLength), title: "Middle RCI", color: Color.RED);
+plot(ta.rci(source, longLength), title: "Long RCI", color: Color.GREEN);
+
+hline(0, "Middle band");
+let upper = hline(80, "Upper band");
+let lower = hline(-80, "Lower band");
+fill(upper, lower, Color.new(Color.BLUE, 90));

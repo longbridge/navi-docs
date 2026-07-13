@@ -1,0 +1,56 @@
+﻿indicator(
+    "Stochastic Momentum Index",
+    "SMI",
+    timeframe: "",
+    timeframe_gaps: true
+);
+
+let lengthK = input.int(10, "%K Length", minval: 1, maxval: 15000);
+let lengthD = input.int(3, "%D Length", minval: 1, maxval: 4999);
+let lengthEMA = input.int(3, "EMA Length", minval: 1, maxval: 4999);
+
+fn emaEma(source, length) {
+    ta.ema(ta.ema(source, length), length);
+}
+
+let highestHigh = ta.highest(lengthK);
+let lowestLow = ta.lowest(lengthK);
+let highestLowestRange = highestHigh - lowestLow;
+let relativeRange = close - (highestHigh + lowestLow) / 2;
+let smi = 200 * (emaEma(relativeRange, lengthD) / emaEma(
+    highestLowestRange,
+    lengthD
+));
+
+let smiPlot = plot(smi, "SMI", color: Color.BLUE);
+plot(ta.ema(smi, lengthEMA), "SMI-based EMA", color: Color.ORANGE);
+
+let overbought = hline(40, "Overbought line");
+let oversold = hline(-40, "Oversold line");
+fill(
+    overbought,
+    oversold,
+    title: "Background",
+    color: Color.new(Color.BLUE, 90)
+);
+hline(0, "Middle line", color: Color.new(Color.GRAY, 50));
+
+let midLinePlot = plot(0, color: na, editable: false, display: PlotDisplay.NONE);
+fill(
+    smiPlot,
+    midLinePlot,
+    120,
+    40,
+    top_color: Color.new(#4caf4f, 50),
+    bottom_color: Color.new(Color.GREEN, 100),
+    title: "Overbought Gradient Fill"
+);
+fill(
+    smiPlot,
+    midLinePlot,
+    -40,
+    -120,
+    top_color: Color.new(Color.RED, 100),
+    bottom_color: Color.new(Color.RED, 50),
+    title: "Oversold Gradient Fill"
+);

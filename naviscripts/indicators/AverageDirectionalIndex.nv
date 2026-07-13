@@ -1,0 +1,35 @@
+﻿indicator(
+    "Average Directional Index",
+    short_title: "ADX",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+
+let TT_ADX_LEN = "The time period to be used in calculating the ADX which has a smoothing component.";
+let TT_DI_LEN = "The time period to be used in calculating the DI (Directional Indicator).";
+
+let adxlen = input(14, title: "ADX Smoothing", tooltip: TT_ADX_LEN);
+let dilen = input(14, title: "DI Length", tooltip: TT_DI_LEN);
+
+fn dirmov(len) {
+    let up = ta.change(high);
+    let down = -ta.change(low);
+    let plusDM = na(up) ? na : (up > down and up > 0 ? up : 0);
+    let minusDM = na(down) ? na : (down > up and down > 0 ? down : 0);
+    let truerange = ta.rma(ta.tr, len);
+    let plus = fixnan(100 * ta.rma(plusDM, len) / truerange);
+    let minus = fixnan(100 * ta.rma(minusDM, len) / truerange);
+    (plus, minus);
+}
+fn adx(dilen, adxlen) {
+    let (plus, minus) = dirmov(dilen);
+    let sum = plus + minus;
+    let adx = 100 * ta.rma(
+        math.abs(plus - minus) / (sum == 0 ? 1 : sum),
+        adxlen
+    );
+}
+let sig = adx(dilen, adxlen);
+plot(sig, color: Color.RED, title: "ADX");

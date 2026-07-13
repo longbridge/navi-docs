@@ -1,0 +1,11 @@
+﻿indicator(
+    title: "Mass Index",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input.int(10, minval: 1);
+let span = high - low;
+let mi = math.sum(ta.ema(span, 9) / ta.ema(ta.ema(span, 9), 9), length);
+plot(mi, "Mass Index");

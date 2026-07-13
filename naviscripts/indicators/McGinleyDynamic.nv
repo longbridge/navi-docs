@@ -1,0 +1,14 @@
+﻿indicator(
+    title: "McGinley Dynamic",
+    overlay: true,
+    timeframe: "",
+    timeframe_gaps: true
+);
+let length = input.int(14, minval: 1);
+let source = close;
+let mg = 0.0;
+mg = na(mg[1]) ? ta.ema(source, length) : mg[1] + (source - mg[1]) / (length * math.pow(
+    source / mg[1],
+    4
+));
+plot(mg, "McGinley Dynamic");

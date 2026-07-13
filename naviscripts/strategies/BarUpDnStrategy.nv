@@ -1,0 +1,14 @@
+﻿strategy(
+    "BarUpDn Strategy",
+    overlay: true,
+    default_qty_type: DefaultQtyType.PercentOfEquity,
+    default_qty_value: 10
+);
+let maxIdLossPcnt = input.float(1, "Max intraday loss (%)");
+strategy.risk.max_intraday_loss(maxIdLossPcnt, DefaultQtyType.PercentOfEquity);
+if (close > open and open > close[1]) {
+    strategy.entry("BarUp", Direction.Long);
+}
+if (close < open and open < close[1]) {
+    strategy.entry("BarDn", Direction.Short);
+}

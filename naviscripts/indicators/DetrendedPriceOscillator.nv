@@ -1,0 +1,19 @@
+﻿indicator(
+    title: "Detrended Price Oscillator",
+    short_title: "DPO",
+    format: Format.Price,
+    precision: 2,
+    timeframe: "",
+    timeframe_gaps: true
+);
+
+let TT_CENTERED = "When the DPO is centered, the DPO line stays offset towards the left. When it is not centered, it shifts back to the right to match current price.";
+
+let period_ = input.int(21, "Length", minval: 1);
+let isCentered = input(false, "Centered", tooltip: TT_CENTERED);
+
+let barsback = period_ / 2 + 1;
+let ma = ta.sma(close, period_);
+let dpo = isCentered ? close[barsback] - ma : close - ma[barsback];
+plot(dpo, "DPO", offset: isCentered ? -barsback : 0, color: #43A047);
+hline(0, title: "Zero line", color: #787B86);

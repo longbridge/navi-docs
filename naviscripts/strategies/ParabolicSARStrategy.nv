@@ -1,0 +1,104 @@
+﻿strategy("Parabolic SAR Strategy", overlay: true);
+let start = input(0.02);
+let increment = input(0.02);
+let maximum = input(0.2);
+var uptrend: bool = false;
+var EP: float = na;
+var SAR: float = na;
+var AF: float = start;
+var nextBarSAR: float = na;
+if bar_index > 0 {
+    let firstTrendBar = false;
+    SAR = nextBarSAR;
+    if bar_index == 1 {
+        let prevSAR: float = na;
+        let prevEP: float = na;
+        let lowPrev = low[1];
+        let highPrev = high[1];
+        let closeCur = close;
+        let closePrev = close[1];
+        if closeCur > closePrev {
+            uptrend = true;
+            EP = high;
+            prevSAR = lowPrev;
+            prevEP = high;
+        } else {
+            uptrend = false;
+            EP = low;
+            prevSAR = highPrev;
+            prevEP = low;
+        }
+        firstTrendBar = true;
+        SAR = prevSAR + start * (prevEP - prevSAR);
+    }
+    if uptrend {
+        if SAR > low {
+            firstTrendBar = true;
+            uptrend = false;
+            SAR = math.max(EP, high);
+            EP = low;
+            AF = start;
+        }
+    } else {
+        if SAR < high {
+            firstTrendBar = true;
+            uptrend = true;
+            SAR = math.min(EP, low);
+            EP = high;
+            AF = start;
+        }
+    }
+    if not firstTrendBar {
+        if uptrend {
+            if high > EP {
+                EP = high;
+                AF = math.min(AF + increment, maximum);
+            }
+        } else {
+            if low < EP {
+                EP = low;
+                AF = math.min(AF + increment, maximum);
+            }
+        }
+    }
+    if uptrend {
+        SAR = math.min(SAR, low[1]);
+        if bar_index > 1 {
+            SAR = math.min(SAR, low[2]);
+        }
+    } else {
+        SAR = math.max(SAR, high[1]);
+        if bar_index > 1 {
+            SAR = math.max(SAR, high[2]);
+        }
+    }
+    nextBarSAR = SAR + AF * (EP - SAR);
+    if bar_state.is_confirmed {
+        if uptrend {
+            strategy.entry(
+                "ParSE",
+                Direction.Short,
+                stop: nextBarSAR,
+                comment: "ParSE"
+            );
+            strategy.cancel("ParLE");
+        } else {
+            strategy.entry(
+                "ParLE",
+                Direction.Long,
+                stop: nextBarSAR,
+                comment: "ParLE"
+            );
+            strategy.cancel("ParSE");
+        }
+    }
+}
+
+plot(SAR, "SAR", style: PlotStyle.Cross, line_width: 3, color: Color.ORANGE);
+plot(
+    nextBarSAR,
+    "Next bar SAR",
+    style: PlotStyle.Cross,
+    line_width: 3,
+    color: Color.AQUA
+);

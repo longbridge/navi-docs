@@ -1,0 +1,14 @@
+﻿strategy("Consecutive Up/Down Strategy", overlay: true);
+let consecutiveBarsUp = input(3, "Consecutive bars up");
+let consecutiveBarsDown = input(3, "Consecutive bars down");
+let price = close;
+let ups = 0.0;
+ups = price > price[1] ? nz(ups[1]) + 1 : 0;
+let dns = 0.0;
+dns = price < price[1] ? nz(dns[1]) + 1 : 0;
+if (ups >= consecutiveBarsUp) {
+    strategy.entry("ConsUpLE", Direction.Long, comment: "ConsUpLE");
+}
+if (dns >= consecutiveBarsDown) {
+    strategy.entry("ConsDnSE", Direction.Short, comment: "ConsUpLE");
+}
