@@ -27,6 +27,32 @@ Load only the reference needed for the task:
 7. Make outputs deterministic and readable: stable plot order, clear titles, explicit colors, and `na` or `display.NONE` when hiding output.
 8. When returning code, return complete `.nv` source unless the user asked for only a fragment.
 
+## CLI Validation
+
+Validate every complete `.nv` file you create or modify with the `navi` CLI. Use `navi --help` or `navi <command> --help` for detailed, current behavior; `-h` only prints a summary.
+
+1. Check whether the CLI is installed with `command -v navi` (`Get-Command navi` on Windows).
+2. If it is missing, install it with the appropriate command when local tool installation is in scope; otherwise give the command to the user:
+
+   macOS or Linux:
+
+   ```bash
+   curl -fsSL https://assets.lbkrs.com/github/release/navi/stable/install.sh | sh
+   ```
+
+   Windows PowerShell:
+
+   ```powershell
+   irm https://assets.lbkrs.com/github/release/navi/stable/install.ps1 | iex
+   ```
+
+3. Run `navi lint path/to/script.nv`. This is the default completion gate: it checks syntax, types, compilation, imports, and canonical formatting.
+4. When lint reports only a formatting difference, run `navi fmt path/to/script.nv`, then rerun lint.
+5. When suitable OHLCV CSV data is available and runtime behavior matters, run `navi run path/to/script.nv --data path/to/bars.csv --symbol NASDAQ:AAPL --timeframe 1D`. Inspect `navi run --help` for the CSV schema and timeframe syntax.
+6. Treat every non-zero exit status as a failed validation. Fix the script and repeat until the required commands exit successfully; report any validation that could not be run.
+
+Use `navi check path/to/script.nv` (also available as `navi compile`) when compilation is required but formatting is intentionally out of scope. Do not claim that a code fragment was CLI-validated unless it was placed in a complete `.nv` script and the command succeeded.
+
 ## Navi Essentials
 
 - Every script begins with `indicator(...)`, `strategy(...)`, or `library(...)`.
