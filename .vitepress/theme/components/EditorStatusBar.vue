@@ -27,7 +27,7 @@ const isExternalFile = computed(() => {
 </script>
 
 <template>
-  <div class="flex items-start gap-2 px-3 py-1 border-t border-border bg-muted/50 text-xs font-mono shrink-0 min-w-0">
+  <div class="flex min-w-0 shrink-0 items-start gap-2 border-t border-border bg-muted/40 px-3 py-1.5 font-mono text-xs">
     <!-- Diagnostic message -->
     <button
       v-if="firstDiagnostic"
@@ -44,7 +44,7 @@ const isExternalFile = computed(() => {
       </span>
     </button>
     <template v-else>
-      <CircleCheck :size="14" class="shrink-0 text-green-500" />
+      <CircleCheck :size="14" class="shrink-0 text-primary" />
       <span class="text-muted-foreground">{{ t('status.noIssues') }}</span>
     </template>
   </div>

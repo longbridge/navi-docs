@@ -20,7 +20,7 @@ const classes = computed(() => {
     destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
     outline: 'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground',
     secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
-    ghost: 'hover:bg-accent hover:text-accent-foreground',
+    ghost: 'hover:bg-foreground/10 hover:text-foreground',
     link: 'text-primary underline-offset-4 hover:underline',
   }
 
@@ -28,7 +28,7 @@ const classes = computed(() => {
     default: 'h-9 px-4 py-2',
     sm: 'h-8 rounded-md px-3 text-xs',
     lg: 'h-10 rounded-md px-8',
-    icon: 'h-9 w-9',
+    icon: 'size-9',
   }
 
   return cn(base, variants[props.variant], sizes[props.size], props.class)

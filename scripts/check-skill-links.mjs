@@ -36,8 +36,9 @@ for (const file of await markdownFiles(skillRoot)) {
     if (!relativeUrl || generatedPages.has(relativeUrl)) continue;
 
     const sourcePath = path.join(root, relativeUrl);
+    const markdownSourcePath = path.join(root, `${relativeUrl}.md`);
     const publicPath = path.join(root, "public", relativeUrl);
-    if (!(await exists(sourcePath)) && !(await exists(publicPath))) {
+    if (!(await exists(sourcePath)) && !(await exists(markdownSourcePath)) && !(await exists(publicPath))) {
       failures.push(`${path.relative(root, file)}: https://navi-lang.org/${relativeUrl}`);
     }
   }

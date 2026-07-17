@@ -6,7 +6,9 @@
     "dev": "vitepress dev",
     "package-skill": "rm -f public/navi-skill.zip && cd skills && zip -qr ../public/navi-skill.zip navi",
     "check:skill-links": "node scripts/check-skill-links.mjs",
-    "prebuild": "npm run check:skill-links && npm run package-skill",
+    "check:playground-url": "node scripts/check-playground-url.mjs",
+    "check:monarch": "node scripts/check-monarch.mjs",
+    "prebuild": "npm run check:skill-links && npm run check:playground-url && npm run check:monarch && npm run package-skill",
     "build": "vitepress build",
     "preview": "vitepress preview"
   },

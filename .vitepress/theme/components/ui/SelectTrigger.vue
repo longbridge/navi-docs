@@ -3,7 +3,12 @@ import { SelectIcon, SelectTrigger, type SelectTriggerProps } from 'radix-vue'
 import { ChevronDown } from 'lucide-vue-next'
 import { cn } from '../../lib/utils'
 
-const props = defineProps<SelectTriggerProps & { class?: string }>()
+const props = withDefaults(defineProps<SelectTriggerProps & {
+  class?: string
+  hideIcon?: boolean
+}>(), {
+  hideIcon: false,
+})
 </script>
 
 <template>
@@ -15,7 +20,7 @@ const props = defineProps<SelectTriggerProps & { class?: string }>()
     )"
   >
     <slot />
-    <SelectIcon as-child>
+    <SelectIcon v-if="!props.hideIcon" as-child>
       <ChevronDown class="h-4 w-4 opacity-50" />
     </SelectIcon>
   </SelectTrigger>

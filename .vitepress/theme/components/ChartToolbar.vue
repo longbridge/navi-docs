@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { SelectRoot, SelectGroup, SelectValue } from 'radix-vue'
 import { useI18n } from 'vue-i18n'
 import { STOCKS, SECURITY_TIMEFRAMES, type StockDef, type SecurityTimeframe } from '../composables/use-wasm'
@@ -7,8 +8,10 @@ import SelectContent from './ui/SelectContent.vue'
 import SelectItem from './ui/SelectItem.vue'
 import CandlestickStyleButton from './CandlestickStyleButton.vue'
 import type { CandlestickStyleKey } from '../constants/candlestick-styles'
+import { ChevronsUpDown } from 'lucide-vue-next'
 
 const { t } = useI18n()
+const stockSelectOpen = ref(false)
 
 const props = defineProps<{
   activeStock: StockDef
@@ -34,48 +37,23 @@ function onStockChange(value: string) {
 </script>
 
 <template>
-  <div class="flex items-center gap-1 border-b border-border bg-muted/50 px-2 py-1 shrink-0">
-    <!-- Stock selector -->
-    <SelectRoot
-      :model-value="activeStock.ticker"
-      @update:model-value="onStockChange"
-    >
-      <SelectTrigger class="h-7 w-[300px] shrink-0 text-xs">
-        <span class="truncate">{{ activeStock.name }}</span>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectItem
-            v-for="stock in STOCKS"
-            :key="stock.ticker"
-            :value="stock.ticker"
-            class="pr-8"
-          >
-            <span class="flex items-center justify-between gap-3 w-full">
-              <span>{{ stock.name }}</span>
-              <span class="text-xs text-muted-foreground">{{ stock.ticker }}</span>
-            </span>
-          </SelectItem>
-        </SelectGroup>
-      </SelectContent>
-    </SelectRoot>
-
+  <div class="flex min-h-10 shrink-0 items-center gap-1.5 border-b border-border bg-background px-3 py-1.5">
     <!-- Timeframe selector -->
-    <div class="flex items-center shrink-0">
+    <div class="flex shrink-0 items-center rounded-md bg-muted p-0.5">
       <button
         v-for="tf in SECURITY_TIMEFRAMES"
         :key="tf"
         :title="t(`toolbar.timeframes.${tf}`)"
-        class="inline-flex items-center justify-center h-7 min-w-[28px] px-1.5 rounded-md text-xs font-medium transition-colors"
+        class="inline-flex h-7 min-w-7 items-center justify-center rounded-sm px-1.5 text-xs font-medium transition-colors"
         :class="currentTimeframe === tf
-          ? 'bg-primary text-primary-foreground'
-          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'"
+          ? 'bg-primary/10 text-primary'
+          : 'text-muted-foreground hover:bg-foreground/10 hover:text-foreground'"
         @click="emit('timeframe-change', tf)"
       >{{ tf }}</button>
     </div>
 
     <!-- Separator -->
-    <div class="w-px h-4 bg-border shrink-0 mx-0.5" />
+    <div class="mx-0.5 h-5 w-px shrink-0 bg-border" />
 
     <!-- Candlestick style selector -->
     <CandlestickStyleButton
@@ -84,15 +62,15 @@ function onStockChange(value: string) {
     />
 
     <!-- Separator -->
-    <div class="w-px h-4 bg-border shrink-0 mx-0.5" />
+    <div class="mx-0.5 h-5 w-px shrink-0 bg-border" />
 
     <!-- Last price line toggle -->
     <button
       :title="t('toolbar.lastPriceLine')"
-      class="inline-flex items-center justify-center h-7 w-7 rounded-md transition-colors"
+      class="inline-flex size-8 items-center justify-center rounded-md transition-colors"
       :class="showLastPriceLine !== false
-        ? 'text-foreground hover:bg-accent hover:text-accent-foreground'
-        : 'text-muted-foreground/40 hover:bg-accent hover:text-muted-foreground'"
+        ? 'bg-primary/10 text-primary hover:bg-primary/15'
+        : 'text-muted-foreground hover:bg-foreground/10 hover:text-foreground'"
       @click="emit('last-price-line-change', showLastPriceLine === false)"
     >
       <svg viewBox="0 0 16 16" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -103,10 +81,10 @@ function onStockChange(value: string) {
     <!-- Chip distribution (CYQ) toggle -->
     <button
       :title="t('toolbar.cyq')"
-      class="inline-flex items-center justify-center h-7 w-7 rounded-md transition-colors"
+      class="inline-flex size-8 items-center justify-center rounded-md transition-colors"
       :class="showCyq
-        ? 'text-foreground hover:bg-accent hover:text-accent-foreground'
-        : 'text-muted-foreground/40 hover:bg-accent hover:text-muted-foreground'"
+        ? 'bg-primary/10 text-primary hover:bg-primary/15'
+        : 'text-muted-foreground hover:bg-foreground/10 hover:text-foreground'"
       @click="emit('cyq-change', !showCyq)"
     >
       <svg viewBox="0 0 16 16" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -115,5 +93,38 @@ function onStockChange(value: string) {
         <line x1="2" y1="12" x2="6" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
     </button>
+
+    <!-- Stock selector: a quiet label until the user opens it. -->
+    <SelectRoot
+      v-model:open="stockSelectOpen"
+      :model-value="activeStock.ticker"
+      @update:model-value="onStockChange"
+    >
+      <SelectTrigger
+        class="ml-auto h-8 shrink-0 text-xs transition-all"
+        :hide-icon="!stockSelectOpen"
+        :class="stockSelectOpen
+          ? 'w-[clamp(14rem,24vw,20rem)] border-input bg-background shadow-sm'
+          : 'w-auto max-w-[20rem] justify-start gap-2 border-transparent bg-transparent px-2 font-medium shadow-none hover:bg-foreground/10'"
+      >
+        <span class="truncate">{{ activeStock.name }}</span>
+        <ChevronsUpDown v-if="!stockSelectOpen" class="size-3.5 shrink-0 text-muted-foreground" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectItem
+            v-for="stock in STOCKS"
+            :key="stock.ticker"
+            :value="stock.ticker"
+            class="pr-8"
+          >
+            <span class="flex w-full items-center justify-between gap-3">
+              <span>{{ stock.name }}</span>
+              <span class="text-xs text-muted-foreground">{{ stock.ticker }}</span>
+            </span>
+          </SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </SelectRoot>
   </div>
 </template>
