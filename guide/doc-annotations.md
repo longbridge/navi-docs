@@ -145,7 +145,7 @@ Multiple examples are each wrapped in their own block:
 // // Crossover signal using two SMAs
 // let fast = ta.sma(close, 9);
 // let slow = ta.sma(close, 21);
-// plot_shape(ta.crossover(fast, slow), style: Shape.LabelUp);
+// plot_shape(ta.cross_over(fast, slow), style: Shape.LabelUp);
 //@endexample
 export fn sma(src: series float, length: simple int): series float {
     _

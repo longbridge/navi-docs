@@ -1,0 +1,67 @@
+//@description Skill-validation indicator with confirmed EMA cross signals and
+// an ATR trend filter.
+indicator("Skill Validation Trend", short_title: "SV Trend", overlay: true);
+
+let fastLength = input.int(12, "Fast EMA Length", minval: 1);
+let slowLength = input.int(26, "Slow EMA Length", minval: 2);
+let atrLength = input.int(14, "ATR Length", minval: 1);
+let atrMultiplier = input.float(1.5, "ATR Multiplier", minval: 0.1, step: 0.1);
+let showSignals = input.bool(true, "Show Confirmed Signals");
+let source = input.source(close, "Source");
+
+let fastEma = ta.ema(source, fastLength);
+let slowEma = ta.ema(source, slowLength);
+let atrValue = ta.atr(atrLength);
+let upperBand = slowEma + atrValue * atrMultiplier;
+let lowerBand = slowEma - atrValue * atrMultiplier;
+
+let ready = not na(fastEma) and not na(slowEma) and not na(atrValue);
+let crossedAbove = ta.cross_over(fastEma, slowEma);
+let crossedBelow = ta.cross_under(fastEma, slowEma);
+let bullishCross = ready and crossedAbove;
+let bearishCross = ready and crossedBelow;
+let confirmedBullish = showSignals and bullishCross and bar_state.is_confirmed;
+let confirmedBearish = showSignals and bearishCross and bar_state.is_confirmed;
+
+let upperPlot = plot(
+    ready ? upperBand : na,
+    "Upper ATR Band",
+    color: Color.new(Color.BLUE, 35)
+);
+let lowerPlot = plot(
+    ready ? lowerBand : na,
+    "Lower ATR Band",
+    color: Color.new(Color.BLUE, 35)
+);
+fill(upperPlot, lowerPlot, Color.new(Color.BLUE, 90), title: "ATR Envelope");
+
+plot(ready ? fastEma : na, "Fast EMA", color: Color.GREEN, line_width: 2);
+plot(ready ? slowEma : na, "Slow EMA", color: Color.ORANGE, line_width: 2);
+
+plot_shape(
+    confirmedBullish,
+    title: "Bullish Cross",
+    style: Shape.TriangleUp,
+    location: Location.BelowBar,
+    color: Color.GREEN,
+    size: Size.Small
+);
+plot_shape(
+    confirmedBearish,
+    title: "Bearish Cross",
+    style: Shape.TriangleDown,
+    location: Location.AboveBar,
+    color: Color.RED,
+    size: Size.Small
+);
+
+alert_condition(
+    confirmedBullish,
+    "Bullish EMA Cross",
+    "Fast EMA crossed above slow EMA on a confirmed bar."
+);
+alert_condition(
+    confirmedBearish,
+    "Bearish EMA Cross",
+    "Fast EMA crossed below slow EMA on a confirmed bar."
+);

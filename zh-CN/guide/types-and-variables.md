@@ -121,8 +121,8 @@ plot(updateCount, style: PlotStyle.Circles);
 
 ```navi
 struct Counter {
-    int bars = 0,
-    varip int ticks = 0,
+    bars: int = 0,
+    varip ticks: int = 0,
 }
 
 var counter: Counter = Counter.new();

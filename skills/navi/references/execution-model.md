@@ -2,6 +2,8 @@
 
 Use this file when a script depends on previous bars, persistent state, missing values, realtime updates, or multi-timeframe data.
 
+These execution semantics are stable, but confirm anything that looks off against navi-lang.org — the guide at <https://navi-lang.org/guide/> (full text: <https://navi-lang.org/llms-full.txt>).
+
 ## Table of Contents
 
 - [Bar-by-Bar Evaluation](#bar-by-bar-evaluation)
@@ -127,7 +129,7 @@ Use `varip` only for intentional intrabar state:
 
 ```navi
 varip updates: int = 0;
-if barstate.is_new {
+if bar_state.is_new {
     updates = 1;
 } else {
     updates += 1;
@@ -220,7 +222,7 @@ A script repaints when a historical bar's final value differs from what would ha
 Default to these rules:
 
 - Base plotted signals on values available at that bar.
-- Gate final alerts/orders on `barstate.is_confirmed` when the signal must wait for bar close.
+- Gate final alerts/orders on `bar_state.is_confirmed` when the signal must wait for bar close.
 - Avoid `varip` in historical-looking plots unless the realtime-only nature is intentional.
 - Avoid lookahead in `request.security`; prefer `BarmergeLookahead.Off`.
 - Be careful with pivot functions: pivots confirm only after enough right-side bars exist, so signal placement may naturally appear delayed.
@@ -229,7 +231,7 @@ Confirmed-bar side effect:
 
 ```navi
 let longSignal = ta.cross_over(fast, slow);
-if longSignal and barstate.is_confirmed {
+if longSignal and bar_state.is_confirmed {
     alert("Long signal", AlertFreq.OncePerBarClose);
 }
 ```

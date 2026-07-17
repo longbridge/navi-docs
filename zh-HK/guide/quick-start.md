@@ -39,8 +39,8 @@ strategy("MA Cross", overlay: true);
 let fast = ta.ema(close, input.int(10, "Fast"));
 let slow = ta.ema(close, input.int(20, "Slow"));
 
-if ta.crossover(fast, slow) { strategy.entry("Long", Direction.Long); }
-if ta.crossunder(fast, slow) { strategy.entry("Short", Direction.Short); }
+if ta.cross_over(fast, slow) { strategy.entry("Long", Direction.Long); }
+if ta.cross_under(fast, slow) { strategy.entry("Short", Direction.Short); }
 
 plot(fast, "Fast EMA");
 plot(slow, "Slow EMA");

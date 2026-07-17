@@ -2,6 +2,8 @@
 
 Use this file to write `.nv` source code. It describes Navi syntax only; API names live in [stdlib.md](stdlib.md), and bar-by-bar behavior lives in [execution-model.md](execution-model.md).
 
+Navi syntax is stable, but if a detail here ever seems to conflict with working code, treat navi-lang.org as authoritative — the language guide at <https://navi-lang.org/guide/> (full text: <https://navi-lang.org/llms-full.txt>).
+
 ## Table of Contents
 
 - [Program Shape](#program-shape)
@@ -89,8 +91,8 @@ Primitive types:
 | `int` | `42`, `-5`, `+3` |
 | `float` | `3.14`, `.5`, `3.`, `1e-3` |
 | `bool` | `true`, `false` |
-| `string` | `"hello"`, `'hello'` |
-| `color` | `#FF0000`, `#FF000080`, `color.BLUE` |
+| `String` | `"hello"`, `'hello'` |
+| `color` | `#FF0000`, `#FF000080`, `Color.BLUE` |
 
 String escapes include `\\`, `\n`, `\r`, `\t`, `\"`/`""`, and `\'`/`''`.
 
@@ -105,7 +107,7 @@ Collection types are PascalCase:
 
 ```navi
 let values: Array<float> = Array.new<float>(3, 0.0);
-let counts: Map<string, int> = {"up": 1, "down": 2};
+let counts: Map<String, int> = {"up": 1, "down": 2};
 let grid: Matrix<float> = Matrix.new<float>(2, 3, 0.0);
 ```
 
@@ -114,8 +116,8 @@ Array and map literals:
 ```navi
 let xs: Array<int> = [1, 2, 3];
 let emptyXs: Array<float> = [];
-let labels: Map<string, int> = {"fast": 9, "slow": 21};
-let emptyLabels: Map<string, int> = {};
+let labels: Map<String, int> = {"fast": 9, "slow": 21};
+let emptyLabels: Map<String, int> = {};
 ```
 
 Map keys must be primitive values or enums.
@@ -169,7 +171,7 @@ count %= 3;
 - Ternary: `condition ? whenTrue : whenFalse`
 - History reference: `seriesValue[1]`, `expr[n]`
 - Member/namespace access: `ta.sma`, `order.price`, `labelId.set_text(...)`
-- Named arguments: `plot(close, title: "Close", color: color.BLUE)`
+- Named arguments: `plot(close, title: "Close", color: Color.BLUE)`
 
 ## Control Flow
 
@@ -190,7 +192,7 @@ plot_shape(isUp, title: "Up", style: Shape.TriangleUp);
 plot_shape(isDown, title: "Down", style: Shape.TriangleDown);
 ```
 
-If an `if` expression omits `else`, the false branch yields `na` for most types, `false` for bool, or `""` for string.
+If an `if` expression omits `else`, the false branch yields `na` for most types, `false` for bool, or `""` for String.
 
 ### `for`
 
@@ -363,7 +365,7 @@ Struct fields use `name: type`, comma-separated. Fields can have default values;
 ```navi
 struct Order {
     id: int,
-    symbol: string,
+    symbol: String,
     price: float = na,
     varip updates: int = 0,
 }

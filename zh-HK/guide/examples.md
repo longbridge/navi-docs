@@ -26,10 +26,10 @@ let fast = ta.sma(close, fastLen);
 let slow = ta.sma(close, slowLen);
 
 // ④ 偵測金叉和死叉事件。
-//   ta.crossover(a, b)  → 在 a 向上穿越 b 的那根 Bar 返回 true
-//   ta.crossunder(a, b) → 在 a 向下穿越 b 的那根 Bar 返回 true
-let crossUp   = ta.crossover(fast, slow);
-let crossDown = ta.crossunder(fast, slow);
+//   ta.cross_over(a, b)  → 在 a 向上穿越 b 的那根 Bar 返回 true
+//   ta.cross_under(a, b) → 在 a 向下穿越 b 的那根 Bar 返回 true
+let crossUp   = ta.cross_over(fast, slow);
+let crossDown = ta.cross_under(fast, slow);
 
 // ⑤ 將兩條均線繪製為連續折線。
 //   linewidth=2 使線條略粗於預設值 1。
@@ -68,7 +68,7 @@ bg_color(bgColor);
 | 腳本宣告 | `indicator(...)` — 行 ① |
 | 使用者輸入 | `input.int` — 行 ② |
 | `series<float>` 變數 | `fast`、`slow`、`crossUp`、`crossDown` — 行 ③④ |
-| `ta` 模組 | `ta.sma`、`ta.crossover`、`ta.crossunder` — 行 ③④ |
+| `ta` 模組 | `ta.sma`、`ta.cross_over`、`ta.cross_under` — 行 ③④ |
 | 繪製折線 | `plot(...)` — 行 ⑤ |
 | 繪製形狀標記 | `plot_shape(...)` — 行 ⑥⑦ |
 | 透明顏色 | `color.new(c, transp)` — 行 ⑧ |

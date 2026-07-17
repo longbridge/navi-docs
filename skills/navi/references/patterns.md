@@ -2,6 +2,8 @@
 
 Use these templates when writing complete `.nv` scripts. Prefer the simplest pattern that matches the request, then adapt names, inputs, colors, and plots.
 
+The concrete API names, enum variants, and signatures shown here are illustrative and can change. Confirm specifics against navi-lang.org (`llms-full.txt` or the relevant page) as you adapt a template.
+
 ## Table of Contents
 
 - [Complete Templates](#complete-templates)
@@ -27,7 +29,7 @@ let src = input.source(close, "Source");
 let ma = ta.sma(src, len);
 let ready = not na(ma);
 
-plot(ready ? ma : na, "SMA", color: color.ORANGE, linewidth: 2);
+plot(ready ? ma : na, "SMA", color: Color.ORANGE, line_width: 2);
 ```
 
 ### Oscillator Pane
@@ -38,9 +40,9 @@ indicator("My Oscillator", overlay: false, format: Format.Price, precision: 2);
 let len = input.int(14, "Length", minval: 1);
 let osc = ta.rsi(close, len);
 
-plot(osc, "RSI", color: color.PURPLE);
-hline(70, "Overbought", color: color.RED, linestyle: HLineStyle.Dashed);
-hline(30, "Oversold", color: color.GREEN, linestyle: HLineStyle.Dashed);
+plot(osc, "RSI", color: Color.PURPLE);
+hline(70, "Overbought", color: Color.RED, linestyle: HLineStyle.Dashed);
+hline(30, "Oversold", color: Color.GREEN, linestyle: HLineStyle.Dashed);
 ```
 
 ### Strategy
@@ -57,15 +59,15 @@ let slow = ta.ema(close, slowLen);
 let longSignal = ta.cross_over(fast, slow);
 let shortSignal = ta.cross_under(fast, slow);
 
-if longSignal and barstate.is_confirmed {
+if longSignal and bar_state.is_confirmed {
     strategy.entry("Long", Direction.Long);
 }
-if shortSignal and barstate.is_confirmed {
+if shortSignal and bar_state.is_confirmed {
     strategy.entry("Short", Direction.Short);
 }
 
-plot(fast, "Fast EMA", color: color.GREEN);
-plot(slow, "Slow EMA", color: color.RED);
+plot(fast, "Fast EMA", color: Color.GREEN);
+plot(slow, "Slow EMA", color: Color.RED);
 ```
 
 ### Library
@@ -79,7 +81,7 @@ library("TaHelpers");
 //@param length Moving-average length.
 //@param maType Moving-average type.
 //@returns Moving-average series.
-export fn ma(src: series float, length: simple int, maType: simple string): series float {
+export fn ma(src: series float, length: simple int, maType: simple String): series float {
     let result = switch maType {
         "EMA" => ta.ema(src, length),
         "SMA" => ta.sma(src, length),
@@ -107,7 +109,7 @@ let ma = switch maType {
     => ta.ema(close, len),
 };
 
-plot(ma, "MA", color: color.ORANGE);
+plot(ma, "MA", color: Color.ORANGE);
 ```
 
 ### Warmup Guard
@@ -126,9 +128,9 @@ plot(ready ? ma : na, "SMA");
 let showBands = input.bool(true, "Show Bands");
 let (basis, upper, lower) = ta.bb(close, 20, 2.0);
 
-plot(basis, "Basis", color: color.BLUE);
-plot(showBands ? upper : na, "Upper", color: color.RED);
-plot(showBands ? lower : na, "Lower", color: color.GREEN);
+plot(basis, "Basis", color: Color.BLUE);
+plot(showBands ? upper : na, "Upper", color: Color.RED);
+plot(showBands ? lower : na, "Lower", color: Color.GREEN);
 ```
 
 ### Stable Plot Handles for Fill
@@ -136,10 +138,10 @@ plot(showBands ? lower : na, "Lower", color: color.GREEN);
 ```navi
 let (basis, upper, lower) = ta.bb(close, 20, 2.0);
 
-let upperPlot = plot(upper, "Upper", color: color.RED);
-let lowerPlot = plot(lower, "Lower", color: color.GREEN);
-fill(upperPlot, lowerPlot, color.new(color.BLUE, 90), title: "Band Fill");
-plot(basis, "Basis", color: color.ORANGE);
+let upperPlot = plot(upper, "Upper", color: Color.RED);
+let lowerPlot = plot(lower, "Lower", color: Color.GREEN);
+fill(upperPlot, lowerPlot, Color.new(Color.BLUE, 90), title: "Band Fill");
+plot(basis, "Basis", color: Color.ORANGE);
 ```
 
 ## Signals and Crosses
@@ -153,8 +155,8 @@ let slow = ta.ema(close, 20);
 let crossUp = ta.cross_over(fast, slow);
 let crossDown = ta.cross_under(fast, slow);
 
-plot_shape(crossUp, title: "Cross Up", style: Shape.TriangleUp, location: Location.BelowBar, color: color.GREEN);
-plot_shape(crossDown, title: "Cross Down", style: Shape.TriangleDown, location: Location.AboveBar, color: color.RED);
+plot_shape(crossUp, title: "Cross Up", style: Shape.TriangleUp, location: Location.BelowBar, color: Color.GREEN);
+plot_shape(crossDown, title: "Cross Down", style: Shape.TriangleDown, location: Location.AboveBar, color: Color.RED);
 ```
 
 Spell out the boundary when `>`/`>=` details matter:
@@ -168,7 +170,7 @@ Gate confirmed signals when alerts/orders should wait for bar close:
 
 ```navi
 let signal = ta.cross_over(fast, slow);
-let confirmedSignal = signal and barstate.is_confirmed;
+let confirmedSignal = signal and bar_state.is_confirmed;
 
 alert_condition(confirmedSignal, "Long", "Long signal");
 ```
@@ -183,7 +185,7 @@ if na(peak) or high > peak {
     peak = high;
 }
 
-plot(peak, "Peak", color: color.GREEN);
+plot(peak, "Peak", color: Color.GREEN);
 ```
 
 ### Count Consecutive Bars
@@ -214,7 +216,7 @@ plot(window.avg(), "Window Average");
 
 ```navi
 varip updates: int = 0;
-if barstate.is_new {
+if bar_state.is_new {
     updates = 1;
 } else {
     updates += 1;
@@ -233,7 +235,7 @@ Use `varip` only when realtime tick counting is intended.
 indicator("Weekly MA", overlay: true);
 
 let weeklyMa = request.security(syminfo.tickerid, "W", ta.sma(close, 20), lookahead: BarmergeLookahead.Off);
-plot(weeklyMa, "Weekly SMA", color: color.ORANGE);
+plot(weeklyMa, "Weekly SMA", color: Color.ORANGE);
 ```
 
 ### Confirmed Higher-Timeframe Value
@@ -265,8 +267,8 @@ let right = input.int(5, "Right", minval: 1);
 let ph = ta.pivot_high(high, left, right);
 let pl = ta.pivot_low(low, left, right);
 
-plot_shape(not na(ph), title: "Pivot High", style: Shape.TriangleDown, location: Location.AboveBar, offset: -right, color: color.RED);
-plot_shape(not na(pl), title: "Pivot Low", style: Shape.TriangleUp, location: Location.BelowBar, offset: -right, color: color.GREEN);
+plot_shape(not na(ph), title: "Pivot High", style: Shape.TriangleDown, location: Location.AboveBar, offset: -right, color: Color.RED);
+plot_shape(not na(pl), title: "Pivot Low", style: Shape.TriangleUp, location: Location.BelowBar, offset: -right, color: Color.GREEN);
 ```
 
 Simple bearish divergence scaffold:
@@ -288,7 +290,7 @@ let bearishDiv = havePivot
     and currPrice > prevPrice
     and currOsc < prevOsc;
 
-plot_shape(bearishDiv, title: "Bear Div", style: Shape.TriangleDown, location: Location.AboveBar, offset: -right, color: color.RED);
+plot_shape(bearishDiv, title: "Bear Div", style: Shape.TriangleDown, location: Location.AboveBar, offset: -right, color: Color.RED);
 ```
 
 ## Strategy Patterns
@@ -299,10 +301,10 @@ plot_shape(bearishDiv, title: "Bear Div", style: Shape.TriangleDown, location: L
 let longSignal = ta.cross_over(fast, slow);
 let exitSignal = ta.cross_under(fast, slow);
 
-if longSignal and barstate.is_confirmed {
+if longSignal and bar_state.is_confirmed {
     strategy.entry("Long", Direction.Long);
 }
-if exitSignal and barstate.is_confirmed {
+if exitSignal and bar_state.is_confirmed {
     strategy.close("Long");
 }
 ```
@@ -328,7 +330,7 @@ strategy.risk.max_position_size(10);
 
 ## Common Pitfalls
 
-- Do not use outdated aliases when the current API uses snake_case. Prefer `ta.cross_over`, `ta.cross_under`, `ta.value_when`, `ta.bars_since`, `ta.pivot_high`, and `ta.pivot_low`.
+- Confirm API names against navi-lang.org rather than trusting memory. Built-in functions are snake_case (e.g. `ta.cross_over`), never a camelCase alias.
 - Do not write lowercase collection types (`array<T>`, `map<K,V>`, `matrix<T>`). Use `Array<T>`, `Map<K, V>`, and `Matrix<T>`.
 - Do not compare `na` with `==`; use `na(x)` or `not na(x)`.
 - Do not use a `series` value for a parameter that the API marks `simple`, `input`, or `const`.
@@ -345,9 +347,9 @@ Before returning a script:
 - The script starts with `indicator`, `strategy`, or `library`.
 - All statements that need semicolons have them.
 - Function and struct annotations use `name: type`.
-- API names match `api/stdlib` spellings.
+- API names and signatures verified against navi-lang.org (`llms-full.txt` or the specific page).
 - Warmup `na` behavior is handled for rolling calculations.
 - Crosses use either `ta.cross_over`/`ta.cross_under` or explicit history comparisons.
-- Strategies gate orders with `barstate.is_confirmed` when close-confirmed behavior is intended.
+- Strategies gate orders with `bar_state.is_confirmed` when close-confirmed behavior is intended.
 - MTF logic uses `BarmergeLookahead.Off` by default.
 - Plots have stable titles, order, and colors.

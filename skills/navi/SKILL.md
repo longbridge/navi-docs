@@ -5,6 +5,16 @@ description: Write, refactor, debug, and review Navi `.nv` indicator, strategy, 
 
 Write valid Navi code for chart indicators, strategies, and reusable libraries. Keep every answer focused on Navi authoring: syntax, execution semantics, standard-library calls, and practical script patterns.
 
+## Source of Truth
+
+Navi's standard library and, occasionally, its syntax evolve. This skill captures the stable authoring model — it deliberately does **not** reproduce the full API. Treat **navi-lang.org** as authoritative and verify concrete API details there instead of trusting memory or any list embedded in this skill.
+
+- Full documentation in one file (language guide + complete stdlib API): <https://navi-lang.org/llms-full.txt>
+- Documentation index, per topic — fetch a single page on demand: <https://navi-lang.org/llms.txt>
+- Any single doc page as raw markdown: append `.md` to its path, e.g. <https://navi-lang.org/api/stdlib/ta/index.md>
+
+Before using any concrete API — a function name, signature, enum variant, or method name — confirm it against the source above. When unsure, fetch `llms-full.txt` (or the specific page) rather than guessing.
+
 ## Reference Map
 
 Load only the reference needed for the task:
@@ -13,7 +23,7 @@ Load only the reference needed for the task:
 | --- | --- |
 | [references/syntax.md](references/syntax.md) | Check Navi source syntax: statements, blocks, declarations, types, collections, functions, methods, structs, enums, imports, and exports. |
 | [references/execution-model.md](references/execution-model.md) | Reason about bar-by-bar execution, series values, qualifiers, `var`/`varip`, rollback, `na`, history references, and repainting. |
-| [references/stdlib.md](references/stdlib.md) | Choose built-ins and exact API names for `ta`, `input`, plots, drawing objects, `request`, `strategy`, colors, strings, collections, enums, and state namespaces. |
+| [references/stdlib.md](references/stdlib.md) | Learn the stdlib naming rules and how to look up exact API names, signatures, and enum variants on navi-lang.org. |
 | [references/patterns.md](references/patterns.md) | Start from complete indicator/strategy/library templates or reuse idioms for warmup guards, crosses, state, arrays, MTF data, divergence, debugging, and output polish. |
 
 ## Authoring Workflow
@@ -23,8 +33,8 @@ Load only the reference needed for the task:
 3. Model time correctly. Treat `close`, `high`, `ta.*` outputs, conditions, and plots as per-bar `series` values. Use `x[1]` for prior bars.
 4. Use `let` for per-bar calculations, `var` for state that must persist across bars, and `varip` only for intentional intrabar state.
 5. Guard warmup and missing values with `na()`, `nz()`, or `fixnan()`; never assume `na` is zero.
-6. Prefer current standard-library API names from `references/stdlib.md` and `api/stdlib`. In particular, use snake_case names such as `ta.cross_over`, `ta.cross_under`, `ta.value_when`, `ta.bars_since`, `ta.highest_bars`, and `ta.lowest_bars`.
-7. Make outputs deterministic and readable: stable plot order, clear titles, explicit colors, and `na` or `display.NONE` when hiding output.
+6. Confirm standard-library API names and signatures against navi-lang.org (`llms-full.txt` or the specific page) before using them; do not rely on remembered lists. As a rule, Navi built-in functions are snake_case (e.g. `ta.cross_over`) and types/enums are PascalCase (e.g. `Direction.Long`).
+7. Make outputs deterministic and readable: stable plot order, clear titles, explicit colors, and `na` or `PlotDisplay.NONE` when hiding output.
 8. When returning code, return complete `.nv` source unless the user asked for only a fragment.
 
 ## CLI Validation
@@ -74,7 +84,7 @@ let len = input.int(14, "Length", minval: 1);
 let src = input.source(close, "Source");
 
 let ma = ta.sma(src, len);
-plot(ma, "SMA", color: color.ORANGE);
+plot(ma, "SMA", color: Color.ORANGE);
 ```
 
 Minimal strategy:
@@ -98,8 +108,8 @@ if shortSignal {
     strategy.entry("Short", Direction.Short);
 }
 
-plot(fast, "Fast EMA", color: color.GREEN);
-plot(slow, "Slow EMA", color: color.RED);
+plot(fast, "Fast EMA", color: Color.GREEN);
+plot(slow, "Slow EMA", color: Color.RED);
 ```
 
 Reusable library:

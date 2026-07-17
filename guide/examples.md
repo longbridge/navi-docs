@@ -26,10 +26,10 @@ let fast = ta.sma(close, fastLen);
 let slow = ta.sma(close, slowLen);
 
 // ④ Detect crossover and crossunder events.
-//   ta.crossover(a, b)  → true on the bar where a crosses above b
-//   ta.crossunder(a, b) → true on the bar where a crosses below b
-let crossUp   = ta.crossover(fast, slow);
-let crossDown = ta.crossunder(fast, slow);
+//   ta.cross_over(a, b)  → true on the bar where a crosses above b
+//   ta.cross_under(a, b) → true on the bar where a crosses below b
+let crossUp   = ta.cross_over(fast, slow);
+let crossDown = ta.cross_under(fast, slow);
 
 // ⑤ Plot the two moving averages as continuous lines.
 //   linewidth=2 makes them slightly thicker than the default 1.
@@ -68,7 +68,7 @@ bg_color(bgColor);
 | Script declaration | `indicator(...)` — line ① |
 | User inputs | `input.int` — line ② |
 | `series<float>` variables | `fast`, `slow`, `crossUp`, `crossDown` — lines ③④ |
-| `ta` module | `ta.sma`, `ta.crossover`, `ta.crossunder` — lines ③④ |
+| `ta` module | `ta.sma`, `ta.cross_over`, `ta.cross_under` — lines ③④ |
 | Plotting lines | `plot(...)` — line ⑤ |
 | Plotting shapes | `plot_shape(...)` — lines ⑥⑦ |
 | Transparent colors | `color.new(c, transp)` — line ⑧ |
