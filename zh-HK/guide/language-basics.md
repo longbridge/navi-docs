@@ -29,12 +29,23 @@ let a: float = 10; // 行尾註釋
 ```navi
 let a = 1; let b = 2; let c = a + b;   // 同一行多條語句
 
-let result = longVariableName           // 跨行拆分
-    + anotherLongVariable
-    - someOtherValue;
+let result = long_variable_name         // 跨行拆分
+    + another_long_variable
+    - some_other_value;
 ```
 
 以右大括號 `}` 結尾的語句（函數、if/for/while 等）不需要在末尾加 `;`。
+
+## 命名規範
+
+Navi 原始碼應使用一致的命名方式：
+
+- 變數、參數、函數、方法和屬性使用 `snake_case`：`fast_length`、`long_signal`、`calculate_average`。
+- struct、enum、newtype 及枚舉值使用 `PascalCase`：`TradeState`、`Direction.Long`。
+- 編譯期常量使用 `SCREAMING_SNAKE_CASE`：`MAX_LOOKBACK`。
+- 新建 `.nv` 檔案使用 `snake_case`：`relative_strength_index.nv`。
+
+`example/indicators/` 目錄中的檔案遵循這一檔名規範。
 
 ## 基本類型
 

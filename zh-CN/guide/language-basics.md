@@ -29,12 +29,23 @@ Navi 没有多行注释。以 `//@` 开头的特殊注释是文档标签：`//@f
 ```navi
 let a = 1; let b = 2; let c = a + b;   // 同一行多条语句
 
-let result = longVariableName           // 跨行书写
-    + anotherLongVariable
-    - someOtherValue;
+let result = long_variable_name         // 跨行书写
+    + another_long_variable
+    - some_other_value;
 ```
 
 以右花括号 `}` 结尾的语句（函数、if/for/while 等）不需要加尾部 `;`。
+
+## 命名规范
+
+Navi 源码应使用一致的命名方式：
+
+- 变量、参数、函数、方法和属性使用 `snake_case`：`fast_length`、`long_signal`、`calculate_average`。
+- struct、enum、newtype 及枚举值使用 `PascalCase`：`TradeState`、`Direction.Long`。
+- 编译期常量使用 `SCREAMING_SNAKE_CASE`：`MAX_LOOKBACK`。
+- 新建 `.nv` 文件使用 `snake_case`：`relative_strength_index.nv`。
+
+`example/indicators/` 目录中的文件遵循这一文件名规范。
 
 ## 基本类型
 

@@ -29,12 +29,23 @@ Every statement ends with `;`. Newlines are insignificant — multiple statement
 ```navi
 let a = 1; let b = 2; let c = a + b;   // multiple on one line
 
-let result = longVariableName           // split across lines
-    + anotherLongVariable
-    - someOtherValue;
+let result = long_variable_name         // split across lines
+    + another_long_variable
+    - some_other_value;
 ```
 
 Statements that end with a closing brace `}` (functions, if/for/while, etc.) do not take a trailing `;`.
+
+## Naming Conventions
+
+Use consistent names in Navi source code:
+
+- Variables, parameters, functions, methods, and properties use `snake_case`: `fast_length`, `long_signal`, `calculate_average`.
+- Structs, enums, newtypes, and enum variants use `PascalCase`: `TradeState`, `Direction.Long`.
+- Compile-time constants use `SCREAMING_SNAKE_CASE`: `MAX_LOOKBACK`.
+- New `.nv` filenames use `snake_case`: `relative_strength_index.nv`.
+
+The files under `example/indicators/` follow this filename convention.
 
 ## Basic Types
 

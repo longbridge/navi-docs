@@ -5,8 +5,25 @@ CDN_BASE="${NAVI_CDN_BASE:-https://assets.lbkrs.com/github/release/navi/stable}"
 INSTALL_DIR="${NAVI_INSTALL_DIR:-$HOME/.local/bin}"
 VERSION="${NAVI_VERSION:-}"
 
+fetch_stdout() {
+    url="$1"
+    if ! curl -fsSL "$url"; then
+        echo "Failed to request: $url" >&2
+        exit 1
+    fi
+}
+
+download() {
+    url="$1"
+    output="$2"
+    if ! curl -fsSL "$url" -o "$output"; then
+        echo "Failed to download: $url" >&2
+        exit 1
+    fi
+}
+
 if [ -z "$VERSION" ]; then
-    metadata="$(curl -fsSL "$CDN_BASE/latest.json")"
+    metadata="$(fetch_stdout "$CDN_BASE/latest.json")"
     VERSION="$(printf '%s' "$metadata" | sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
     if [ -z "$VERSION" ]; then
         echo "Invalid release metadata: latest.json has no version" >&2
@@ -26,8 +43,8 @@ asset="navi-v${VERSION}-${target}.tar.gz"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT INT TERM
 
-curl -fsSL "$CDN_BASE/$asset" -o "$tmp/$asset"
-curl -fsSL "$CDN_BASE/$asset.sha256" -o "$tmp/$asset.sha256"
+download "$CDN_BASE/$asset" "$tmp/$asset"
+download "$CDN_BASE/$asset.sha256" "$tmp/$asset.sha256"
 (
     cd "$tmp"
     if command -v sha256sum >/dev/null 2>&1; then
