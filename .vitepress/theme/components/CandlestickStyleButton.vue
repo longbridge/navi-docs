@@ -34,9 +34,9 @@ function select(key: CandlestickStyleKey) {
     <PopoverTrigger as-child>
       <button
         :title="t(`candlestickStyle.styles.${activeStyle}`, CANDLESTICK_STYLE_MAP[activeStyle]?.label ?? activeStyle)"
-        class="inline-flex items-center gap-1.5 h-7 rounded-md transition-colors text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+        class="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
         :class="[
-          open ? 'bg-accent text-accent-foreground' : '',
+          open ? 'bg-primary/10 text-primary' : '',
           showLabel ? 'px-2' : 'w-7 justify-center',
         ]"
       >
@@ -71,8 +71,8 @@ function select(key: CandlestickStyleKey) {
           <button
             v-for="style in CANDLESTICK_STYLES.filter(s => s.group === group)"
             :key="style.key"
-            class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
-            :class="style.key === activeStyle ? 'bg-accent/50 font-medium' : ''"
+            class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-foreground/10 hover:text-foreground"
+            :class="style.key === activeStyle ? 'bg-primary/10 font-medium text-primary' : ''"
             @click="select(style.key)"
           >
             <svg

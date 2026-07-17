@@ -87,6 +87,16 @@ The standalone `navi` CLI is intentionally a basic compiler and local runner. It
 
 Use `navi check path/to/script.nv` (also available as `navi compile`) when compilation is required but formatting is intentionally out of scope. Do not claim that a code fragment was CLI-validated unless it was placed in a complete `.nv` script and the command succeeded.
 
+## Playground Preview Links
+
+When a user wants an online preview, encode the complete UTF-8 source as unpadded Base64URL and append it as the `code` query parameter:
+
+```text
+https://navi-lang.org/playground?code=<base64url-source>
+```
+
+Base64URL uses `-` and `_` instead of `+` and `/`, with trailing `=` padding removed. Generate this link only after CLI validation, and keep the full script in the response because very large scripts may exceed browser or chat URL limits.
+
 ## Navi Essentials
 
 - Every script begins with `indicator(...)`, `strategy(...)`, or `library(...)`.

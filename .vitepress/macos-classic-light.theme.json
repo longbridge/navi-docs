@@ -1,0 +1,66 @@
+{
+  "$schema": "vscode://schemas/color-theme",
+  "name": "macOS Classic Light",
+  "type": "light",
+  "colors": {
+    "editor.background": "#FFFFFF",
+    "editor.foreground": "#000000",
+    "editor.lineHighlightBackground": "#F5F5F5",
+    "editor.lineHighlightBorder": "#00000000",
+    "editorLineNumber.foreground": "#929292",
+    "editorLineNumber.activeForeground": "#000000",
+    "editor.selectionBackground": "#9DDDFF"
+  },
+  "tokenColors": [
+    {
+      "settings": {
+        "foreground": "#000000",
+        "background": "#FFFFFF"
+      }
+    },
+    {
+      "scope": ["comment", "comment.line", "comment.documentation"],
+      "settings": { "foreground": "#007FFF" }
+    },
+    {
+      "scope": ["string", "string.quoted"],
+      "settings": { "foreground": "#036A07" }
+    },
+    {
+      "scope": ["constant.character.escape"],
+      "settings": { "foreground": "#036A07" }
+    },
+    {
+      "scope": ["constant.language", "constant.other.color", "support.constant.color"],
+      "settings": { "foreground": "#C5060B" }
+    },
+    {
+      "scope": ["constant.numeric"],
+      "settings": { "foreground": "#0433FF" }
+    },
+    {
+      "scope": ["keyword", "storage.type", "storage.modifier"],
+      "settings": { "foreground": "#0433FF" }
+    },
+    {
+      "scope": ["support.type", "entity.name.type", "entity.other.inherited-class"],
+      "settings": { "foreground": "#6F42C1" }
+    },
+    {
+      "scope": ["entity.name.function", "entity.name.function.method"],
+      "settings": { "foreground": "#0000A2" }
+    },
+    {
+      "scope": ["constant.other.reference.link"],
+      "settings": { "foreground": "#6A7293", "fontStyle": "italic" }
+    },
+    {
+      "scope": ["variable", "variable.other", "meta.property-name"],
+      "settings": { "foreground": "#000000" }
+    },
+    {
+      "scope": ["punctuation", "keyword.operator"],
+      "settings": { "foreground": "#000000" }
+    }
+  ]
+}

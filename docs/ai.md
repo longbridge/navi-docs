@@ -116,6 +116,16 @@ For real data, prefer these sources when available:
 
 Real data complements synthetic cases; it does not replace targeted data that deliberately reaches important branches.
 
+### Online preview
+
+After validation, an AI agent can generate a Playground preview by encoding the complete UTF-8 script as unpadded Base64URL and placing it in the `code` query parameter:
+
+```text
+https://navi-lang.org/playground?code=<base64url-source>
+```
+
+Opening the link loads the script as an unsaved file and adds it to the chart. Base64URL uses `-` and `_` instead of `+` and `/`, with trailing `=` removed. Keep the source file alongside the link because browsers and chat clients limit URL length.
+
 ## Example Requests
 
 ```text

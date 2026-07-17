@@ -2,7 +2,7 @@
 import { ref, computed, shallowRef, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useData } from 'vitepress'
 import { useI18n } from 'vue-i18n'
-import { ChevronsLeft, ChevronsRight, Lock } from 'lucide-vue-next'
+import { Check, ChevronsDown, ChevronsUp, CircleAlert, Lock, Share2 } from 'lucide-vue-next'
 import { useWasm, type StockDef } from '../composables/use-wasm'
 import { useScripts } from '../composables/use-scripts'
 import { builtinIndicators, isBuiltinId, getBuiltinScript } from '../composables/builtin-scripts'
@@ -27,11 +27,12 @@ import type { CandlestickStyleKey } from '../constants/candlestick-styles'
 import ResizablePanelGroup from './ui/ResizablePanelGroup.vue'
 import ResizablePanel from './ui/ResizablePanel.vue'
 import ResizableHandle from './ui/ResizableHandle.vue'
+import { decodePlaygroundSource, encodePlaygroundSource } from '../utils/playground-url.mjs'
 
 const { t, locale } = useI18n()
 
 const { engine, loading: wasmLoading, error: wasmError, activeStock, currentTimeframe, init: initWasm, changeStock, changeTimeframe, setTheme: setChartTheme } = useWasm()
-const { isDark, lang } = useData()
+const { lang } = useData()
 
 const chartCanvas = ref<HTMLCanvasElement | null>(null)
 const chartContainer = ref<HTMLDivElement | null>(null)
@@ -44,7 +45,6 @@ const LS_SCRIPT = 'navi-playground-script'
 const LS_ACTIVE_ID = 'navi-playground-active-id'
 const LS_PANEL = 'navi-playground-panel-ratio'
 const LS_COLLAPSED = 'navi-playground-editor-collapsed'
-const LS_STRATEGY_HEIGHT = 'navi-playground-strategy-height'
 const LS_CHART_SNAPSHOT = 'navi-playground-chart-snapshot'
 
 const defaultScript = builtinIndicators[0]?.source ?? '// Write Navi here\n'
@@ -53,16 +53,22 @@ function migrateLegacySource(source: string): string {
   return source.replace(/\bshorttitle(?=\s*:)/g, 'short_title')
 }
 
+const sharedSource = decodePlaygroundSource(window.location.search)
 const storedSource = localStorage.getItem(LS_SCRIPT)
-const initialSource = migrateLegacySource(storedSource || defaultScript)
-if (storedSource && initialSource !== storedSource) {
+const initialSource = migrateLegacySource(sharedSource ?? storedSource ?? defaultScript)
+if (sharedSource !== null) {
+  localStorage.setItem(LS_SCRIPT, initialSource)
+  localStorage.removeItem(LS_ACTIVE_ID)
+} else if (storedSource && initialSource !== storedSource) {
   localStorage.setItem(LS_SCRIPT, initialSource)
 }
 const currentSource = ref(initialSource)
-const activeScriptId = ref<string | null>(localStorage.getItem(LS_ACTIVE_ID) || null)
-const dirty = ref(false)
+const activeScriptId = ref<string | null>(sharedSource === null ? localStorage.getItem(LS_ACTIVE_ID) || null : null)
+const dirty = ref(sharedSource !== null)
+const shareStatus = ref<'idle' | 'copied' | 'failed'>('idle')
+let shareStatusTimer: ReturnType<typeof setTimeout> | null = null
 /** Script IDs (tags) currently added to the chart. */
-const savedSnapshotJson: string | null = localStorage.getItem(LS_CHART_SNAPSHOT)
+const savedSnapshotJson: string | null = sharedSource === null ? localStorage.getItem(LS_CHART_SNAPSHOT) : null
 const savedSnapshot: any = savedSnapshotJson ? JSON.parse(savedSnapshotJson) : null
 const savedScriptsOnChart: string[] = savedSnapshot?.scripts?.map((s: any) => s.tag) ?? []
 const scriptsOnChart = ref<Set<string>>(new Set(savedScriptsOnChart))
@@ -591,20 +597,12 @@ function syncImeFocus() {
   }
 }
 
-const STRATEGY_DEFAULT_RATIO = 65
-const savedStrategyRatio = parseFloat(localStorage.getItem(LS_STRATEGY_HEIGHT) || '')
-const strategyChartSize = ref(isNaN(savedStrategyRatio) ? STRATEGY_DEFAULT_RATIO : Math.max(20, Math.min(savedStrategyRatio, 85)))
-const strategyPanel = shallowRef<InstanceType<typeof ResizablePanel> | null>(null)
+const resultTab = ref<'chart' | 'report'>('chart')
 
-function onChartPanelResize(sizes: number[]) {
-  // Only persist when the strategy panel is expanded (non-zero size).
-  // When it is collapsed the chart takes 100% — ignore that event so
-  // the saved ratio is not overwritten.
-  if (sizes.length > 1 && sizes[1] > 0 && sizes[0] !== undefined) {
-    strategyChartSize.value = sizes[0]
-    localStorage.setItem(LS_STRATEGY_HEIGHT, String(sizes[0]))
-  }
-  nextTick(resizeCanvas)
+async function selectResultTab(tab: 'chart' | 'report') {
+  resultTab.value = tab
+  await nextTick()
+  if (tab === 'chart') resizeCanvas()
 }
 
 const CHART_MIN = 20
@@ -780,7 +778,7 @@ async function doRun(tag?: string): Promise<boolean> {
 }
 
 /** Add the current script to the chart using `tag` as its identifier. */
-function addToChart(tag: string) {
+async function addToChart(tag: string): Promise<boolean> {
   // Static analysis gates the add — only compile-time errors block.
   analyze(currentSource.value)
   if (firstDiagnostic.value?.severity === 'error') {
@@ -797,14 +795,14 @@ function addToChart(tag: string) {
       }],
     }
     dialogMode.value = 'scriptError'
-    return
+    return false
   }
   // Register on chart immediately, then kick off execution asynchronously.
   // Runtime errors (e.g. runtime.error()) will appear as a ⚠ icon on
   // the indicator label rather than blocking the add.
   const next = new Set([...scriptsOnChart.value, tag])
   scriptsOnChart.value = next
-  void doRun(tag)
+  return doRun(tag)
 }
 
 /** Remove the script identified by `tag` from the chart. */
@@ -847,6 +845,45 @@ function onSourceChange(source: string) {
   debounceTimer = setTimeout(() => {
     analyze(source)
   }, 300)
+}
+
+async function shareCurrentScript() {
+  const url = new URL(window.location.href)
+  url.search = ''
+  url.searchParams.set('code', encodePlaygroundSource(currentSource.value))
+  url.hash = ''
+
+  try {
+    let copied = false
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(url.toString())
+        copied = true
+      } catch {
+        // Fall through to the legacy copy path below.
+      }
+    }
+    if (!copied) {
+      const textarea = document.createElement('textarea')
+      textarea.value = url.toString()
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      copied = document.execCommand('copy')
+      textarea.remove()
+      if (!copied) throw new Error('Clipboard copy was rejected')
+    }
+    shareStatus.value = 'copied'
+  } catch {
+    shareStatus.value = 'failed'
+  }
+
+  if (shareStatusTimer) clearTimeout(shareStatusTimer)
+  shareStatusTimer = setTimeout(() => {
+    shareStatus.value = 'idle'
+    shareStatusTimer = null
+  }, 2000)
 }
 
 async function loadScript(id: string) {
@@ -1540,9 +1577,6 @@ onMounted(async () => {
   if (savedEditorCollapsed) {
     editorPanel.value?.collapse()
   }
-  // Strategy panel starts collapsed; the watcher on strategyReport
-  // will expand it when the first run produces a strategy report.
-  strategyPanel.value?.collapse()
   collapseEventsReady = true
 
   const canvas = chartCanvas.value
@@ -1554,7 +1588,7 @@ onMounted(async () => {
     // Dev hook for ad-hoc DevTools inspection.
     ;(window as unknown as { __navi: unknown }).__navi = engine.value
     // Sync initial theme before first render
-    setChartTheme(isDark.value)
+    setChartTheme(false)
 
     // Start pollEvent loop — replaces set_chart_event_callback.
     chartEventRaf = requestAnimationFrame(pollChartEvents)
@@ -1594,6 +1628,17 @@ onMounted(async () => {
     // Run initial analysis so the status bar shows diagnostics.
     analyze(currentSource.value)
 
+    // Shared links are deterministic previews: ignore local chart state and
+    // immediately add the decoded, unsaved script to the default chart.
+    if (sharedSource !== null) {
+      await waitForEditorSourceSync(currentSource.value)
+      await addToChart(UNSAVED_TAG)
+      await nextTick()
+      if (strategyReport.value) {
+        resultTab.value = 'report'
+      }
+    }
+
     // Restore chart snapshot (scripts + configs + viewport + pane ratios).
     if (savedSnapshotJson) {
       await restoreSnapshot(savedSnapshotJson)
@@ -1628,6 +1673,7 @@ onUnmounted(() => {
   window.removeEventListener('pagehide', flushPersistedChartState)
   window.removeEventListener('keydown', onKeyDown)
   if (debounceTimer) clearTimeout(debounceTimer)
+  if (shareStatusTimer) clearTimeout(shareStatusTimer)
   if (scrollAnimRaf) cancelAnimationFrame(scrollAnimRaf)
   if (chartEventRaf) cancelAnimationFrame(chartEventRaf)
   if (resizeObserver) resizeObserver.disconnect()
@@ -1644,48 +1690,68 @@ watch(activeScriptId, (id) => {
   refreshStrategyReport()
 })
 
-// Sync chart theme with VitePress dark mode
-watch(isDark, (dark) => {
-  setChartTheme(dark)
-}, { immediate: true })
-
-// Collapse / expand the strategy panel when the report changes.
-watch(strategyReport, async (report) => {
-  await nextTick()
-  if (report) {
-    strategyPanel.value?.expand()
-  } else {
-    strategyPanel.value?.collapse()
-  }
+watch(strategyReport, (report, previousReport) => {
+  if (report && !previousReport) resultTab.value = 'report'
+  if (!report) resultTab.value = 'chart'
 })
 
 
 </script>
 
 <template>
-  <div class="playground-page" style="height: calc(100vh - var(--vp-nav-height, 64px)); display: flex; flex-direction: column; overflow: hidden;">
+  <div class="playground-page flex flex-col overflow-hidden bg-muted/30" style="height: calc(100vh - var(--vp-nav-height, 64px));">
     <!-- Error fallback -->
     <div v-if="wasmError" style="padding: 2rem; color: var(--vp-c-danger-1);">
       <strong>{{ t('playground.wasm.failed') }}</strong> {{ wasmError }}
     </div>
 
+    <!-- Playground-level navigation and actions -->
+    <div class="grid h-12 shrink-0 grid-cols-[1fr_auto_1fr] items-center border-b border-border bg-background px-3">
+      <div class="truncate text-sm font-semibold tracking-tight text-foreground">
+        Navi Playground
+      </div>
+
+      <div class="flex h-9 items-center rounded-md border border-input bg-muted p-1 text-muted-foreground" role="tablist">
+        <button
+          class="h-7 rounded-sm px-4 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          :class="resultTab === 'chart' ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-background hover:text-foreground'"
+          role="tab"
+          :aria-selected="resultTab === 'chart'"
+          @click="selectResultTab('chart')"
+        >{{ t('toolbar.chartTab') }}</button>
+        <button
+          v-if="strategyReport"
+          class="h-7 rounded-sm px-4 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          :class="resultTab === 'report' ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-background hover:text-foreground'"
+          role="tab"
+          :aria-selected="resultTab === 'report'"
+          @click="selectResultTab('report')"
+        >{{ t('toolbar.reportTab') }}</button>
+      </div>
+
+      <button
+        class="inline-flex h-8 min-w-[5.5rem] items-center justify-center justify-self-end gap-1.5 rounded-md border border-input bg-background px-2.5 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-foreground/10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        :title="shareStatus === 'copied' ? t('toolbar.shareCopied') : shareStatus === 'failed' ? t('toolbar.shareFailed') : t('toolbar.shareTitle')"
+        @click="shareCurrentScript"
+      >
+        <Check v-if="shareStatus === 'copied'" :size="14" class="text-primary" />
+        <CircleAlert v-else-if="shareStatus === 'failed'" :size="14" class="text-destructive" />
+        <Share2 v-else :size="14" />
+        <span>{{ shareStatus === 'copied' ? t('toolbar.shareCopied') : shareStatus === 'failed' ? t('toolbar.shareFailed') : t('toolbar.share') }}</span>
+      </button>
+    </div>
+
     <!-- Main content -->
     <ResizablePanelGroup
       id="playground-panels"
-      direction="horizontal"
+      direction="vertical"
       class="flex-1 min-h-0"
       @layout="onPanelResize"
     >
       <!-- Chart panel -->
       <ResizablePanel :default-size="defaultPanelSize" :min-size="CHART_MIN">
-        <ResizablePanelGroup
-          id="chart-strategy-panels"
-          direction="vertical"
-          style="height: 100%;"
-          @layout="onChartPanelResize"
-        >
-          <ResizablePanel :default-size="strategyChartSize" :min-size="20">
-            <div style="display: flex; flex-direction: column; height: 100%;">
+        <div class="flex h-full min-h-0 flex-col overflow-hidden bg-background">
+          <div v-show="resultTab === 'chart'" class="flex min-h-0 flex-1 flex-col">
               <ChartToolbar
                 :active-stock="activeStock"
                 :current-timeframe="currentTimeframe"
@@ -1721,7 +1787,7 @@ watch(strategyReport, async (report) => {
               </div>
               <div
                 ref="chartContainer"
-                :style="{ flex: '1', minHeight: '0', position: 'relative', background: isDark ? '#1e1e2e' : '#ffffff', overflow: 'hidden' }"
+                :style="{ flex: '1', minHeight: '0', position: 'relative', background: '#ffffff', overflow: 'hidden' }"
               >
               <canvas
                 ref="chartCanvas"
@@ -1778,6 +1844,7 @@ watch(strategyReport, async (report) => {
               </div>
             </div>
             <AnnotationContextMenu
+              v-if="resultTab === 'chart'"
               :open="ctxMenuOpen"
               :x="ctxMenuX"
               :y="ctxMenuY"
@@ -1786,7 +1853,7 @@ watch(strategyReport, async (report) => {
               @select="onContextMenuSelect"
             />
             <SelectionToolbar
-              :visible="selToolbarVisible && !annPropsDialogOpen"
+              :visible="resultTab === 'chart' && selToolbarVisible && !annPropsDialogOpen"
               :bounds="selToolbarBounds"
               :descriptors="selToolbarDescriptors"
               :values="selToolbarValues"
@@ -1800,6 +1867,7 @@ watch(strategyReport, async (report) => {
               @open-properties="selToolbarAnnId != null && openAnnotationPropertiesDialog(BigInt(selToolbarAnnId))"
             />
             <AnnotationPropertiesDialog
+              v-if="resultTab === 'chart'"
               :open="annPropsDialogOpen"
               :descriptors="annPropsDescriptors"
               :values="annPropsValues"
@@ -1809,30 +1877,25 @@ watch(strategyReport, async (report) => {
               @point-change="onAnnPropsPointChange"
               @reset-to-default="onAnnPropsResetToDefault"
             />
-          </ResizablePanel>
-          <ResizableHandle v-if="strategyReport" />
-          <ResizablePanel
-            ref="strategyPanel"
-            :default-size="100 - strategyChartSize"
-            :min-size="15"
-            collapsible
-            :collapsed-size="0"
-          >
-            <StrategyTester v-if="strategyReport" :report="strategyReport" @scroll-to-bar="scrollToBar" />
-          </ResizablePanel>
-        </ResizablePanelGroup>
+          <StrategyTester
+            v-if="strategyReport && resultTab === 'report'"
+            class="min-h-0 flex-1"
+            :report="strategyReport"
+            @scroll-to-bar="scrollToBar"
+          />
+        </div>
       </ResizablePanel>
 
       <ResizableHandle>
         <button
-          class="z-10 flex h-6 w-3.5 !cursor-pointer items-center justify-center rounded-sm border bg-border text-muted-foreground hover:bg-accent"
+          class="z-10 flex h-4 w-7 !cursor-pointer items-center justify-center rounded-md border border-border bg-background text-muted-foreground shadow-sm transition-colors hover:bg-foreground/10 hover:text-foreground"
           :title="editorCollapsed ? t('playground.editor.show') : t('playground.editor.hide')"
           @mousedown.stop
           @pointerdown="toggleDownPos = { x: $event.clientX, y: $event.clientY }"
           @click="onToggleBtnClick"
         >
-          <ChevronsLeft v-if="editorCollapsed" class="h-2.5 w-2.5 pointer-events-none" />
-          <ChevronsRight v-else class="h-2.5 w-2.5 pointer-events-none" />
+          <ChevronsUp v-if="editorCollapsed" class="h-2.5 w-2.5 pointer-events-none" />
+          <ChevronsDown v-else class="h-2.5 w-2.5 pointer-events-none" />
         </button>
       </ResizableHandle>
 
@@ -1846,7 +1909,7 @@ watch(strategyReport, async (report) => {
         @collapse="onEditorCollapse"
         @expand="onEditorExpand"
       >
-        <div style="display: flex; flex-direction: column; height: 100%; background: var(--vp-c-bg);">
+        <div class="flex h-full flex-col overflow-hidden bg-background">
           <EditorToolbar
             :active-script-id="activeScriptId"
             :script-tag="currentTagComputed"
@@ -1864,12 +1927,12 @@ watch(strategyReport, async (report) => {
 
           <div
             v-if="activeScriptId && isBuiltinId(activeScriptId)"
-            class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border-b shrink-0 bg-amber-500/15 dark:bg-amber-500/20 border-l-4 border-l-amber-500 text-amber-900 dark:text-amber-100"
+            class="flex shrink-0 items-center gap-2 border-b border-border bg-muted px-3 py-2 text-xs font-medium text-foreground"
           >
-            <Lock :size="14" class="shrink-0 text-amber-600 dark:text-amber-400" />
+            <Lock :size="14" class="shrink-0 text-muted-foreground" />
             <span>{{ t('toolbar.readonlyHint') }}</span>
             <button
-              class="underline underline-offset-2 hover:text-amber-700 dark:hover:text-amber-200 transition-colors font-semibold"
+              class="rounded-sm font-semibold text-primary transition-colors hover:bg-primary/10"
               @click="dialogMode = 'saveAs'"
             >{{ t('toolbar.saveAs').split(' (')[0] }}</button>
           </div>

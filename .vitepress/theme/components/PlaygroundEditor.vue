@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useData } from 'vitepress'
-import { registerNaviLanguage, NAVI_LANG_ID } from '../monarch'
+import { registerNaviLanguage, NAVI_LANG_ID, NAVI_LIGHT_THEME } from '../monarch'
 import type { PlaygroundEngine } from '../composables/playground-engine'
 
 const props = defineProps<{
@@ -16,7 +15,6 @@ const emit = defineEmits<{
   'show-docs': [info: { module: string; name: string } | null]
 }>()
 
-const { isDark } = useData()
 const { t } = useI18n()
 
 const container = ref<HTMLDivElement | null>(null)
@@ -79,10 +77,11 @@ onMounted(async () => {
   const editor = monaco.editor.create(container.value, {
     value: props.source,
     language: NAVI_LANG_ID,
-    theme: isDark.value ? 'vs-dark' : 'vs',
+    theme: NAVI_LIGHT_THEME,
     minimap: { enabled: false },
     wordWrap: 'on',
     fontSize: 13,
+    fontFamily: 'Menlo, Monaco, "Courier New", monospace',
     lineNumbers: 'on',
     scrollBeyondLastLine: false,
     automaticLayout: true,
@@ -92,6 +91,9 @@ onMounted(async () => {
     readOnly: props.readonly ?? false,
     renderValidationDecorations: 'on',
     renderLineHighlight: 'line',
+    unicodeHighlight: {
+      ambiguousCharacters: false,
+    },
     padding: { top: 8 },
   })
   editorRef.value = editor
@@ -124,11 +126,6 @@ onUnmounted(() => {
   disposables.forEach(d => d.dispose())
   editorRef.value?.dispose()
   sourceApplyWaiters.splice(0).forEach(({ resolve }) => resolve())
-})
-
-// Update theme when dark mode changes
-watch(isDark, (dark) => {
-  monacoRef.value?.editor.setTheme(dark ? 'vs-dark' : 'vs')
 })
 
 // Update editor content when source changes externally (script load).

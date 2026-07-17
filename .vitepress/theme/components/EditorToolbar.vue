@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import {
   PopoverRoot, PopoverTrigger, PopoverPortal, PopoverContent,
 } from 'radix-vue'
-import { Plus, Save, CopyPlus, Pencil, Trash2, ChevronDown, Search, Check, ChartLine } from 'lucide-vue-next'
+import { Plus, Save, CopyPlus, Pencil, Trash2, ChevronsUpDown, Search, Check, ChartLine } from 'lucide-vue-next'
 import type { ScriptItem } from '../composables/script-store'
 import { isBuiltinId, getBuiltinScript, builtinIndicators, builtinStrategies } from '../composables/builtin-scripts'
 
@@ -90,16 +90,19 @@ const filteredStrategies = computed(() =>
 </script>
 
 <template>
-  <div class="flex items-center gap-1 border-b border-border bg-muted/50 px-2 py-1 shrink-0">
+  <div class="flex min-h-11 shrink-0 items-center justify-between gap-4 overflow-x-auto border-b border-border bg-background px-3 py-1.5">
     <!-- Script selector -->
-    <div class="flex items-center gap-1 flex-1 min-w-0">
+    <div class="flex w-[clamp(16rem,36vw,32rem)] shrink-0 items-center gap-1">
       <PopoverRoot v-model:open="scriptMenuOpen">
         <PopoverTrigger
-          class="flex h-7 flex-1 min-w-0 items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-xs shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring"
+          class="flex h-8 min-w-0 items-center whitespace-nowrap rounded-md border px-2 text-xs font-medium ring-offset-background transition-all hover:bg-foreground/10 focus:outline-none focus:ring-1 focus:ring-ring"
+          :class="scriptMenuOpen
+            ? 'flex-1 justify-between border-input bg-background px-3 shadow-sm'
+            : 'w-auto flex-none justify-start gap-1 border-transparent bg-transparent shadow-none'"
           @click="openMenu"
         >
           <span class="truncate">{{ activeScriptName }}</span>
-          <ChevronDown class="ml-1 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown class="ml-1 size-3.5 shrink-0 text-muted-foreground" />
         </PopoverTrigger>
         <PopoverPortal>
           <PopoverContent
@@ -128,8 +131,8 @@ const filteredStrategies = computed(() =>
                   v-for="s in filteredUserScripts"
                   :key="s.id"
                   :data-active="s.id === activeScriptId"
-                  class="w-full text-left flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
-                  :class="s.id === activeScriptId ? 'text-primary font-medium' : ''"
+                  class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-none transition-colors hover:bg-foreground/10 hover:text-foreground"
+                  :class="s.id === activeScriptId ? 'bg-primary/10 text-primary font-medium' : ''"
                   @click="selectScript(s.id)"
                 >
                   {{ s.name }}
@@ -150,8 +153,8 @@ const filteredStrategies = computed(() =>
                     v-for="s in filteredIndicators"
                     :key="s.id"
                     :data-active="s.id === activeScriptId"
-                    class="w-full text-left flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
-                    :class="s.id === activeScriptId ? 'text-primary font-medium' : ''"
+                    class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-none transition-colors hover:bg-foreground/10 hover:text-foreground"
+                    :class="s.id === activeScriptId ? 'bg-primary/10 text-primary font-medium' : ''"
                     @click="selectScript(s.id)"
                   >
                     <span class="flex-1 min-w-0 truncate">{{ s.title }}</span>
@@ -168,8 +171,8 @@ const filteredStrategies = computed(() =>
                     v-for="s in filteredStrategies"
                     :key="s.id"
                     :data-active="s.id === activeScriptId"
-                    class="w-full text-left flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
-                    :class="s.id === activeScriptId ? 'text-primary font-medium' : ''"
+                    class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-none transition-colors hover:bg-foreground/10 hover:text-foreground"
+                    :class="s.id === activeScriptId ? 'bg-primary/10 text-primary font-medium' : ''"
                     @click="selectScript(s.id)"
                   >
                     <span class="flex-1 min-w-0 truncate">{{ s.title }}</span>
@@ -192,29 +195,29 @@ const filteredStrategies = computed(() =>
         </PopoverPortal>
       </PopoverRoot>
       <span v-if="dirty" class="inline-block w-1.5 h-1.5 rounded-full bg-primary shrink-0" :title="t('toolbar.unsaved')" />
-    </div>
-
-    <!-- Script actions -->
-    <div class="flex items-center gap-0.5">
-      <!-- Add to chart: shown when current script is NOT yet on chart -->
       <button
         v-if="!scriptsOnChart.has(scriptTag)"
-        class="inline-flex items-center justify-center h-7 px-2 gap-1 rounded-md text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
+        class="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-md bg-primary/10 px-2.5 text-xs font-medium text-primary transition-colors hover:bg-primary/15"
         :title="t('toolbar.addToChart')"
         @click="emit('add-to-chart')"
       >
         <ChartLine :size="13" />
         {{ t('toolbar.addToChart') }}
       </button>
+    </div>
+
+    <!-- Script actions -->
+    <div class="flex shrink-0 items-center gap-1">
+      <div class="flex items-center gap-0.5" role="group" :aria-label="t('toolbar.fileActions')">
       <button
-        class="inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
         :title="t('toolbar.newScript')"
         @click="emit('new')"
       >
         <Plus :size="14" />
       </button>
       <button
-        class="inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-40 disabled:pointer-events-none"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
         :title="t('toolbar.save')"
         :disabled="!dirty"
         @click="emit('save')"
@@ -222,14 +225,19 @@ const filteredStrategies = computed(() =>
         <Save :size="14" />
       </button>
       <button
-        class="inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
         :title="t('toolbar.saveAs')"
         @click="emit('save-as')"
       >
         <CopyPlus :size="14" />
       </button>
+      </div>
+
+      <span class="mx-0.5 h-5 w-px bg-border" aria-hidden="true" />
+
+      <div class="flex items-center gap-0.5" role="group" :aria-label="t('toolbar.scriptActions')">
       <button
-        class="inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-40 disabled:pointer-events-none"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
         :title="t('toolbar.rename')"
         :disabled="!activeScriptId || isBuiltin"
         @click="emit('rename')"
@@ -237,13 +245,14 @@ const filteredStrategies = computed(() =>
         <Pencil :size="14" />
       </button>
       <button
-        class="inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-40 disabled:pointer-events-none"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-40"
         :title="t('toolbar.delete')"
         :disabled="!activeScriptId || isBuiltin"
         @click="emit('delete')"
       >
         <Trash2 :size="14" />
       </button>
+      </div>
     </div>
   </div>
 </template>

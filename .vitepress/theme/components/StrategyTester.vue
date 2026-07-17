@@ -1061,27 +1061,34 @@ function exportCsv() {
 /* ── Tabs ── */
 .st-tabs {
   display: flex;
+  align-items: center;
+  gap: 16px;
   border-bottom: 1px solid hsl(var(--border));
-  padding: 0 8px;
+  padding: 0 12px;
   flex-shrink: 0;
 }
 .st-tab {
   display: flex;
   align-items: center;
   gap: 2px;
-  padding: 5px 12px;
+  height: 36px;
+  padding: 0 2px;
   cursor: pointer;
   color: hsl(var(--muted-foreground));
-  background: none;
+  background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
+  border-radius: 0;
   font-size: 12px;
+  font-weight: 500;
   transition: color 0.15s, border-color 0.15s;
 }
-.st-tab:hover { color: hsl(var(--foreground)); }
+.st-tab:hover {
+  color: hsl(var(--foreground));
+}
 .st-tab.active {
   color: hsl(var(--foreground));
-  border-bottom-color: hsl(var(--primary));
+  border-bottom-color: hsl(var(--foreground));
 }
 
 /* ── Body ── */
@@ -1116,9 +1123,10 @@ function exportCsv() {
   flex-shrink: 0;
 }
 .st-metric {
-  padding: 6px 8px;
-  border-radius: 4px;
-  background: hsl(var(--muted));
+  padding: 8px 10px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  background: hsl(var(--card));
 }
 .st-metric-label {
   font-size: 10px;

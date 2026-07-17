@@ -49,6 +49,12 @@ export default defineConfig({
   },
 
   markdown: {
+    theme: JSON.parse(
+      readFileSync(
+        resolve(__dirname, "macos-classic-light.theme.json"),
+        "utf-8",
+      ),
+    ),
     languages: [
       {
         ...JSON.parse(
