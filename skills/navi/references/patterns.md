@@ -73,14 +73,14 @@ plot(slow, "Slow EMA", color: Color.RED);
 ### Library
 
 ```navi
-//@description Shared technical-analysis helpers.
+// @description Shared technical-analysis helpers.
 library("TaHelpers");
 
-//@function Selects a moving average by name.
-//@param src Source series.
-//@param length Moving-average length.
-//@param maType Moving-average type.
-//@returns Moving-average series.
+// @function Selects a moving average by name.
+// @param src Source series.
+// @param length Moving-average length.
+// @param maType Moving-average type.
+// @returns Moving-average series.
 export fn ma(src: series float, length: simple int, ma_type: simple String): series float {
     let result = switch ma_type {
         "EMA" => ta.ema(src, length),

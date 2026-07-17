@@ -124,13 +124,13 @@ plot(slow, "Slow EMA", color: Color.RED);
 Reusable library:
 
 ```navi
-//@description Shared moving-average helpers.
+// @description Shared moving-average helpers.
 library("MaLib");
 
-//@function Calculates an exponential moving average.
-//@param src Source series.
-//@param length EMA length.
-//@returns EMA series.
+// @function Calculates an exponential moving average.
+// @param src Source series.
+// @param length EMA length.
+// @returns EMA series.
 export fn ema_of(src: series float, length: simple int): series float {
     ta.ema(src, length);
 }

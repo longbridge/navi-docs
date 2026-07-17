@@ -68,13 +68,13 @@ let body = if close > open {
 
 ## Comments and Documentation Tags
 
-Line comments use `//`. Documentation tags use `//@tag` and attach to the following declaration.
+Line comments use `//`. Documentation tags accept both `//@tag` and `// @tag` and attach to the following declaration. Prefer the spaced form in new code.
 
 ```navi
-//@function Calculates a smoothed value.
-//@param src Source series.
-//@param length Smoothing length.
-//@returns Smoothed series.
+// @function Calculates a smoothed value.
+// @param src Source series.
+// @param length Smoothing length.
+// @returns Smoothed series.
 export fn smooth(src: series float, length: simple int): series float {
     ta.ema(src, length);
 }

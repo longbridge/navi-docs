@@ -1,4 +1,4 @@
-//@description Skill-validation indicator with confirmed EMA cross signals and
+// @description Skill-validation indicator with confirmed EMA cross signals and
 // an ATR trend filter.
 indicator("Skill Validation Trend", short_title: "SV Trend", overlay: true);
 
