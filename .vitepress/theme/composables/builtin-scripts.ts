@@ -1,13 +1,13 @@
 /** Built-in example scripts bundled with the app (read-only). */
 
 // Vite glob import: eagerly load all .nv files as raw text
-const indicatorModules = import.meta.glob('/naviscripts/indicators/*.nv', {
+const indicatorModules = import.meta.glob('/example/indicators/*.nv', {
   eager: true,
   query: '?raw',
   import: 'default',
 }) as Record<string, string>
 
-const strategyModules = import.meta.glob('/naviscripts/strategies/*.nv', {
+const strategyModules = import.meta.glob('/example/strategies/*.nv', {
   eager: true,
   query: '?raw',
   import: 'default',
@@ -17,7 +17,7 @@ export interface BuiltinScript {
   id: string
   name: string
   title: string
-  shorttitle: string | null
+  shortTitle: string | null
   source: string
   category: 'indicator' | 'strategy'
 }
@@ -28,30 +28,29 @@ function nameFromPath(path: string): string {
 }
 
 /**
- * Parse title and shorttitle from the first indicator/strategy/library call
+ * Parse title and short_title from the first indicator/strategy/library call
  * in a Navi source.
  *
  * Handles both named-argument style:
- *   indicator(title = "My Title", shorttitle = "MT", ...)
+ *   indicator(title: "My Title", short_title: "MT", ...)
  * and positional-argument style:
  *   indicator("My Title", "MT", ...)
  * as well as mixed/multi-line forms.
  */
-function parseTitleAndShorttitle(source: string): { title: string | null; shorttitle: string | null } {
+function parseTitleAndShortTitle(source: string): { title: string | null; shortTitle: string | null } {
   // Find the first indicator/strategy/library call and extract its argument list.
   // The call may span multiple lines.
   const callMatch = source.match(/(?:^|\n)\s*(?:indicator|strategy|library)\s*\(([^)]*)\)/s)
-  if (!callMatch) return { title: null, shorttitle: null }
+  if (!callMatch) return { title: null, shortTitle: null }
 
   const args = callMatch[1]
 
-  // Try named argument: title = "..."
-  const namedTitle = args.match(/\btitle\s*=\s*"((?:[^"\\]|\\.)*)"/s)
-  // Try named argument: shorttitle = "..."
-  const namedShorttitle = args.match(/\bshorttitle\s*=\s*"((?:[^"\\]|\\.)*)"/s)
+  // Try Navi named arguments: title: "...", short_title: "..."
+  const namedTitle = args.match(/\btitle\s*:\s*"((?:[^"\\]|\\.)*)"/s)
+  const namedShortTitle = args.match(/\bshort_title\s*:\s*"((?:[^"\\]|\\.)*)"/s)
 
   let title: string | null = namedTitle ? namedTitle[1] : null
-  let shorttitle: string | null = namedShorttitle ? namedShorttitle[1] : null
+  let shortTitle: string | null = namedShortTitle ? namedShortTitle[1] : null
 
   // If no named title, try first positional string argument (not preceded by an identifier=)
   if (title === null) {
@@ -59,16 +58,16 @@ function parseTitleAndShorttitle(source: string): { title: string | null; shortt
     const firstPosMatch = args.match(/^\s*"((?:[^"\\]|\\.)*)"/s)
     if (firstPosMatch) {
       title = firstPosMatch[1]
-      // If no named shorttitle, try second positional string argument
-      if (shorttitle === null) {
+      // If no named short_title, try the second positional string argument.
+      if (shortTitle === null) {
         const afterFirst = args.slice(args.indexOf('"') + firstPosMatch[1].length + 2)
         const secondPosMatch = afterFirst.match(/^\s*,\s*"((?:[^"\\]|\\.)*)"/s)
-        if (secondPosMatch) shorttitle = secondPosMatch[1]
+        if (secondPosMatch) shortTitle = secondPosMatch[1]
       }
     }
   }
 
-  return { title, shorttitle }
+  return { title, shortTitle }
 }
 
 function buildScripts(
@@ -78,12 +77,12 @@ function buildScripts(
   return Object.entries(modules)
     .map(([path, source]) => {
       const name = nameFromPath(path)
-      const { title, shorttitle } = parseTitleAndShorttitle(source)
+      const { title, shortTitle } = parseTitleAndShortTitle(source)
       return {
         id: `builtin:${category}:${name}`,
         name,
         title: title ?? name,
-        shorttitle: shorttitle !== title ? shorttitle : null,
+        shortTitle: shortTitle !== title ? shortTitle : null,
         source,
         category,
       }

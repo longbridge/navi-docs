@@ -2,7 +2,7 @@
 
 Use this file when a script depends on previous bars, persistent state, missing values, realtime updates, or multi-timeframe data.
 
-These execution semantics are stable, but confirm anything that looks off against navi-lang.org — the guide at <https://navi-lang.org/guide/> (full text: <https://navi-lang.org/llms-full.txt>).
+These execution semantics are stable, but confirm anything that looks off against navi-lang.org — the guide at <https://navi-lang.org/docs/> (full text: <https://navi-lang.org/llms-full.txt>).
 
 ## Table of Contents
 

@@ -3,7 +3,9 @@ import type { Theme } from "vitepress";
 import { h } from "vue";
 import { createI18n } from "vue-i18n";
 import DocActions from "./components/DocActions.vue";
+import LatestVersion from "./components/LatestVersion.vue";
 import OverloadTabs from "./components/OverloadTabs.vue";
+import QuickStartSmaChart from "./components/QuickStartSmaChart.vue";
 import "./styles/playground.css";
 import "./styles/design.css";
 import en from "../i18n/en";
@@ -24,12 +26,15 @@ const i18n = createI18n({
 export default {
   extends: DefaultTheme,
   Layout() {
-    return h(DefaultTheme.Layout);
+    return h(DefaultTheme.Layout, null, {
+      "home-hero-info-after": () => h(LatestVersion),
+    });
   },
   enhanceApp({ app, router }) {
     app.use(i18n);
     app.component("DocActions", DocActions);
     app.component("OverloadTabs", OverloadTabs);
+    app.component("QuickStartSmaChart", QuickStartSmaChart);
 
     if (typeof window !== "undefined") {
       // Sync vue-i18n locale with VitePress lang on route change.

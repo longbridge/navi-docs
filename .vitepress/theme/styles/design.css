@@ -9,6 +9,7 @@
   --lb-error: #ff3a3a;
   --up-color: #00ada2;
   --down-color: #ff3a75;
+  --chart-indicator-blue: #2962ff;
   --lb-navy: #0a0e19;
   --lb-text: #3c3c43;
   --lb-muted: #82888d;
@@ -518,7 +519,7 @@ html.dark .vp-doc a > code {
 
 .vp-doc div[class*="language-"] {
   border: 1px solid var(--vp-c-border);
-  border-radius: 16px;
+  border-radius: 8px;
   background: var(--vp-c-bg-soft);
   box-shadow: none;
 }

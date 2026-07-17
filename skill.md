@@ -8,10 +8,10 @@ hero:
   actions:
     - theme: brand
       text: Install Skill
-      link: /guide/ai-assistant
+      link: /docs/ai
     - theme: alt
       text: Read Navi Docs
-      link: /guide/
+      link: /docs/
 
 features:
   - title: One command install
@@ -38,4 +38,4 @@ Pull the latest version of the skill whenever the docs change:
 npx skills update navi
 ```
 
-See the [AI Assistant guide](/guide/ai-assistant) for agent-specific options and usage.
+See the [AI Assistant guide](/docs/ai) for agent-specific options and usage.

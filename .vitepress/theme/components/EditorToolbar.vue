@@ -35,7 +35,7 @@ const isBuiltin = computed(() => isBuiltinId(props.activeScriptId))
 const activeScriptName = computed(() => {
   if (!props.activeScriptId) return t('toolbar.selectScript')
   const builtin = getBuiltinScript(props.activeScriptId)
-  if (builtin) return builtin.shorttitle ? `${builtin.title} (${builtin.shorttitle})` : builtin.title
+  if (builtin) return builtin.shortTitle ? `${builtin.title} (${builtin.shortTitle})` : builtin.title
   const user = props.scripts.find(s => s.id === props.activeScriptId)
   if (user) return user.name
   return t('toolbar.selectScript')
@@ -74,7 +74,7 @@ const filteredIndicators = computed(() =>
   query.value
     ? builtinIndicators.filter(s =>
         s.title.toLowerCase().includes(query.value) ||
-        (s.shorttitle?.toLowerCase().includes(query.value) ?? false),
+        (s.shortTitle?.toLowerCase().includes(query.value) ?? false),
       )
     : builtinIndicators,
 )
@@ -83,7 +83,7 @@ const filteredStrategies = computed(() =>
   query.value
     ? builtinStrategies.filter(s =>
         s.title.toLowerCase().includes(query.value) ||
-        (s.shorttitle?.toLowerCase().includes(query.value) ?? false),
+        (s.shortTitle?.toLowerCase().includes(query.value) ?? false),
       )
     : builtinStrategies,
 )
@@ -155,7 +155,7 @@ const filteredStrategies = computed(() =>
                     @click="selectScript(s.id)"
                   >
                     <span class="flex-1 min-w-0 truncate">{{ s.title }}</span>
-                    <span v-if="s.shorttitle" class="shrink-0 text-xs text-muted-foreground">{{ s.shorttitle }}</span>
+                    <span v-if="s.shortTitle" class="shrink-0 text-xs text-muted-foreground">{{ s.shortTitle }}</span>
                     <Check v-if="scriptsOnChart.has(s.id)" class="h-3.5 w-3.5 shrink-0" />
                     <span v-else class="w-3.5 shrink-0" />
                   </button>
@@ -173,7 +173,7 @@ const filteredStrategies = computed(() =>
                     @click="selectScript(s.id)"
                   >
                     <span class="flex-1 min-w-0 truncate">{{ s.title }}</span>
-                    <span v-if="s.shorttitle" class="shrink-0 text-xs text-muted-foreground">{{ s.shorttitle }}</span>
+                    <span v-if="s.shortTitle" class="shrink-0 text-xs text-muted-foreground">{{ s.shortTitle }}</span>
                     <Check v-if="scriptsOnChart.has(s.id)" class="h-3.5 w-3.5 shrink-0" />
                     <span v-else class="w-3.5 shrink-0" />
                   </button>

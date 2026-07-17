@@ -32,10 +32,36 @@ if [ -z "$VERSION" ]; then
 fi
 VERSION="${VERSION#v}"
 
+# Detect the Linux C library. musl systems (e.g. Alpine) get the static
+# musl build; everything else defaults to the glibc build. Override with
+# NAVI_LIBC=musl or NAVI_LIBC=gnu.
+detect_linux_libc() {
+    if [ -n "${NAVI_LIBC:-}" ]; then
+        printf '%s' "$NAVI_LIBC"
+    elif ldd --version 2>&1 | grep -qi musl; then
+        printf 'musl'
+    elif [ -f /lib/ld-musl-x86_64.so.1 ] || [ -f /lib/ld-musl-aarch64.so.1 ]; then
+        printf 'musl'
+    else
+        printf 'gnu'
+    fi
+}
+
 case "$(uname -s)-$(uname -m)" in
     Darwin-x86_64) target="x86_64-apple-darwin" ;;
     Darwin-arm64) target="aarch64-apple-darwin" ;;
-    Linux-x86_64) target="x86_64-unknown-linux-gnu" ;;
+    Linux-x86_64)
+        if [ "$(detect_linux_libc)" = musl ]; then
+            target="x86_64-unknown-linux-musl"
+        else
+            target="x86_64-unknown-linux-gnu"
+        fi
+        ;;
+    Linux-aarch64 | Linux-arm64)
+        # Only a static musl build is published for aarch64 Linux; it runs
+        # on both glibc and musl systems.
+        target="aarch64-unknown-linux-musl"
+        ;;
     *) echo "Unsupported platform: $(uname -s) $(uname -m)" >&2; exit 1 ;;
 esac
 

@@ -49,7 +49,16 @@ const LS_CHART_SNAPSHOT = 'navi-playground-chart-snapshot'
 
 const defaultScript = builtinIndicators[0]?.source ?? '// Write Navi here\n'
 
-const currentSource = ref(localStorage.getItem(LS_SCRIPT) || defaultScript)
+function migrateLegacySource(source: string): string {
+  return source.replace(/\bshorttitle(?=\s*:)/g, 'short_title')
+}
+
+const storedSource = localStorage.getItem(LS_SCRIPT)
+const initialSource = migrateLegacySource(storedSource || defaultScript)
+if (storedSource && initialSource !== storedSource) {
+  localStorage.setItem(LS_SCRIPT, initialSource)
+}
+const currentSource = ref(initialSource)
 const activeScriptId = ref<string | null>(localStorage.getItem(LS_ACTIVE_ID) || null)
 const dirty = ref(false)
 /** Script IDs (tags) currently added to the chart. */
@@ -853,7 +862,7 @@ async function loadScript(id: string) {
   } else {
     const s = scripts.value.find(x => x.id === id)
     if (s) {
-      currentSource.value = s.source
+      currentSource.value = migrateLegacySource(s.source)
       activeScriptId.value = id
       dirty.value = false
     }

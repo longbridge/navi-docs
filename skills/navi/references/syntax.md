@@ -2,7 +2,7 @@
 
 Use this file to write `.nv` source code. It describes Navi syntax only; API names live in [stdlib.md](stdlib.md), and bar-by-bar behavior lives in [execution-model.md](execution-model.md).
 
-Navi syntax is stable, but if a detail here ever seems to conflict with working code, treat navi-lang.org as authoritative — the language guide at <https://navi-lang.org/guide/> (full text: <https://navi-lang.org/llms-full.txt>).
+Navi syntax is stable, but if a detail here ever seems to conflict with working code, treat navi-lang.org as authoritative — the language guide at <https://navi-lang.org/docs/> (full text: <https://navi-lang.org/llms-full.txt>).
 
 ## Table of Contents
 

@@ -12,38 +12,39 @@ export const zhHK: LocaleSpecificConfig<DefaultTheme.Config> & {
   description: "Navi 語言文檔與試玩區",
   themeConfig: {
     nav: [
-      { text: "Docs", link: "/zh-HK/guide/" },
+      { text: "Docs", link: "/zh-HK/docs/" },
       { text: "Skill", link: "/zh-HK/skill" },
       { text: "API", link: "/zh-HK/api/stdlib/" },
       { text: "Playground", link: "/zh-HK/playground" },
     ],
     sidebar: {
       "/zh-HK/api/": api,
-      "/zh-HK/guide/": [
+      "/zh-HK/docs/": [
         {
           text: "快速入門",
           items: [
-            { text: "簡介", link: "/zh-HK/guide/" },
-            { text: "快速開始", link: "/zh-HK/guide/quick-start" },
-            { text: "AI 助手", link: "/zh-HK/guide/ai-assistant" },
+            { text: "簡介", link: "/zh-HK/docs/" },
+            { text: "安裝", link: "/zh-HK/docs/install" },
+            { text: "快速開始", link: "/zh-HK/docs/quick-start" },
+            { text: "AI 助手", link: "/zh-HK/docs/ai" },
           ],
         },
         {
           text: "語言",
           items: [
-            { text: "語言基礎", link: "/zh-HK/guide/language-basics" },
-            { text: "歷史引用", link: "/zh-HK/guide/history-reference" },
-            { text: "集合類型", link: "/zh-HK/guide/collections" },
-            { text: "變量與限定符", link: "/zh-HK/guide/types-and-variables" },
-            { text: "控制結構", link: "/zh-HK/guide/control-structures" },
-            { text: "函數與方法", link: "/zh-HK/guide/functions-and-methods" },
-            { text: "自定義類型與枚舉", link: "/zh-HK/guide/custom-types" },
+            { text: "語言基礎", link: "/zh-HK/docs/language-basics" },
+            { text: "歷史引用", link: "/zh-HK/docs/history-reference" },
+            { text: "集合類型", link: "/zh-HK/docs/collections" },
+            { text: "變量與限定符", link: "/zh-HK/docs/types-and-variables" },
+            { text: "控制結構", link: "/zh-HK/docs/control-structures" },
+            { text: "函數與方法", link: "/zh-HK/docs/functions-and-methods" },
+            { text: "自定義類型與枚舉", link: "/zh-HK/docs/custom-types" },
             {
               text: "跨標的與多時間框架",
-              link: "/zh-HK/guide/request-security",
+              link: "/zh-HK/docs/request-security",
             },
-            { text: "文檔注解", link: "/zh-HK/guide/doc-annotations" },
-            { text: "示例", link: "/zh-HK/guide/examples" },
+            { text: "文檔注解", link: "/zh-HK/docs/doc-annotations" },
+            { text: "示例", link: "/zh-HK/docs/examples" },
           ],
         },
       ],
