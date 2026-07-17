@@ -58,6 +58,8 @@ Follow these Navi naming conventions consistently:
 
 Validate every complete `.nv` file you create or modify with the `navi` CLI. Use `navi --help` or `navi <command> --help` for detailed, current behavior; `-h` only prints a summary.
 
+The standalone `navi` CLI is intentionally a basic compiler and local runner. It does not include or download market data. Its role in AI authoring workflows is to prove that a script compiles and, with caller-provided data, executes successfully.
+
 1. Check whether the CLI is installed with `command -v navi` (`Get-Command navi` on Windows).
 2. If it is missing, install it with the appropriate command when local tool installation is in scope; otherwise give the command to the user:
 
@@ -75,8 +77,13 @@ Validate every complete `.nv` file you create or modify with the `navi` CLI. Use
 
 3. Run `navi lint path/to/script.nv`. This is the default completion gate: it checks syntax, types, compilation, imports, and canonical formatting.
 4. When lint reports only a formatting difference, run `navi fmt path/to/script.nv`, then rerun lint.
-5. When suitable OHLCV CSV data is available and runtime behavior matters, run `navi run path/to/script.nv --data path/to/bars.csv --symbol NASDAQ:AAPL --timeframe 1D`. Inspect `navi run --help` for the CSV schema and timeframe syntax.
-6. Treat every non-zero exit status as a failed validation. Fix the script and repeat until the required commands exit successfully; report any validation that could not be run.
+5. When runtime behavior matters, provide data explicitly with `--data`:
+   - By default, construct a small synthetic OHLCV CSV that exercises the script's warmup and important branches. Required columns are `time,open,high,low,close`; `volume` and `turnover` are optional. Use Unix milliseconds, chronological rows, internally consistent prices (`low <= open/close <= high`), and enough bars for the longest lookback.
+   - If the `longbridge` CLI is installed and authenticated, either fetch real candles with `longbridge kline history SYMBOL --start YYYY-MM-DD --end YYYY-MM-DD --format json` and convert them to the CSV schema, or run the script directly on Longbridge historical data with `longbridge quant run`.
+   - If a Longbridge MCP server is available, request historical candlesticks through its market-data tools and convert the returned OHLCV values to the CSV schema.
+   - If neither Longbridge option is available, a reputable public market-data source is acceptable. Account for its licensing, price adjustment, timezone, ordering, and missing-bar conventions.
+6. Run `navi run path/to/script.nv --data path/to/bars.csv --symbol NASDAQ:AAPL --timeframe 1D`. Inspect `navi run --help` for the current CSV schema and timeframe syntax.
+7. Treat every non-zero exit status as a failed validation. Fix the script and repeat until the required commands exit successfully; report the commands run, the data source (synthetic or real), and any validation that could not be completed.
 
 Use `navi check path/to/script.nv` (also available as `navi compile`) when compilation is required but formatting is intentionally out of scope. Do not claim that a code fragment was CLI-validated unless it was placed in a complete `.nv` script and the command succeeded.
 

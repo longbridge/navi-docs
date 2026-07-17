@@ -50,7 +50,7 @@ Verify the installation:
 navi --version
 ```
 
-The Quick Start shows how to validate a script and run it against a local OHLCV CSV.
+The standalone CLI contains no market data; it provides basic compile, lint, format, and run capabilities so developers and AI agents can verify script correctness. `navi run` therefore requires a caller-provided OHLCV CSV through `--data`. The Quick Start shows how to build synthetic validation data and where to obtain real candles when needed.
 
 ## Next Steps
 

@@ -50,7 +50,7 @@ irm https://navi-lang.org/install.ps1 | iex
 navi --version
 ```
 
-快速开始会继续介绍如何验证脚本，以及如何使用本地 OHLCV CSV 运行脚本。
+独立 CLI 不包含行情数据，只提供基础的编译、lint、格式化和运行能力，方便开发者及 AI 验证脚本正确性。因此 `navi run` 必须通过 `--data` 接收调用方提供的 OHLCV CSV。快速开始会介绍如何构造模拟验证数据，以及需要时如何获取真实 K 线。
 
 ## 下一步
 

@@ -25,13 +25,24 @@ plot(ta.sma(close, len), "SMA", color: Color.BLUE);
 navi lint sma.nv
 ```
 
-`lint` 会检查语法、类型、编译、导入和规范格式。准备 OHLCV CSV 后，可执行：
+`lint` 会检查语法、类型、编译、导入和规范格式。独立 CLI 不包含行情数据。要验证运行行为，请准备 OHLCV CSV；模拟 K 线即可，但应覆盖脚本的回看周期和关键分支。然后执行：
 
 ```bash
 navi run sma.nv --data bars.csv --symbol NASDAQ:AAPL --timeframe 1D
 ```
 
-运行 `navi run --help` 可查看完整 CSV 格式和所有选项。
+CSV 必须包含 `time,open,high,low,close`，可选包含 `volume` 和 `turnover`；`time` 使用 Unix 毫秒。运行 `navi run --help` 可查看当前 CSV 格式和所有选项。
+
+需要真实 K 线时，已安装并登录的 Longbridge CLI 可以输出 JSON：
+
+```bash
+longbridge kline history AAPL.US \
+  --start 2024-01-01 \
+  --end 2024-12-31 \
+  --format json
+```
+
+将返回的 OHLCV 字段转换为上述 CSV 格式即可。AI 环境若提供 Longbridge MCP，也可以通过其行情工具请求历史 K 线。两者均不可用时，可使用可靠的公开数据源，并核对授权、复权方式、时区、排序及缺失 K 线处理方式。
 
 ## 使用 Longbridge 运行
 

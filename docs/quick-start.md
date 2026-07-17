@@ -25,13 +25,24 @@ If you installed the standalone `navi` CLI for development, validate the script 
 navi lint sma.nv
 ```
 
-`lint` checks syntax, types, compilation, imports, and canonical formatting. To execute the script, prepare an OHLCV CSV and run:
+`lint` checks syntax, types, compilation, imports, and canonical formatting. The standalone CLI does not contain market data. To verify execution, prepare an OHLCV CSV—synthetic bars are sufficient and should cover the script's lookback and important branches—then run:
 
 ```bash
 navi run sma.nv --data bars.csv --symbol NASDAQ:AAPL --timeframe 1D
 ```
 
-Use `navi run --help` for the complete CSV schema and available options.
+The required CSV columns are `time,open,high,low,close`; `volume` and `turnover` are optional, and `time` is Unix milliseconds. Use `navi run --help` for the current schema and available options.
+
+When real candles are useful, an installed and authenticated Longbridge CLI can fetch them as JSON:
+
+```bash
+longbridge kline history AAPL.US \
+  --start 2024-01-01 \
+  --end 2024-12-31 \
+  --format json
+```
+
+Convert the returned OHLCV fields to the CSV schema above. In an AI environment with Longbridge MCP, the agent can instead request historical candlesticks from its market-data tools. If neither is available, use a reputable public market-data source and check its licensing, adjustment, timezone, ordering, and missing-bar conventions.
 
 ## Run with Longbridge
 
