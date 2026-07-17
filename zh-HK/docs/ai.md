@@ -35,6 +35,34 @@ npx skills add longbridge/navi --skill navi
 
 也可以[下載打包後的 skill](/navi-skill.zip)，並將它解壓到 AI 編碼助手的 skills 目錄。
 
+同時安裝獨立的 `navi` CLI，讓 AI 編碼助手可以編譯並執行它編寫的腳本。
+
+macOS 或 Linux：
+
+```bash
+curl -fsSL https://navi-lang.org/install.sh | sh
+```
+
+Windows PowerShell：
+
+```powershell
+irm https://navi-lang.org/install.ps1 | iex
+```
+
+確認 CLI 可用：
+
+```bash
+navi --version
+```
+
+Navi 文件或 API 更新後，可更新已安裝的 skill：
+
+```bash
+npx skills update navi
+```
+
+CLI 不包含行情數據。下方驗證流程會透過 `--data` 使用調用方提供的模擬或真實 OHLCV 數據。
+
 ## 使用
 
 安裝後，兼容的 AI 編碼助手在處理 `.nv` 文件或你詢問 Navi 相關問題時即可使用該 skill。
@@ -63,7 +91,7 @@ npx skills add longbridge/navi --skill navi
    ```
 
 4. 如果只有格式問題，先執行 `navi fmt`，然後重新 lint。
-5. 需要驗證執行行為並且有 OHLCV CSV 數據時，實際執行腳本：
+5. 需要驗證執行行為時，先構造一份較小的模擬 OHLCV CSV，數據量應覆蓋腳本最長回看週期，然後實際執行腳本：
 
    ```bash
    navi run path/to/script.nv \
@@ -76,6 +104,18 @@ npx skills add longbridge/navi --skill navi
 
 只有 AI 成功執行 CLI 才能稱為「已驗證」；僅返回代碼區塊不代表完成驗證。
 
+### 執行數據
+
+獨立的 `navi` CLI 僅提供基礎編譯和本機執行能力，不包含也不會下載行情數據，因此 `navi run` 必須透過 `--data` 接收調用方提供的數據。AI 驗證預設應使用模擬數據：時間戳按 Unix 毫秒遞增，OHLC 價格關係合理，並根據腳本需要覆蓋預熱、上漲、下跌、橫盤和觸發訊號等場景。
+
+需要真實數據時，按可用環境優先選擇：
+
+- 已安裝並登入的 Longbridge CLI：執行 `longbridge kline history SYMBOL --start YYYY-MM-DD --end YYYY-MM-DD --format json`，再將返回的 K 線轉換為 `navi run` 所需的 CSV；也可以使用 `longbridge quant run` 直接基於 Longbridge 歷史數據執行腳本。
+- AI 環境中的 Longbridge MCP：透過其行情工具請求歷史 K 線，再將返回的 OHLCV 轉換為 CSV。
+- 兩者均不可用時，可使用可靠的公開數據源，但要核對授權、復權方式、時區、數據順序及缺失 K 線處理方式。
+
+真實數據是對模擬場景的補充，不能代替專門構造、用於觸發關鍵分支的數據。
+
 ## 提問示例
 
 ```text
@@ -87,14 +127,6 @@ npx skills add longbridge/navi --skill navi
 建立一個 Navi 庫，匯出 EMA 和交叉判斷輔助函數。
 遵循 Navi 命名規範，儲存為 moving_average_helpers.nv，
 並返回實際的 navi lint 結果。
-```
-
-## 更新
-
-Navi 文件或 API 更新後，請更新已安裝的 skill：
-
-```bash
-npx skills update navi
 ```
 
 Skill 將 [navi-lang.org](/zh-HK/docs/) 及其標準庫文件作為目前 API 的權威來源。

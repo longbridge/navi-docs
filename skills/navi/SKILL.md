@@ -11,9 +11,17 @@ Navi's standard library and, occasionally, its syntax evolve. This skill capture
 
 - Full documentation in one file (language guide + complete stdlib API): <https://navi-lang.org/llms-full.txt>
 - Documentation index, per topic — fetch a single page on demand: <https://navi-lang.org/llms.txt>
-- Any single doc page as raw markdown: append `.md` to its path, e.g. <https://navi-lang.org/api/stdlib/ta/index.md>
+- Any single doc page as raw markdown: use the exact URL listed in `llms.txt`, e.g. <https://navi-lang.org/api/stdlib/ta/index.md>
 
 Before using any concrete API — a function name, signature, enum variant, or method name — confirm it against the source above. When unsure, fetch `llms-full.txt` (or the specific page) rather than guessing.
+
+Never construct a documentation URL from a symbol name. Fetch `llms.txt` first and copy an exact link from it. In particular:
+
+- Guide pages live under `/docs/`, not `/ai/` or `/guide/`.
+- Namespace/module pages use `/api/stdlib/<module>/index.md`.
+- Prelude types and enums use `/api/stdlib/prelude/<Type>.md`, such as `Table.md` and `PlotDisplay.md`; they do not have nested `index.md` pages.
+- Free prelude functions such as `plot`, `bg_color`, `na`, and `nz` are sections of `/api/stdlib/prelude/index.md`; they do not have one page per function.
+- If a guessed URL returns 404, stop guessing paths and return to `llms.txt`.
 
 ## Reference Map
 
@@ -33,7 +41,7 @@ Load only the reference needed for the task:
 3. Model time correctly. Treat `close`, `high`, `ta.*` outputs, conditions, and plots as per-bar `series` values. Use `x[1]` for prior bars.
 4. Use `let` for per-bar calculations, `var` for state that must persist across bars, and `varip` only for intentional intrabar state.
 5. Guard warmup and missing values with `na()`, `nz()`, or `fixnan()`; never assume `na` is zero.
-6. Confirm standard-library API names and signatures against navi-lang.org (`llms-full.txt` or the specific page) before using them; do not rely on remembered lists. As a rule, Navi built-in functions are snake_case (e.g. `ta.cross_over`) and types/enums are PascalCase (e.g. `Direction.Long`).
+6. Confirm standard-library API names and signatures against navi-lang.org (`llms.txt`, then its exact page link) before using them; do not rely on remembered lists or synthesize URLs. As a rule, Navi built-in functions are snake_case (e.g. `ta.cross_over`, `bg_color`) and types/enums are PascalCase (e.g. `Direction.Long`).
 7. Make outputs deterministic and readable: stable plot order, clear titles, explicit colors, and `na` or `PlotDisplay.NONE` when hiding output.
 8. When returning code, return complete `.nv` source unless the user asked for only a fragment.
 
@@ -49,6 +57,8 @@ Follow these Navi naming conventions consistently:
 ## CLI Validation
 
 Validate every complete `.nv` file you create or modify with the `navi` CLI. Use `navi --help` or `navi <command> --help` for detailed, current behavior; `-h` only prints a summary.
+
+The standalone `navi` CLI is intentionally a basic compiler and local runner. It does not include or download market data. Its role in AI authoring workflows is to prove that a script compiles and, with caller-provided data, executes successfully.
 
 1. Check whether the CLI is installed with `command -v navi` (`Get-Command navi` on Windows).
 2. If it is missing, install it with the appropriate command when local tool installation is in scope; otherwise give the command to the user:
@@ -67,8 +77,13 @@ Validate every complete `.nv` file you create or modify with the `navi` CLI. Use
 
 3. Run `navi lint path/to/script.nv`. This is the default completion gate: it checks syntax, types, compilation, imports, and canonical formatting.
 4. When lint reports only a formatting difference, run `navi fmt path/to/script.nv`, then rerun lint.
-5. When suitable OHLCV CSV data is available and runtime behavior matters, run `navi run path/to/script.nv --data path/to/bars.csv --symbol NASDAQ:AAPL --timeframe 1D`. Inspect `navi run --help` for the CSV schema and timeframe syntax.
-6. Treat every non-zero exit status as a failed validation. Fix the script and repeat until the required commands exit successfully; report any validation that could not be run.
+5. When runtime behavior matters, provide data explicitly with `--data`:
+   - By default, construct a small synthetic OHLCV CSV that exercises the script's warmup and important branches. Required columns are `time,open,high,low,close`; `volume` and `turnover` are optional. Use Unix milliseconds, chronological rows, internally consistent prices (`low <= open/close <= high`), and enough bars for the longest lookback.
+   - If the `longbridge` CLI is installed and authenticated, either fetch real candles with `longbridge kline history SYMBOL --start YYYY-MM-DD --end YYYY-MM-DD --format json` and convert them to the CSV schema, or run the script directly on Longbridge historical data with `longbridge quant run`.
+   - If a Longbridge MCP server is available, request historical candlesticks through its market-data tools and convert the returned OHLCV values to the CSV schema.
+   - If neither Longbridge option is available, a reputable public market-data source is acceptable. Account for its licensing, price adjustment, timezone, ordering, and missing-bar conventions.
+6. Run `navi run path/to/script.nv --data path/to/bars.csv --symbol NASDAQ:AAPL --timeframe 1D`. Inspect `navi run --help` for the current CSV schema and timeframe syntax.
+7. Treat every non-zero exit status as a failed validation. Fix the script and repeat until the required commands exit successfully; report the commands run, the data source (synthetic or real), and any validation that could not be completed.
 
 Use `navi check path/to/script.nv` (also available as `navi compile`) when compilation is required but formatting is intentionally out of scope. Do not claim that a code fragment was CLI-validated unless it was placed in a complete `.nv` script and the command succeeded.
 

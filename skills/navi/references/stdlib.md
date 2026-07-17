@@ -7,10 +7,23 @@ This file explains **how to find and use** Navi's standard library. It intention
 Look up exact names, argument order, parameter qualifiers, and enum variants on navi-lang.org before using them:
 
 - Everything in one file (language guide + full stdlib API): <https://navi-lang.org/llms-full.txt>
-- Page index — fetch one topic on demand: <https://navi-lang.org/llms.txt>
-- A single doc page as raw markdown: append `.md` to its path, e.g. <https://navi-lang.org/api/stdlib/ta/index.md>
+- Page index — fetch this first, then copy an exact topic URL: <https://navi-lang.org/llms.txt>
+- A module page from that index, for example: <https://navi-lang.org/api/stdlib/ta/index.md>
 
 Fetch the relevant page whenever you need a concrete function name, its argument order, or whether a length parameter must be `simple` or may be `series`.
+
+## URL Routing
+
+Do not infer URLs from a heading, symbol, or type name. `llms.txt` is the route manifest.
+
+| Looking for | Exact page shape | Example |
+| --- | --- | --- |
+| Guide topic | `/docs/<topic>.md` | `/docs/examples.md` |
+| Namespace/module | `/api/stdlib/<module>/index.md` | `/api/stdlib/request/index.md` |
+| Prelude type or enum | `/api/stdlib/prelude/<Type>.md` | `/api/stdlib/prelude/Table.md` |
+| Free prelude function | `/api/stdlib/prelude/index.md` | find `### bg_color` in the page |
+
+There is no `/ai/examples/index.md`, `/api/stdlib/Table/index.md`, `/api/stdlib/PlotDisplay/index.md`, or `/api/stdlib/bgcolor/index.md`. After any 404, return to `llms.txt`; do not try another guessed variation.
 
 ## Naming Rules
 
@@ -40,6 +53,8 @@ Use this to decide *which* area to look up, then fetch that page for its current
 - **State namespaces**: `bar_state`, `timeframe`, `symbol_info`, `session`, `log`, `runtime`; display flags use the `PlotDisplay` enum.
 
 Do not assume a member exists from this map alone — confirm names on the page.
+
+`request.financial` accepts a provider-defined `financial_id` string. The API reference documents the call signature, not a universal list of metric IDs. Do not invent an ID, and do not reuse an identifier from a separate screener/filter API without provider documentation confirming that mapping. For example, screener keys such as `pettm` and `marketcap` are not evidence that the same strings are valid `request.financial` IDs.
 
 ## Call Shapes
 
@@ -75,6 +90,6 @@ if ta.cross_over(fast, slow) {
 
 ## When Writing Code
 
-- Unsure a function exists or how it is spelled? Fetch `api/stdlib/<module>/index.md` (or `llms-full.txt`) first.
-- Need every variant of an enum? Fetch its prelude page; do not guess.
+- Unsure a function exists or how it is spelled? Fetch `llms.txt`, then follow its exact module or prelude link.
+- Need every variant of an enum? Follow the exact prelude type link from `llms.txt`; do not append `/index.md`.
 - Copy argument order and qualifiers from the docs, not from the simplified shapes above.
