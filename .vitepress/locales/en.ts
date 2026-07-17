@@ -11,44 +11,45 @@ export const en: LocaleSpecificConfig<DefaultTheme.Config> & {
   lang: "en",
   themeConfig: {
     nav: [
-      { text: "Docs", link: "/guide/" },
+      { text: "Docs", link: "/docs/" },
       { text: "Skill", link: "/skill" },
       { text: "API", link: "/api/stdlib/" },
       { text: "Playground", link: "/playground" },
     ],
     sidebar: {
       "/api/": api,
-      "/guide/": [
+      "/docs/": [
         {
           text: "Getting Started",
           items: [
-            { text: "Introduction", link: "/guide/" },
-            { text: "Quick Start", link: "/guide/quick-start" },
-            { text: "AI Assistant", link: "/guide/ai-assistant" },
+            { text: "Introduction", link: "/docs/" },
+            { text: "Install", link: "/docs/install" },
+            { text: "Quick Start", link: "/docs/quick-start" },
+            { text: "AI Assistant", link: "/docs/ai" },
           ],
         },
         {
           text: "Language",
           items: [
-            { text: "Language Basics", link: "/guide/language-basics" },
-            { text: "History Reference", link: "/guide/history-reference" },
-            { text: "Collections", link: "/guide/collections" },
+            { text: "Language Basics", link: "/docs/language-basics" },
+            { text: "History Reference", link: "/docs/history-reference" },
+            { text: "Collections", link: "/docs/collections" },
             {
               text: "Variables & Qualifiers",
-              link: "/guide/types-and-variables",
+              link: "/docs/types-and-variables",
             },
-            { text: "Control Structures", link: "/guide/control-structures" },
+            { text: "Control Structures", link: "/docs/control-structures" },
             {
               text: "Functions & Methods",
-              link: "/guide/functions-and-methods",
+              link: "/docs/functions-and-methods",
             },
-            { text: "Custom Types & Enums", link: "/guide/custom-types" },
+            { text: "Custom Types & Enums", link: "/docs/custom-types" },
             {
               text: "Cross-Symbol & Multi-Timeframe",
-              link: "/guide/request-security",
+              link: "/docs/request-security",
             },
-            { text: "Doc Annotations", link: "/guide/doc-annotations" },
-            { text: "Examples", link: "/guide/examples" },
+            { text: "Doc Annotations", link: "/docs/doc-annotations" },
+            { text: "Examples", link: "/docs/examples" },
           ],
         },
       ],

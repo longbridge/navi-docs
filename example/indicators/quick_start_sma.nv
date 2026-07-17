@@ -1,0 +1,4 @@
+indicator("SMA", overlay: true);
+
+let len = input.int(14, "Length", minval: 1);
+plot(ta.sma(close, len), "SMA", color: Color.BLUE);

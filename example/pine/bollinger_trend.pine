@@ -1,0 +1,35 @@
+//@version=6
+indicator("Bollinger Trend", overlay=true)
+
+length = input.int(20, "Bollinger Length", minval=1)
+multiplier = input.float(2.0, "Standard Deviation", minval=0.1, step=0.1)
+trend_length = input.int(50, "Trend Length", minval=1)
+
+[basis, upper, lower] = ta.bb(close, length, multiplier)
+trend = ta.ema(close, trend_length)
+
+basis_plot = plot(basis, "Basis", color=color.blue)
+upper_plot = plot(upper, "Upper", color=color.red)
+lower_plot = plot(lower, "Lower", color=color.green)
+plot(trend, "Trend", color=color.orange, linewidth=2)
+fill(upper_plot, lower_plot, color=color.new(color.blue, 90))
+
+bullish_breakout = ta.crossover(close, upper) and close > trend
+bearish_breakout = ta.crossunder(close, lower) and close < trend
+
+plotshape(
+    bullish_breakout,
+    title="Bullish Breakout",
+    style=shape.triangleup,
+    location=location.belowbar,
+    color=color.green,
+    size=size.tiny
+)
+plotshape(
+    bearish_breakout,
+    title="Bearish Breakout",
+    style=shape.triangledown,
+    location=location.abovebar,
+    color=color.red,
+    size=size.tiny
+)

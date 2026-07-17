@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vitepress dev",
+    "package-skill": "rm -f public/navi-skill.zip && cd skills && zip -qr ../public/navi-skill.zip navi",
+    "prebuild": "npm run package-skill",
     "build": "vitepress build",
     "preview": "vitepress preview"
   },

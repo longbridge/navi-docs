@@ -3,4 +3,5 @@ dist/
 .vitepress/dist/
 .vitepress/cache/
 stdlib-docs*.json
+public/navi-skill.zip
 .DS_Store

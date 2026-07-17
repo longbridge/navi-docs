@@ -1,0 +1,12 @@
+indicator("Bollinger Range", overlay: true);
+
+let price_source = input.source(close, "Source");
+let period = input.int(20, "Period", minval: 1);
+let deviation = input.float(2.0, "Deviation", minval: 0.1);
+
+let (middle, upper_band, lower_band) = ta.bb(price_source, period, deviation);
+let middle_color = middle > middle[1] ? Color.GREEN : Color.RED;
+
+plot(middle, "Trend Basis", color: middle_color, line_width: 2);
+plot(upper_band, "Upper Range", color: Color.BLUE);
+plot(lower_band, "Lower Range", color: Color.BLUE);

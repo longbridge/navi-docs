@@ -2,6 +2,8 @@
 
 Use this file when a script depends on previous bars, persistent state, missing values, realtime updates, or multi-timeframe data.
 
+These execution semantics are stable, but confirm anything that looks off against navi-lang.org — the guide at <https://navi-lang.org/docs/> (full text: <https://navi-lang.org/llms-full.txt>).
+
 ## Table of Contents
 
 - [Bar-by-Bar Evaluation](#bar-by-bar-evaluation)
@@ -73,8 +75,8 @@ Always check the API signature when passing lengths or options. Some `ta.*` func
 let len = input.int(14, "Length", minval: 1);
 plot(ta.ema(close, len)); // OK: input int can satisfy simple int
 
-let dynamicLen = int(close);
-// plot(ta.ema(close, dynamicLen)); // error if the signature requires simple int
+let dynamic_len = int(close);
+// plot(ta.ema(close, dynamic_len)); // error if the signature requires simple int
 ```
 
 ## `let`, `var`, and `varip`
@@ -107,8 +109,8 @@ plot(count, "Count");
 
 ```navi
 if close > open {
-    var firstGreenClose = close;
-    log.info(str.tostring(firstGreenClose));
+    var first_green_close = close;
+    log.info(String.from(first_green_close));
 }
 ```
 
@@ -127,7 +129,7 @@ Use `varip` only for intentional intrabar state:
 
 ```navi
 varip updates: int = 0;
-if barstate.is_new {
+if bar_state.is_new {
     updates = 1;
 } else {
     updates += 1;
@@ -176,8 +178,8 @@ Helpers:
 - `fixnan(x)` replaces `na` with the last non-`na` value.
 
 ```navi
-let safeVolume = nz(volume, 0.0);
-let heldMa = fixnan(ta.sma(close, 20));
+let safe_volume = nz(volume, 0.0);
+let held_ma = fixnan(ta.sma(close, 20));
 ```
 
 Annotate `na` when used alone:
@@ -191,9 +193,9 @@ var peak: float = na;
 `x[n]` returns the value `x` produced `n` bars ago. It reads the already-computed historical value; it does not recompute the expression.
 
 ```navi
-let prevClose = close[1];
-let prevSma = ta.sma(close, 14)[1];
-let prevRange = (high - low)[1];
+let prev_close = close[1];
+let prev_sma = ta.sma(close, 14)[1];
+let prev_range = (high - low)[1];
 ```
 
 Rules:
@@ -207,8 +209,8 @@ Rules:
 Manual cross logic:
 
 ```navi
-let crossedUp = fast > slow and fast[1] <= slow[1];
-let crossedDown = fast < slow and fast[1] >= slow[1];
+let crossed_up = fast > slow and fast[1] <= slow[1];
+let crossed_down = fast < slow and fast[1] >= slow[1];
 ```
 
 Prefer `ta.cross_over(fast, slow)` and `ta.cross_under(fast, slow)` when their boundary behavior matches the script.
@@ -220,7 +222,7 @@ A script repaints when a historical bar's final value differs from what would ha
 Default to these rules:
 
 - Base plotted signals on values available at that bar.
-- Gate final alerts/orders on `barstate.is_confirmed` when the signal must wait for bar close.
+- Gate final alerts/orders on `bar_state.is_confirmed` when the signal must wait for bar close.
 - Avoid `varip` in historical-looking plots unless the realtime-only nature is intentional.
 - Avoid lookahead in `request.security`; prefer `BarmergeLookahead.Off`.
 - Be careful with pivot functions: pivots confirm only after enough right-side bars exist, so signal placement may naturally appear delayed.
@@ -228,8 +230,8 @@ Default to these rules:
 Confirmed-bar side effect:
 
 ```navi
-let longSignal = ta.cross_over(fast, slow);
-if longSignal and barstate.is_confirmed {
+let long_signal = ta.cross_over(fast, slow);
+if long_signal and bar_state.is_confirmed {
     alert("Long signal", AlertFreq.OncePerBarClose);
 }
 ```
@@ -239,8 +241,8 @@ if longSignal and barstate.is_confirmed {
 `request.security(symbol, timeframe, expression, ...)` evaluates `expression` on another symbol or timeframe and aligns the result to the current chart.
 
 ```navi
-let weeklyClose = request.security(syminfo.tickerid, "W", close);
-plot(weeklyClose, "Weekly Close");
+let weekly_close = request.security(symbol_info.tickerid, "W", close);
+plot(weekly_close, "Weekly Close");
 ```
 
 Guidelines:
@@ -253,16 +255,16 @@ Guidelines:
 Tuple request:
 
 ```navi
-let (wOpen, wHigh, wLow, wClose) =
-    request.security(syminfo.tickerid, "W", (open, high, low, close));
+let (w_open, w_high, w_low, w_close) =
+    request.security(symbol_info.tickerid, "W", (open, high, low, close));
 
-plot_candle(wOpen, wHigh, wLow, wClose, title: "Weekly OHLC");
+plot_candle(w_open, w_high, w_low, w_close, title: "Weekly OHLC");
 ```
 
 Lower-timeframe request returns an `Array<T>`:
 
 ```navi
-let lows = request.security_lower_tf(syminfo.tickerid, "1", low);
-let intrabarLow = lows.size() > 0 ? lows.min() : na;
-plot(intrabarLow, "1m low inside bar");
+let lows = request.security_lower_tf(symbol_info.tickerid, "1", low);
+let intrabar_low = lows.size() > 0 ? lows.min() : na;
+plot(intrabar_low, "1m low inside bar");
 ```

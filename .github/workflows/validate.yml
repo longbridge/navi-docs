@@ -1,0 +1,45 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    name: Site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  navi-scripts:
+    name: Navi scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Navi CLI
+        run: |
+          sh public/install.sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Show Navi version
+        run: navi --version
+
+      - name: Check examples
+        run: find example -type f -name '*.nv' -print0 | sort -z | xargs -0 -n 1 navi check

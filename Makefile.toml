@@ -47,22 +47,22 @@ cwd = "${SITE}"
 script_runner = "@shell"
 script = ["node scripts/generate-stdlib-docs.mjs"]
 
-# Package the navi-authoring Claude Code skill as a zip for users to download.
+# Package the Navi skill as a zip for users to download.
 [tasks.package-skill]
 private = true
 workspace = false
 
 [tasks.package-skill.linux]
 script_runner = "@shell"
-script = ["zip -r \"${SITE}/public/navi-authoring-skill.zip\" \".claude/skills/navi-authoring\""]
+script = ["rm -f \"${SITE}/public/navi-skill.zip\" && cd \"${SITE}/skills\" && zip -qr \"../public/navi-skill.zip\" \"navi\""]
 
 [tasks.package-skill.mac]
 script_runner = "@shell"
-script = ["zip -r \"${SITE}/public/navi-authoring-skill.zip\" \".claude/skills/navi-authoring\""]
+script = ["rm -f \"${SITE}/public/navi-skill.zip\" && cd \"${SITE}/skills\" && zip -qr \"../public/navi-skill.zip\" \"navi\""]
 
 [tasks.package-skill.windows]
 script_runner = "@shell"
-script = ["powershell -Command \"Compress-Archive -Path '.claude/skills/navi-authoring' -DestinationPath '${SITE}/public/navi-authoring-skill.zip' -Force\""]
+script = ["powershell -Command \"Compress-Archive -Path '${SITE}/skills/navi' -DestinationPath '${SITE}/public/navi-skill.zip' -Force\""]
 
 # Commit all generated assets into the navi-docs submodule repo.
 # The "git diff --cached --quiet || git commit" pattern is idempotent:
@@ -73,7 +73,7 @@ workspace = false
 cwd = "${SITE}"
 script_runner = "@shell"
 script = [
-    "git add wasm-pkg/ api/stdlib/ zh-CN/api/stdlib/ zh-HK/api/stdlib/ public/navi-authoring-skill.zip stdlib-sidebar.json",
+    "git add wasm-pkg/ api/stdlib/ zh-CN/api/stdlib/ zh-HK/api/stdlib/ stdlib-sidebar.json",
     'git diff --cached --quiet || git commit -m "chore: update generated assets"',
 ]
 

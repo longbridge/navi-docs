@@ -1,0 +1,16 @@
+strategy("MA Cross", overlay: true);
+
+let fast = ta.ema(close, input.int(10, "Fast"));
+let slow = ta.ema(close, input.int(20, "Slow"));
+
+if ta.cross_over(fast, slow) {
+    strategy.close("Short");
+    strategy.entry("Long", Direction.Long);
+}
+if ta.cross_under(fast, slow) {
+    strategy.close("Long");
+    strategy.entry("Short", Direction.Short);
+}
+
+plot(fast, "Fast EMA");
+plot(slow, "Slow EMA");

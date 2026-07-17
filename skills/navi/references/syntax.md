@@ -2,6 +2,8 @@
 
 Use this file to write `.nv` source code. It describes Navi syntax only; API names live in [stdlib.md](stdlib.md), and bar-by-bar behavior lives in [execution-model.md](execution-model.md).
 
+Navi syntax is stable, but if a detail here ever seems to conflict with working code, treat navi-lang.org as authoritative — the language guide at <https://navi-lang.org/docs/> (full text: <https://navi-lang.org/llms-full.txt>).
+
 ## Table of Contents
 
 - [Program Shape](#program-shape)
@@ -46,8 +48,8 @@ let c = a
 Declarations or control-flow forms with a trailing block do not need an extra `;` when used as standalone statements:
 
 ```navi
-let closeWhenUp = close > open ? close : na;
-plot(closeWhenUp, "Up Close");
+let close_when_up = close > open ? close : na;
+plot(close_when_up, "Up Close");
 
 fn double(x: float): float {
     x * 2.0;
@@ -66,13 +68,13 @@ let body = if close > open {
 
 ## Comments and Documentation Tags
 
-Line comments use `//`. Documentation tags use `//@tag` and attach to the following declaration.
+Line comments use `//`. Documentation tags accept both `//@tag` and `// @tag` and attach to the following declaration. Prefer the spaced form in new code.
 
 ```navi
-//@function Calculates a smoothed value.
-//@param src Source series.
-//@param length Smoothing length.
-//@returns Smoothed series.
+// @function Calculates a smoothed value.
+// @param src Source series.
+// @param length Smoothing length.
+// @returns Smoothed series.
 export fn smooth(src: series float, length: simple int): series float {
     ta.ema(src, length);
 }
@@ -89,15 +91,15 @@ Primitive types:
 | `int` | `42`, `-5`, `+3` |
 | `float` | `3.14`, `.5`, `3.`, `1e-3` |
 | `bool` | `true`, `false` |
-| `string` | `"hello"`, `'hello'` |
-| `color` | `#FF0000`, `#FF000080`, `color.BLUE` |
+| `String` | `"hello"`, `'hello'` |
+| `color` | `#FF0000`, `#FF000080`, `Color.BLUE` |
 
 String escapes include `\\`, `\n`, `\r`, `\t`, `\"`/`""`, and `\'`/`''`.
 
 `na` is a missing value. Annotate the type when Navi cannot infer it:
 
 ```navi
-let maybePrice: float = na;
+let maybe_price: float = na;
 // let bad = na; // cannot infer type
 ```
 
@@ -105,7 +107,7 @@ Collection types are PascalCase:
 
 ```navi
 let values: Array<float> = Array.new<float>(3, 0.0);
-let counts: Map<string, int> = {"up": 1, "down": 2};
+let counts: Map<String, int> = {"up": 1, "down": 2};
 let grid: Matrix<float> = Matrix.new<float>(2, 3, 0.0);
 ```
 
@@ -113,9 +115,9 @@ Array and map literals:
 
 ```navi
 let xs: Array<int> = [1, 2, 3];
-let emptyXs: Array<float> = [];
-let labels: Map<string, int> = {"fast": 9, "slow": 21};
-let emptyLabels: Map<string, int> = {};
+let empty_xs: Array<float> = [];
+let labels: Map<String, int> = {"fast": 9, "slow": 21};
+let empty_labels: Map<String, int> = {};
 ```
 
 Map keys must be primitive values or enums.
@@ -169,7 +171,7 @@ count %= 3;
 - Ternary: `condition ? whenTrue : whenFalse`
 - History reference: `seriesValue[1]`, `expr[n]`
 - Member/namespace access: `ta.sma`, `order.price`, `labelId.set_text(...)`
-- Named arguments: `plot(close, title: "Close", color: color.BLUE)`
+- Named arguments: `plot(close, title: "Close", color: Color.BLUE)`
 
 ## Control Flow
 
@@ -184,13 +186,13 @@ let body = if close > open {
     low;
 };
 
-let isUp = close > open;
-let isDown = close < open;
-plot_shape(isUp, title: "Up", style: Shape.TriangleUp);
-plot_shape(isDown, title: "Down", style: Shape.TriangleDown);
+let is_up = close > open;
+let is_down = close < open;
+plot_shape(is_up, title: "Up", style: Shape.TriangleUp);
+plot_shape(is_down, title: "Down", style: Shape.TriangleDown);
 ```
 
-If an `if` expression omits `else`, the false branch yields `na` for most types, `false` for bool, or `""` for string.
+If an `if` expression omits `else`, the false branch yields `na` for most types, `false` for bool, or `""` for String.
 
 ### `for`
 
@@ -203,7 +205,7 @@ for i = 0 to 9 {
 }
 
 for i = 0 to 20 by 2 {
-    log.info(str.tostring(i));
+    log.info(String.from(i));
 }
 ```
 
@@ -211,11 +213,11 @@ Collection iteration:
 
 ```navi
 for value in values {
-    log.info(str.tostring(value));
+    log.info(String.from(value));
 }
 
 for (index, value) in values {
-    log.info(str.format("{0}: {1}", index, value));
+    log.info("{0}: {1}".format(index, value));
 }
 ```
 
@@ -260,7 +262,7 @@ let direction = switch {
 Multi-statement arm:
 
 ```navi
-let labelText = switch day_of_week {
+let label_text = switch day_of_week {
     DayOfWeek.Monday => "Mon",
     DayOfWeek.Tuesday => {
         let s = "Tue";
@@ -316,8 +318,8 @@ struct Position {
     size: float,
 }
 
-method pnl(self: Position, currentPrice: float): float {
-    (currentPrice - self.entry) * self.size;
+method pnl(self: Position, current_price: float): float {
+    (current_price - self.entry) * self.size;
 }
 
 let pos = Position.new(entry: close, size: 10.0);
@@ -363,7 +365,7 @@ Struct fields use `name: type`, comma-separated. Fields can have default values;
 ```navi
 struct Order {
     id: int,
-    symbol: string,
+    symbol: String,
     price: float = na,
     varip updates: int = 0,
 }

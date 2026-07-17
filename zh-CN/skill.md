@@ -8,10 +8,10 @@ hero:
   actions:
     - theme: brand
       text: 安装 Skill
-      link: /zh-CN/guide/ai-assistant
+      link: /zh-CN/docs/ai
     - theme: alt
       text: 阅读文档
-      link: /zh-CN/guide/
+      link: /zh-CN/docs/
 
 features:
   - title: 一条命令安装
@@ -38,4 +38,4 @@ npx skills add longbridge/navi
 npx skills update navi
 ```
 
-更多针对不同助手的选项和用法，请参阅 [AI 助手指南](/zh-CN/guide/ai-assistant)。
+更多针对不同助手的选项和用法，请参阅 [AI 助手指南](/zh-CN/docs/ai)。

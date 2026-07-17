@@ -1,0 +1,258 @@
+﻿indicator(
+    "Multi-Time Period Charts",
+    short_title: "MTPC",
+    overlay: true,
+    max_boxes_count: 500
+);
+
+let TT_AT: String = "If selected, the indicator automatically chooses the timeframe of the displayed bars. The chosen higher" + " timeframe is:\n\n" + " • '2 hours' if the chart timeframe is a seconds-based timeframe.\n" + " • '1 day' if the chart timeframe is lower than one day and not a seconds-based timeframe.\n" + " • '1 week' if the chart timeframe is higher than one day and lower than one week.\n" + " • '1 month' if the chart timeframe is higher than one week and lower than one month.\n" + " • '3 months' if the chart timeframe is higher than one month and lower than three months.\n" + " • '12 months' if the chart timeframe is higher than three months." + " \n\nIf not selected, it uses the timeframe specified in the 'Timeframe' input.";
+
+let TT_UC: String = "When this option is unchecked, MTPC will use intraday data while calculating on intraday charts." + " If Extended Hours are displayed on the chart, they will be taken into account during the calculation." + " If intraday OHLC values are different from daily-based values (normal for stocks), the MTPC will also differ.";
+
+let UP_COLOR: Color = #009688;
+let DN_COLOR: Color = #F44336;
+let UPBD_COLOR: Color = Color.new(UP_COLOR, 70);
+let DNBD_COLOR: Color = Color.new(DN_COLOR, 70);
+
+enum CalcType {
+    hl = "High/Low Range",
+    oc = "Open/Close Range",
+    ohlc = "OHLC",
+    tr = "True Range",
+}
+
+let autoTFInput: bool = input(true, "Auto-timeframe", tooltip: TT_AT);
+let tfInput: String = input.timeframe(
+    "1M",
+    "Timeframe",
+    active: not autoTFInput
+);
+let calcTypeInput: CalcType = input.enum(CalcType.hl, "Calculation");
+let useHaInput: bool = input.bool(false, "Display Heikin Ashi values");
+let useDailyInput: bool = input.bool(
+    false,
+    "Use daily-based values",
+    tooltip: TT_UC
+);
+
+let GRP01: String = "Border and fill colors";
+let upBorderColorInput: Color = input(
+    UP_COLOR,
+    "Up bars  ",
+    inline: "10",
+    group: GRP01
+);
+let upBodyColorInput: Color = input(UPBD_COLOR, "", inline: "10", group: GRP01);
+let dnBorderColorInput: Color = input(
+    DN_COLOR,
+    "Down bars",
+    inline: "11",
+    group: GRP01
+);
+let dnBodyColorInput: Color = input(DNBD_COLOR, "", inline: "11", group: GRP01);
+
+struct OHLC {
+    o: float,
+    h: float,
+    l: float,
+    c: float,
+    prevC: float,
+}
+
+method setBox(
+    bx: Box,
+    cond,
+    left,
+    right,
+    top,
+    bottom,
+    diff,
+    upBodyColor,
+    dnBodyColor,
+    upBorderColor,
+    dnBorderColor
+) {
+    let bodyColor: Color = diff < 0 ? dnBodyColor : upBodyColor;
+    let borderColor: Color = diff < 0 ? dnBorderColor : upBorderColor;
+    switch {
+        cond => {
+            bx.set_bg_color(na);
+            bx.set_border_color(na);
+        }
+        => {
+            bx.set_left(left);
+            bx.set_right(right);
+            bx.set_top(top);
+            bx.set_bottom(bottom);
+            bx.set_bg_color(bodyColor);
+            bx.set_border_color(borderColor);
+        }
+    }
+}
+
+fn selectAutoTimeframe() {
+    let secondsInTF: int = timeframe.in_seconds();
+    let result: String = switch {
+        timeframe.is_seconds => "120",
+        secondsInTF < 86400 => "1440",
+        secondsInTF < 604800 => "1W",
+        secondsInTF < 2628003 => "1M",
+        secondsInTF < 7884009 => "3M",
+        => "12M",
+    };
+}
+
+fn selectTimeframeFromInput(tf) {
+    symbol_info.session == Session.Extended and tf == "1D" ? "1440" : tf;
+}
+
+fn makeOHLC(offset = 0) {
+    OHLC.new(
+        open[offset],
+        high[offset],
+        low[offset],
+        close[offset],
+        close[offset + 1]
+    );
+}
+
+fn haFrom(o, h, l, c, prevHO, prevHC) {
+    let haC: float = (o + h + l + c) / 4;
+    let haO: float = na(prevHO) or na(prevHC) ? (o + c) / 2 : (prevHO + prevHC) / 2;
+    let haH: float = math.max(h, haO, haC);
+    let haL: float = math.min(l, haO, haC);
+    (haO, haH, haL, haC);
+}
+
+fn chartOHLC(tf, useHA) {
+    var htfOpen: float = na;
+    var htfHigh: float = na;
+    var htfLow: float = na;
+    var prevClose: float = na;
+    var haClose: float = na;
+    var haOpen: float = na;
+    var prevHaC: float = na;
+    var prevHaO: float = na;
+    if timeframe.change(tf) {
+        htfOpen = open;
+        htfHigh = high;
+        htfLow = low;
+        prevClose = close[1];
+        prevHaO = haOpen;
+        prevHaC = haClose;
+    }
+    htfHigh = math.max(high, htfHigh);
+    htfLow = math.min(low, htfLow);
+    switch {
+        useHA => {
+            let (haO, haH, haL, haC) = haFrom(
+                htfOpen,
+                htfHigh,
+                htfLow,
+                close,
+                prevHaO,
+                prevHaC
+            );
+            haOpen = haO;
+            haClose = haC;
+            OHLC.new(haO, haH, haL, haC, prevHaC);
+        }
+        => OHLC.new(htfOpen, htfHigh, htfLow, close, prevClose),
+    }
+}
+
+var prevBarIndex: int = bar_index;
+
+var timeframe: String = autoTFInput ? selectAutoTimeframe() : selectTimeframeFromInput(
+    tfInput
+);
+var ticker: String = symbol_info.tickerid;
+
+let (bar0, bar1) = switch {
+    not useDailyInput => (
+        chartOHLC(timeframe, useHaInput),
+        chartOHLC(timeframe, useHaInput)[1]
+    ),
+    => request.security(
+        ticker,
+        timeframe,
+        (makeOHLC(0), makeOHLC(1)),
+        lookahead: BarmergeLookahead.On
+    ),
+};
+
+let isNewPeriod: bool = timeframe.change(timeframe);
+let drawCurrent: bool = bar_state.is_last and not isNewPeriod;
+let bar: OHLC = drawCurrent ? bar0 : bar1;
+bar = na(bar) ? OHLC.new() : bar;
+let diff: float = bar.c - bar.o;
+let left: int = prevBarIndex;
+let right: int = drawCurrent ? bar_index : bar_index - 1;
+let (top, bottom) = switch calcTypeInput {
+    CalcType.oc => (bar.c, bar.o),
+    CalcType.tr => (math.max(bar.h, bar.prevC), math.min(bar.l, bar.prevC)),
+    => (bar.h, bar.l),
+};
+
+if isNewPeriod {
+    prevBarIndex = bar_index;
+    let htBar: Box = Box.new(na, na, na, na);
+    htBar.setBox(
+        false,
+        left,
+        right,
+        top,
+        bottom,
+        diff,
+        upBodyColorInput,
+        dnBodyColorInput,
+        upBorderColorInput,
+        dnBorderColorInput
+    );
+    if calcTypeInput == CalcType.ohlc {
+        let htBody: Box = Box.new(na, na, na, na);
+        htBody.setBox(
+            false,
+            left,
+            right,
+            bar.o,
+            bar.c,
+            diff,
+            upBodyColorInput,
+            dnBodyColorInput,
+            upBorderColorInput,
+            dnBorderColorInput
+        );
+    }
+}
+
+if bar_state.is_last {
+    var rtBox: Box = Box.new(na, na, na, na);
+    rtBox.setBox(
+        isNewPeriod,
+        left,
+        right,
+        top,
+        bottom,
+        diff,
+        upBodyColorInput,
+        dnBodyColorInput,
+        upBorderColorInput,
+        dnBorderColorInput
+    );
+    if calcTypeInput == CalcType.ohlc {
+        var rtBody: Box = Box.new(na, na, na, na);
+        rtBody.setBox(
+            isNewPeriod,
+            left,
+            right,
+            bar.o,
+            bar.c,
+            diff,
+            upBodyColorInput,
+            dnBodyColorInput,
+            upBorderColorInput,
+            dnBorderColorInput
+        );
+    }
+}

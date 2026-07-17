@@ -19,7 +19,7 @@ import DropdownMenuSeparator from "./ui/DropdownMenuSeparator.vue";
 const markdownModules = import.meta.glob(
   [
     "../../../*.md",
-    "../../../guide/**/*.md",
+    "../../../docs/**/*.md",
     "../../../api/**/*.md",
     "../../../zh-CN/**/*.md",
     "../../../zh-HK/**/*.md",
