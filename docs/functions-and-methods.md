@@ -223,7 +223,7 @@ export property pi(): const float {
 }
 ```
 
-Properties allow Navi's standard library to expose built-in values like `close`, `open`, `math.pi`, and `color.RED` as properties in Navi source code.
+Properties allow Navi's standard library to expose built-in values like `close`, `open`, `math.PI`, and `color.RED` as properties in Navi source code.
 
 ## Static Methods on Types
 

@@ -27,6 +27,7 @@ Navi 標準庫內建模組完整 API 參考。
 | [strategy](/zh-HK/api/stdlib/strategy/) | `strategy.*` 函數 |
 | [symbol_info](/zh-HK/api/stdlib/symbol_info/) | `symbol_info.*` 函數 |
 | [ta](/zh-HK/api/stdlib/ta/) | `ta.*` 函數 |
+| [ticker](/zh-HK/api/stdlib/ticker/) | `ticker.*` 函數 |
 | [timeframe](/zh-HK/api/stdlib/timeframe/) | `timeframe.*` 函數 |
 
 ## 子模組

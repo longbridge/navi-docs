@@ -1,7 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
-export const stdlib_docs: (a: number, b: number) => any;
 export const __wbg_analyzer_free: (a: number, b: number) => void;
 export const analyzer_allInlayHints: (a: number) => any;
 export const analyzer_analyze: (a: number, b: number, c: number, d: number, e: number) => any;
@@ -32,6 +31,7 @@ export const analyzer_sourceFiles: (a: number) => any;
 export const analyzer_typeDefinitionAt: (a: number, b: number, c: number) => any;
 export const analyzer_withLocale: (a: number, b: number) => number;
 export const analyzer_workspaceSymbols: (a: number, b: number, c: number) => any;
+export const stdlib_docs: (a: number, b: number) => any;
 export const __wbindgen_malloc: (a: number, b: number) => number;
 export const __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
 export const __wbindgen_externrefs: WebAssembly.Table;

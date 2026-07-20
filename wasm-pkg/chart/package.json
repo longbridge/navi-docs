@@ -2,7 +2,7 @@
   "name": "navi-chart-wasm",
   "type": "module",
   "description": "WASM chart widget for Navi — canvas renderer + JS bindings",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "LGPL-3.0",
   "files": [
     "navi_chart_wasm_bg.wasm",

@@ -27,6 +27,7 @@ Global functions and types available without a namespace prefix.
 | [strategy](/api/stdlib/strategy/) | `strategy.*` functions |
 | [symbol_info](/api/stdlib/symbol_info/) | `symbol_info.*` functions |
 | [ta](/api/stdlib/ta/) | `ta.*` functions |
+| [ticker](/api/stdlib/ticker/) | `ticker.*` functions |
 | [timeframe](/api/stdlib/timeframe/) | `timeframe.*` functions |
 
 ## Sub-modules

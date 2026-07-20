@@ -14,7 +14,7 @@ const _s3 = ref(0)
 
 ## Properties
 
-### e {#e}
+### E {#E}
 
 **Type:** <code>const&nbsp;float</code>
 
@@ -24,7 +24,7 @@ The base of natural logarithms and the limit of (1 + 1/n)^n as n approaches infi
 
 ---
 
-### phi {#phi}
+### PHI {#PHI}
 
 **Type:** <code>const&nbsp;float</code>
 
@@ -34,7 +34,7 @@ Two quantities are in the golden ratio if their ratio equals the ratio of their 
 
 ---
 
-### pi {#pi}
+### PI {#PI}
 
 **Type:** <code>const&nbsp;float</code>
 
@@ -44,7 +44,7 @@ Represents the ratio of a circle's circumference to its diameter.
 
 ---
 
-### reciprocal_phi {#reciprocal_phi}
+### RECIPROCAL_PHI {#RECIPROCAL_PHI}
 
 **Type:** <code>const&nbsp;float</code>
 

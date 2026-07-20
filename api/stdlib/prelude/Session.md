@@ -4,7 +4,7 @@ title: "Session"
 
 # Session
 
-Trading session type.
+Trading session type. Values are inclusive: a wider session also includes all narrower ones.
 
 **Kind:** enum
 
@@ -13,4 +13,5 @@ Trading session type.
 | Name | Description |
 | --- | --- |
 | `Regular` | Regular trading hours only. |
-| `Extended` | Extended trading hours (pre-market and after-hours). |
+| `Extended` | Regular hours plus pre-market and after-hours. |
+| `Overnight` | Regular, extended, and overnight sessions (all). |

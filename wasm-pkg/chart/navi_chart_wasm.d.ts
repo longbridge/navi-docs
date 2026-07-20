@@ -1,23 +1,331 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Returns a JS object representing the built-in light theme.
- *
- * Use this as the `theme` argument to `new Chart(...)` or `chart.setTheme()`.
- */
-export function lightTheme(): any;
-/**
  * Returns a JS object representing the built-in dark theme.
  *
  * Use this as the `theme` argument to `new Chart(...)` or `chart.setTheme()`.
  */
 export function darkTheme(): any;
 /**
+ * Returns a JS object representing the built-in light theme.
+ *
+ * Use this as the `theme` argument to `new Chart(...)` or `chart.setTheme()`.
+ */
+export function lightTheme(): any;
+/**
  * The `ReadableStreamType` enum.
  *
  * *This API requires the following crate features to be activated: `ReadableStreamType`*
  */
 type ReadableStreamType = "bytes";
+
+/** A position within a source file. */
+export interface Position {
+  /** Zero-based file identifier — look up the path in `sourceFiles[fileId]`. */
+  fileId: number;
+  /** One-based line number. */
+  line: number;
+  /** Zero-based column offset in characters. */
+  column: number;
+  /** Byte offset from the start of the source text. */
+  byteOffset: number;
+}
+
+/** A half-open `[start, end)` span in source code. */
+export interface Span {
+  start: Position;
+  end: Position;
+}
+
+/** A rectangular region in CSS pixel coordinates. */
+export interface Rect {
+  origin: { x: number; y: number };
+  size: { width: number; height: number };
+}
+
+/**
+ * Keyboard modifier bitfield forwarded to interaction methods.
+ *
+ * | Bit | Key   |
+ * |-----|-------|
+ * | 1   | Ctrl  |
+ * | 2   | Shift |
+ * | 4   | Alt   |
+ * | 8   | Meta  |
+ */
+export type Modifiers = number;
+
+
+
+/** ISO 4217 currency code, e.g. `"USD"`, `"HKD"`. */
+export type Currency = string;
+
+/** Instrument type, e.g. `"stock"`, `"futures"`, `"crypto"`. */
+export type SymbolType = string;
+
+/** How volume is reported: `"base"` or `"quote"`. */
+export type VolumeType = string;
+
+/** Exchange / market identifier, e.g. `"NYSE"`, `"NASDAQ"`. */
+export type Market = string;
+
+/**
+ * Partial symbol metadata returned by `DataProvider.symbolInfo()`.
+ *
+ * All fields are optional. Any field omitted (or set to `undefined`) falls
+ * back to a default derived from the symbol's exchange prefix.
+ */
+export interface PartialSymbolInfo {
+  /** Exchange that the symbol belongs to. */
+  market?: Market;
+  /** Human-readable description, e.g. `"Apple Inc."`. */
+  description?: string;
+  /** Instrument type. */
+  type?: SymbolType;
+  /** ISO 3166-1 alpha-2 country code, e.g. `"US"`. */
+  country?: string;
+  /** International Securities Identification Number. */
+  isin?: string;
+  /** Root symbol for derivatives, e.g. `"ES"` for `"ESZ4"`. */
+  root?: string;
+  /** Numerator of `mintick = minMove / priceScale`. */
+  minMove?: number;
+  /** Denominator of `mintick = minMove / priceScale`. */
+  priceScale?: number;
+  /** Point value multiplier (usually `1`; relevant for futures). */
+  pointValue?: number;
+  /** Currency of the symbol's prices. */
+  currency?: Currency;
+  /** ISO 8601 expiration date for futures contracts. */
+  expirationDate?: string;
+  /** Ticker of the current front-month contract. */
+  currentContract?: string;
+  /** Base currency for forex / crypto pairs. */
+  baseCurrency?: Currency;
+  employees?: number;
+  industry?: string;
+  sector?: string;
+  minContract?: number;
+  volumeType?: VolumeType;
+  shareholders?: number;
+  sharesOutstandingFloat?: number;
+  sharesOutstandingTotal?: number;
+  recommendationsBuy?: number;
+  recommendationsBuyStrong?: number;
+  recommendationsHold?: number;
+  recommendationsSell?: number;
+  recommendationsSellStrong?: number;
+  /** ISO 8601 date of the latest analyst recommendations. */
+  recommendationsDate?: string;
+  recommendationsTotal?: number;
+  targetPriceAverage?: number;
+  /** ISO 8601 date of the latest price target. */
+  targetPriceDate?: string;
+  targetPriceEstimates?: number;
+  targetPriceHigh?: number;
+  targetPriceLow?: number;
+  targetPriceMedian?: number;
+}
+
+/**
+ * Set of `syminfo.*` property fields that the compiled script actually
+ * accesses. Implementations may use this to fetch only the required data.
+ */
+export interface SyminfoFields {
+  [key: string]: boolean;
+}
+
+/** Field selector for `DataProvider.earnings()`. */
+export type EarningsField = string;
+/** Field selector for `DataProvider.dividends()`. */
+export type DividendsField = string;
+/** Field selector for `DataProvider.splits()`. */
+export type SplitsField = string;
+
+/** A single typed argument value in a `DataArgs` map. */
+export interface DataArg {
+  [key: string]: unknown;
+}
+
+/** Named, typed arguments passed to `DataProvider.data()`. */
+export type DataArgs = Record<string, DataArg>;
+
+
+
+/**
+ * Item yielded by auxiliary data streams (currency rates, financials,
+ * earnings, dividends, economic data, splits, custom data).
+ *
+ * Follows the same `"historyEnd"` stream protocol as
+ * {@link CandlestickItem}.
+ */
+export type AuxDataItem =
+  | { data: { /** Epoch milliseconds. */ time: number; value: number } }
+  | "historyEnd";
+
+
+
+/**
+ * Supplies candlestick and auxiliary data to a {@link Chart}.
+ *
+ * Implement this interface and pass an instance to `new Chart(…)`.
+ * All stream methods support infinite (live) streams — yield historical
+ * data followed by `"historyEnd"`, then keep yielding realtime updates.
+ * When the chart no longer needs data it cancels the generator via
+ * `iterator.return()`.
+ *
+ * All methods are optional — omit any method and the engine uses a safe
+ * default (empty stream or `{}` symbol info). Implement only what your
+ * use-case needs.
+ *
+ * @example
+ * ```ts
+ * const provider: DataProvider = {
+ *   async *candlesticks(symbol, tf, fromTime) {
+ *     const bars = await fetchHistory(symbol, tf, fromTime);
+ *     yield* bars;
+ *     yield "historyEnd";
+ *     // keep yielding realtime bars...
+ *   },
+ * };
+ * ```
+ */
+export interface DataProvider {
+  /**
+   * Return partial symbol metadata for `symbol`.
+   *
+   * `fields` lists which `syminfo.*` properties the script accesses;
+   * you may return only those fields, or return all fields unconditionally.
+   * If omitted, all `syminfo.*` fields fall back to their defaults.
+   */
+  symbolInfo?(symbol: string, fields: SyminfoFields): Promise<PartialSymbolInfo>;
+
+  /**
+   * Stream candlestick items for `(symbol, tf)` starting at or before
+   * `fromTime` (epoch ms). `count` is an optional cap on historical bars.
+   * If omitted, the chart renders with no data.
+   */
+  candlesticks?(symbol: string, tf: TimeFrame, fromTime: number, count?: number): AsyncIterable<CandlestickItem>;
+
+  /** Stream tick items. Only called for tick-based timeframes (`"1T"`, `"nT"`). */
+  ticks?(symbol: string, fromTime: number, count?: number): AsyncIterable<TickItem>;
+
+  /** Stream historical exchange rate data for `from → to` currency conversion. */
+  currencyRate?(from: Currency, to: Currency, fromTime: number): AsyncIterable<AuxDataItem>;
+
+  /** Stream financial report data points (revenue, EPS, …). */
+  financial?(symbol: string, financialId: string, period: string, currency: Currency | null, fromTime: number): AsyncIterable<AuxDataItem>;
+
+  /** Stream earnings data points. */
+  earnings?(symbol: string, field: EarningsField, currency: Currency | null, fromTime: number): AsyncIterable<AuxDataItem>;
+
+  /** Stream dividend data points. */
+  dividends?(symbol: string, field: DividendsField, currency: Currency | null, fromTime: number): AsyncIterable<AuxDataItem>;
+
+  /** Stream macroeconomic data points for `countryCode`. */
+  economic?(countryCode: string, field: string, fromTime: number): AsyncIterable<AuxDataItem>;
+
+  /** Stream stock split data points. */
+  splits?(symbol: string, field: SplitsField, fromTime: number): AsyncIterable<AuxDataItem>;
+
+  /** Stream custom data identified by `fn` and `args`. */
+  data?(fn: string, args: DataArgs, fromTime: number): AsyncIterable<AuxDataItem>;
+}
+
+/**
+ * Supplies K-line data and script execution events to a {@link Chart}.
+ *
+ * Implement `chartStream` to provide a unified stream of
+ * {@link ChartStreamEvent} items. Pass an instance to `new Chart(…)`.
+ *
+ * For in-browser VM execution use `LocalChartProvider` (from the `local`
+ * feature of `navi-chart-wasm`) instead of implementing this yourself.
+ *
+ * @example
+ * ```ts
+ * const provider: ChartProvider = {
+ *   async *chartStream(symbol, tf, request) {
+ *     // yield bars and script events...
+ *   },
+ * };
+ * const chart = new Chart(provider, canvas, "NASDAQ:AAPL", "D", "en", false);
+ * ```
+ */
+export interface ChartProvider {
+  /**
+   * Stream unified K-line + script events for `(symbol, tf)`.
+   *
+   * `request` contains the list of scripts (with their handles and overridden
+   * input values) plus global configuration (locale, inputSessions).
+   *
+   * Script events are tagged with `scriptId` values `0..n` corresponding to
+   * the index in `request.scripts`.
+   */
+  chartStream(
+    symbol: string,
+    tf: TimeFrame,
+    request: ChartStreamRequest,
+  ): AsyncIterable<ChartStreamEvent>;
+}
+
+/**
+ * Resolves `import` statements in Navi source code.
+ *
+ * Pass an instance as the `loader` argument to `new Chart(…)`.
+ * Return `null` when the library is not found (equivalent to `NopLoader`).
+ */
+export interface LibraryLoader {
+  /** Return the Navi source for `path`, or `null` if not found. */
+  load(path: string): string | null;
+}
+
+
+
+/** Trading session that a candlestick belongs to. */
+export type TradeSession = "PreMarket" | "Regular" | "AfterHours" | "Overnight";
+
+/**
+ * Timeframe string identifying a bar interval.
+ *
+ * Common values: `"1"`, `"5"`, `"15"`, `"60"` (minutes), `"D"` (daily),
+ * `"W"` (weekly), `"M"` (monthly).
+ */
+export type TimeFrame = string;
+
+/** A single OHLCV candlestick bar. */
+export interface Candlestick {
+  /** Bar open time as epoch milliseconds. */
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  /** Trade volume. */
+  volume: number;
+  /** Turnover (volume × price). */
+  turnover: number;
+  /** Turnover rate (fraction of float traded). `NaN` when unavailable. */
+  turnoverRate: number;
+  tradeSession: TradeSession;
+  /** Best ask price at bar close (`NaN` when unavailable). */
+  ask: number;
+  /** Best bid price at bar close (`NaN` when unavailable). */
+  bid: number;
+}
+
+/**
+ * Item yielded by `DataProvider.candlesticks()`.
+ *
+ * - `{ bar }` — a confirmed historical bar (before `"historyEnd"`) or the
+ *   current forming realtime bar (after `"historyEnd"`).
+ * - `"historyEnd"` — boundary marker emitted once, after all historical bars
+ *   and before the first realtime bar.
+ */
+export type CandlestickItem =
+  | { bar: Candlestick }
+  | "historyEnd";
+
+
 
 /** A source file referenced by error spans. */
 export interface SourceFile {
@@ -91,48 +399,114 @@ export type ScriptError =
 
 
 
-/** Trading session that a candlestick belongs to. */
-export type TradeSession = "PreMarket" | "Regular" | "AfterHours" | "Overnight";
+/** Opaque string identifier for a running script slot. */
+export type ScriptId = string;
+
+/** Identifier for an individual series graph within a script. */
+export type SeriesGraphId = number;
 
 /**
- * Timeframe string identifying a bar interval.
- *
- * Common values: `"1"`, `"5"`, `"15"`, `"60"` (minutes), `"D"` (daily),
- * `"W"` (weekly), `"M"` (monthly).
+ * Kebab-case identifier of a drawing tool, e.g. `"pointer"`,
+ * `"trendline"`, `"fib-retracement"`.
  */
-export type TimeFrame = string;
+export type DrawingToolId = string;
 
-/** A single OHLCV candlestick bar. */
-export interface Candlestick {
-  /** Bar open time as epoch milliseconds. */
-  time: number;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  /** Trade volume. */
-  volume: number;
-  /** Turnover (volume × price). */
-  turnover: number;
-  /** Turnover rate (fraction of float traded). `NaN` when unavailable. */
-  turnoverRate: number;
-  tradeSession: TradeSession;
-  /** Best ask price at bar close (`NaN` when unavailable). */
-  ask: number;
-  /** Best bid price at bar close (`NaN` when unavailable). */
-  bid: number;
+/**
+ * A chart element that can be selected or double-clicked.
+ *
+ * Discriminate on the variant key: `"series" in el`, `"annotation" in el`, `"bar" in el`.
+ */
+export type ChartElement =
+  | { series:     { scriptId: ScriptId; graphId: SeriesGraphId } }
+  | { annotation: AnnotationId }
+  | { bar:        number };
+
+/**
+ * Result of `hitTest()` — describes what is under the pointer.
+ *
+ * - `"chart"` — inside the chart drawing area.
+ * - `{ divider }` — over a pane-resize handle (`index` is zero-based from top).
+ * - `"none"` — outside all interactive regions.
+ */
+export type HitTarget =
+  | "chart"
+  | { divider: { index: number } }
+  | "none";
+
+/** Snap-to-OHLC magnet configuration. */
+export interface MagnetConfig {
+  /** `"off"` disables snapping, `"weak"` snaps near OHLC levels, `"strong"` always snaps. */
+  mode: "off" | "weak" | "strong";
+  /** When `true`, also snap to indicator series values. */
+  snapToIndicators: boolean;
 }
 
 /**
- * Item yielded by `DataProvider.candlesticks()`.
+ * Event emitted by the chart and drained via `pollEvent()`.
  *
- * - `{ bar }` — a confirmed historical bar (before `"historyEnd"`) or the
- *   current forming realtime bar (after `"historyEnd"`).
- * - `"historyEnd"` — boundary marker emitted once, after all historical bars
- *   and before the first realtime bar.
+ * Discriminate on the variant key:
+ *
+ * ```ts
+ * let ev: ChartEvent | null;
+ * while ((ev = chart.pollEvent()) !== null) {
+ *   if ("contextMenuRequested" in ev) {
+ *     const { x, y, items } = ev.contextMenuRequested;
+ *     showMenu(x, y, items);
+ *   }
+ * }
+ * ```
  */
-export type CandlestickItem =
-  | { bar: Candlestick }
+export type ChartEvent =
+  /** User clicked the "edit" button on a script label. */
+  | { editScript:          ScriptId }
+  /** User clicked the "remove" button on a script label. */
+  | { removeScript:        ScriptId }
+  /** User clicked the error icon on a script label. */
+  | { showError:           ScriptId }
+  /** User clicked the "configure" button on a script label. */
+  | { configureScript:     ScriptId }
+  /** User double-clicked a series graph or candlestick bar. */
+  | { doubleClick:         ChartElement }
+  /** The chart selection changed; value is `null` when cleared. */
+  | { selectionChanged:    ChartElement | null }
+  /** The active drawing tool changed. */
+  | { toolChanged:         { name: string } }
+  /** The magnet configuration was modified by the user. */
+  | "magnetChanged"
+  /** A new annotation was added (programmatically or by the user). */
+  | { annotationCreated:   AnnotationId }
+  /** An existing annotation's spec was replaced. */
+  | { annotationUpdated:   AnnotationId }
+  /** An annotation was removed. */
+  | { annotationDeleted:   AnnotationId }
+  /**
+   * User right-clicked an annotation — display a context menu at `(x, y)`.
+   * Echo the chosen item back with `dispatchContextMenuAction(actionId)`.
+   */
+  | { contextMenuRequested: { x: number; y: number; items: ContextMenuItem[] } };
+
+
+
+/** A single market tick (one trade event). */
+export interface Tick {
+  /** Tick timestamp as epoch milliseconds. */
+  time: number;
+  /** Last traded price. */
+  price: number;
+  /** Volume traded in this tick. */
+  volume: number;
+  /** Aggressor side: `"buy"`, `"sell"`, or `null` when unknown. */
+  side: string | null;
+}
+
+/**
+ * Item yielded by `DataProvider.ticks()`.
+ *
+ * Follows the same stream protocol as {@link CandlestickItem}: historical
+ * ticks precede `"historyEnd"`, realtime ticks follow it.
+ */
+export type TickItem =
+  | { tick: Tick }
   | "historyEnd";
 
 
@@ -263,268 +637,6 @@ export interface ChartStreamRequest {
 
 
 
-/** ISO 4217 currency code, e.g. `"USD"`, `"HKD"`. */
-export type Currency = string;
-
-/** Instrument type, e.g. `"stock"`, `"futures"`, `"crypto"`. */
-export type SymbolType = string;
-
-/** How volume is reported: `"base"` or `"quote"`. */
-export type VolumeType = string;
-
-/** Exchange / market identifier, e.g. `"NYSE"`, `"NASDAQ"`. */
-export type Market = string;
-
-/**
- * Partial symbol metadata returned by `DataProvider.symbolInfo()`.
- *
- * All fields are optional. Any field omitted (or set to `undefined`) falls
- * back to a default derived from the symbol's exchange prefix.
- */
-export interface PartialSymbolInfo {
-  /** Exchange that the symbol belongs to. */
-  market?: Market;
-  /** Human-readable description, e.g. `"Apple Inc."`. */
-  description?: string;
-  /** Instrument type. */
-  type?: SymbolType;
-  /** ISO 3166-1 alpha-2 country code, e.g. `"US"`. */
-  country?: string;
-  /** International Securities Identification Number. */
-  isin?: string;
-  /** Root symbol for derivatives, e.g. `"ES"` for `"ESZ4"`. */
-  root?: string;
-  /** Numerator of `mintick = minMove / priceScale`. */
-  minMove?: number;
-  /** Denominator of `mintick = minMove / priceScale`. */
-  priceScale?: number;
-  /** Point value multiplier (usually `1`; relevant for futures). */
-  pointValue?: number;
-  /** Currency of the symbol's prices. */
-  currency?: Currency;
-  /** ISO 8601 expiration date for futures contracts. */
-  expirationDate?: string;
-  /** Ticker of the current front-month contract. */
-  currentContract?: string;
-  /** Base currency for forex / crypto pairs. */
-  baseCurrency?: Currency;
-  employees?: number;
-  industry?: string;
-  sector?: string;
-  minContract?: number;
-  volumeType?: VolumeType;
-  shareholders?: number;
-  sharesOutstandingFloat?: number;
-  sharesOutstandingTotal?: number;
-  recommendationsBuy?: number;
-  recommendationsBuyStrong?: number;
-  recommendationsHold?: number;
-  recommendationsSell?: number;
-  recommendationsSellStrong?: number;
-  /** ISO 8601 date of the latest analyst recommendations. */
-  recommendationsDate?: string;
-  recommendationsTotal?: number;
-  targetPriceAverage?: number;
-  /** ISO 8601 date of the latest price target. */
-  targetPriceDate?: string;
-  targetPriceEstimates?: number;
-  targetPriceHigh?: number;
-  targetPriceLow?: number;
-  targetPriceMedian?: number;
-}
-
-/**
- * Set of `syminfo.*` property fields that the compiled script actually
- * accesses. Implementations may use this to fetch only the required data.
- */
-export interface SyminfoFields {
-  [key: string]: boolean;
-}
-
-/** Field selector for `DataProvider.earnings()`. */
-export type EarningsField = string;
-/** Field selector for `DataProvider.dividends()`. */
-export type DividendsField = string;
-/** Field selector for `DataProvider.splits()`. */
-export type SplitsField = string;
-
-/** A single typed argument value in a `DataArgs` map. */
-export interface DataArg {
-  [key: string]: unknown;
-}
-
-/** Named, typed arguments passed to `DataProvider.data()`. */
-export type DataArgs = Record<string, DataArg>;
-
-
-
-/**
- * Supplies candlestick and auxiliary data to a {@link Chart}.
- *
- * Implement this interface and pass an instance to `new Chart(…)`.
- * All stream methods support infinite (live) streams — yield historical
- * data followed by `"historyEnd"`, then keep yielding realtime updates.
- * When the chart no longer needs data it cancels the generator via
- * `iterator.return()`.
- *
- * All methods are optional — omit any method and the engine uses a safe
- * default (empty stream or `{}` symbol info). Implement only what your
- * use-case needs.
- *
- * @example
- * ```ts
- * const provider: DataProvider = {
- *   async *candlesticks(symbol, tf, fromTime) {
- *     const bars = await fetchHistory(symbol, tf, fromTime);
- *     yield* bars;
- *     yield "historyEnd";
- *     // keep yielding realtime bars...
- *   },
- * };
- * ```
- */
-export interface DataProvider {
-  /**
-   * Return partial symbol metadata for `symbol`.
-   *
-   * `fields` lists which `syminfo.*` properties the script accesses;
-   * you may return only those fields, or return all fields unconditionally.
-   * If omitted, all `syminfo.*` fields fall back to their defaults.
-   */
-  symbolInfo?(symbol: string, fields: SyminfoFields): Promise<PartialSymbolInfo>;
-
-  /**
-   * Stream candlestick items for `(symbol, tf)` starting at or before
-   * `fromTime` (epoch ms). `count` is an optional cap on historical bars.
-   * If omitted, the chart renders with no data.
-   */
-  candlesticks?(symbol: string, tf: TimeFrame, fromTime: number, count?: number): AsyncIterable<CandlestickItem>;
-
-  /** Stream tick items. Only called for tick-based timeframes (`"1T"`, `"nT"`). */
-  ticks?(symbol: string, fromTime: number, count?: number): AsyncIterable<TickItem>;
-
-  /** Stream historical exchange rate data for `from → to` currency conversion. */
-  currencyRate?(from: Currency, to: Currency, fromTime: number): AsyncIterable<AuxDataItem>;
-
-  /** Stream financial report data points (revenue, EPS, …). */
-  financial?(symbol: string, financialId: string, period: string, currency: Currency | null, fromTime: number): AsyncIterable<AuxDataItem>;
-
-  /** Stream earnings data points. */
-  earnings?(symbol: string, field: EarningsField, currency: Currency | null, fromTime: number): AsyncIterable<AuxDataItem>;
-
-  /** Stream dividend data points. */
-  dividends?(symbol: string, field: DividendsField, currency: Currency | null, fromTime: number): AsyncIterable<AuxDataItem>;
-
-  /** Stream macroeconomic data points for `countryCode`. */
-  economic?(countryCode: string, field: string, fromTime: number): AsyncIterable<AuxDataItem>;
-
-  /** Stream stock split data points. */
-  splits?(symbol: string, field: SplitsField, fromTime: number): AsyncIterable<AuxDataItem>;
-
-  /** Stream custom data identified by `fn` and `args`. */
-  data?(fn: string, args: DataArgs, fromTime: number): AsyncIterable<AuxDataItem>;
-}
-
-/**
- * Supplies K-line data and script execution events to a {@link Chart}.
- *
- * Implement `chartStream` to provide a unified stream of
- * {@link ChartStreamEvent} items. Pass an instance to `new Chart(…)`.
- *
- * For in-browser VM execution use `LocalChartProvider` (from the `local`
- * feature of `navi-chart-wasm`) instead of implementing this yourself.
- *
- * @example
- * ```ts
- * const provider: ChartProvider = {
- *   async *chartStream(symbol, tf, request) {
- *     // yield bars and script events...
- *   },
- * };
- * const chart = new Chart(provider, canvas, "NASDAQ:AAPL", "D", "en", false);
- * ```
- */
-export interface ChartProvider {
-  /**
-   * Stream unified K-line + script events for `(symbol, tf)`.
-   *
-   * `request` contains the list of scripts (with their handles and overridden
-   * input values) plus global configuration (locale, inputSessions).
-   *
-   * Script events are tagged with `scriptId` values `0..n` corresponding to
-   * the index in `request.scripts`.
-   */
-  chartStream(
-    symbol: string,
-    tf: TimeFrame,
-    request: ChartStreamRequest,
-  ): AsyncIterable<ChartStreamEvent>;
-}
-
-/**
- * Resolves `import` statements in Navi source code.
- *
- * Pass an instance as the `loader` argument to `new Chart(…)`.
- * Return `null` when the library is not found (equivalent to `NopLoader`).
- */
-export interface LibraryLoader {
-  /** Return the Navi source for `path`, or `null` if not found. */
-  load(path: string): string | null;
-}
-
-
-
-/**
- * Item yielded by auxiliary data streams (currency rates, financials,
- * earnings, dividends, economic data, splits, custom data).
- *
- * Follows the same `"historyEnd"` stream protocol as
- * {@link CandlestickItem}.
- */
-export type AuxDataItem =
-  | { data: { /** Epoch milliseconds. */ time: number; value: number } }
-  | "historyEnd";
-
-
-
-/** A position within a source file. */
-export interface Position {
-  /** Zero-based file identifier — look up the path in `sourceFiles[fileId]`. */
-  fileId: number;
-  /** One-based line number. */
-  line: number;
-  /** Zero-based column offset in characters. */
-  column: number;
-  /** Byte offset from the start of the source text. */
-  byteOffset: number;
-}
-
-/** A half-open `[start, end)` span in source code. */
-export interface Span {
-  start: Position;
-  end: Position;
-}
-
-/** A rectangular region in CSS pixel coordinates. */
-export interface Rect {
-  origin: { x: number; y: number };
-  size: { width: number; height: number };
-}
-
-/**
- * Keyboard modifier bitfield forwarded to interaction methods.
- *
- * | Bit | Key   |
- * |-----|-------|
- * | 1   | Ctrl  |
- * | 2   | Shift |
- * | 4   | Alt   |
- * | 8   | Meta  |
- */
-export type Modifiers = number;
-
-
-
 /** Stable identifier for an annotation, allocated by the chart. */
 export type AnnotationId = string;
 
@@ -636,118 +748,6 @@ export type PropertyValueResult =
 export type ContextMenuItem =
   | { action: { /** Stable id to pass back to `dispatchContextMenuAction()`. */ actionId: string; /** When `false`, render greyed-out but still visible. */ enabled: boolean } }
   | "separator";
-
-
-
-/** Opaque string identifier for a running script slot. */
-export type ScriptId = string;
-
-/** Identifier for an individual series graph within a script. */
-export type SeriesGraphId = number;
-
-/**
- * Kebab-case identifier of a drawing tool, e.g. `"pointer"`,
- * `"trendline"`, `"fib-retracement"`.
- */
-export type DrawingToolId = string;
-
-/**
- * A chart element that can be selected or double-clicked.
- *
- * Discriminate on the variant key: `"series" in el`, `"annotation" in el`, `"bar" in el`.
- */
-export type ChartElement =
-  | { series:     { scriptId: ScriptId; graphId: SeriesGraphId } }
-  | { annotation: AnnotationId }
-  | { bar:        number };
-
-/**
- * Result of `hitTest()` — describes what is under the pointer.
- *
- * - `"chart"` — inside the chart drawing area.
- * - `{ divider }` — over a pane-resize handle (`index` is zero-based from top).
- * - `"none"` — outside all interactive regions.
- */
-export type HitTarget =
-  | "chart"
-  | { divider: { index: number } }
-  | "none";
-
-/** Snap-to-OHLC magnet configuration. */
-export interface MagnetConfig {
-  /** `"off"` disables snapping, `"weak"` snaps near OHLC levels, `"strong"` always snaps. */
-  mode: "off" | "weak" | "strong";
-  /** When `true`, also snap to indicator series values. */
-  snapToIndicators: boolean;
-}
-
-/**
- * Event emitted by the chart and drained via `pollEvent()`.
- *
- * Discriminate on the variant key:
- *
- * ```ts
- * let ev: ChartEvent | null;
- * while ((ev = chart.pollEvent()) !== null) {
- *   if ("contextMenuRequested" in ev) {
- *     const { x, y, items } = ev.contextMenuRequested;
- *     showMenu(x, y, items);
- *   }
- * }
- * ```
- */
-export type ChartEvent =
-  /** User clicked the "edit" button on a script label. */
-  | { editScript:          ScriptId }
-  /** User clicked the "remove" button on a script label. */
-  | { removeScript:        ScriptId }
-  /** User clicked the error icon on a script label. */
-  | { showError:           ScriptId }
-  /** User clicked the "configure" button on a script label. */
-  | { configureScript:     ScriptId }
-  /** User double-clicked a series graph or candlestick bar. */
-  | { doubleClick:         ChartElement }
-  /** The chart selection changed; value is `null` when cleared. */
-  | { selectionChanged:    ChartElement | null }
-  /** The active drawing tool changed. */
-  | { toolChanged:         { name: string } }
-  /** The magnet configuration was modified by the user. */
-  | "magnetChanged"
-  /** A new annotation was added (programmatically or by the user). */
-  | { annotationCreated:   AnnotationId }
-  /** An existing annotation's spec was replaced. */
-  | { annotationUpdated:   AnnotationId }
-  /** An annotation was removed. */
-  | { annotationDeleted:   AnnotationId }
-  /**
-   * User right-clicked an annotation — display a context menu at `(x, y)`.
-   * Echo the chosen item back with `dispatchContextMenuAction(actionId)`.
-   */
-  | { contextMenuRequested: { x: number; y: number; items: ContextMenuItem[] } };
-
-
-
-/** A single market tick (one trade event). */
-export interface Tick {
-  /** Tick timestamp as epoch milliseconds. */
-  time: number;
-  /** Last traded price. */
-  price: number;
-  /** Volume traded in this tick. */
-  volume: number;
-  /** Aggressor side: `"buy"`, `"sell"`, or `null` when unknown. */
-  side: string | null;
-}
-
-/**
- * Item yielded by `DataProvider.ticks()`.
- *
- * Follows the same stream protocol as {@link CandlestickItem}: historical
- * ticks precede `"historyEnd"`, realtime ticks follow it.
- */
-export type TickItem =
-  | { tick: Tick }
-  | "historyEnd";
 
 
 /**
@@ -1658,24 +1658,24 @@ export interface InitOutput {
   readonly localcharthandle_removeScript: (a: number, b: number) => void;
   readonly localchartprovider_chartStream: (a: number, b: number, c: number, d: number, e: number, f: any) => [number, number, number];
   readonly localchartprovider_new: (a: any) => number;
+  readonly __wbg_intounderlyingsource_free: (a: number, b: number) => void;
+  readonly intounderlyingsource_cancel: (a: number) => void;
+  readonly intounderlyingsource_pull: (a: number, b: any) => any;
   readonly __wbg_intounderlyingsink_free: (a: number, b: number) => void;
   readonly intounderlyingsink_abort: (a: number, b: any) => any;
   readonly intounderlyingsink_close: (a: number) => any;
   readonly intounderlyingsink_write: (a: number, b: any) => any;
-  readonly __wbg_intounderlyingsource_free: (a: number, b: number) => void;
-  readonly intounderlyingsource_cancel: (a: number) => void;
-  readonly intounderlyingsource_pull: (a: number, b: any) => any;
   readonly __wbg_intounderlyingbytesource_free: (a: number, b: number) => void;
   readonly intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
   readonly intounderlyingbytesource_cancel: (a: number) => void;
   readonly intounderlyingbytesource_pull: (a: number, b: any) => any;
   readonly intounderlyingbytesource_start: (a: number, b: any) => void;
   readonly intounderlyingbytesource_type: (a: number) => number;
-  readonly wasm_bindgen__convert__closures_____invoke__hbebe2dad8b5eac24: (a: number, b: number, c: any) => void;
-  readonly wasm_bindgen__closure__destroy__hc022d676e74a4d14: (a: number, b: number) => void;
-  readonly wasm_bindgen__convert__closures_____invoke__hab42f9397c1f232b: (a: number, b: number) => void;
-  readonly wasm_bindgen__closure__destroy__h2901e1fb3a2ac338: (a: number, b: number) => void;
-  readonly wasm_bindgen__convert__closures_____invoke__h3ac53d9680872b24: (a: number, b: number, c: any, d: any) => void;
+  readonly wasm_bindgen__convert__closures_____invoke__h1c3b971bf5230278: (a: number, b: number, c: any) => void;
+  readonly wasm_bindgen__closure__destroy__h19febeda49f66582: (a: number, b: number) => void;
+  readonly wasm_bindgen__convert__closures_____invoke__hdad8e08980442495: (a: number, b: number) => void;
+  readonly wasm_bindgen__closure__destroy__hb26f619182e21929: (a: number, b: number) => void;
+  readonly wasm_bindgen__convert__closures_____invoke__h09e1f75621400211: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_exn_store: (a: number) => void;

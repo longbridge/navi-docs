@@ -28,8 +28,56 @@ title: "chart"
 
 ---
 
+### is_heikin_ashi {#is_heikin_ashi}
+
+**類型:** <code>simple&nbsp;bool</code>
+
+若圖表類型為 Heikin Ashi，則返回 `true`。
+
+---
+
+### is_kagi {#is_kagi}
+
+**類型:** <code>simple&nbsp;bool</code>
+
+若圖表類型為 Kagi，則返回 `true`。
+
+---
+
+### is_line_break {#is_line_break}
+
+**類型:** <code>simple&nbsp;bool</code>
+
+若圖表類型為 Line Break，則返回 `true`。
+
+---
+
+### is_point_figure {#is_point_figure}
+
+**類型:** <code>simple&nbsp;bool</code>
+
+若圖表類型為 Point & Figure，則返回 `true`。
+
+---
+
+### is_range {#is_range}
+
+**類型:** <code>simple&nbsp;bool</code>
+
+若圖表類型為 Range，則返回 `true`。
+
+---
+
+### is_renko {#is_renko}
+
+**類型:** <code>simple&nbsp;bool</code>
+
+若圖表類型為 Renko，則返回 `true`。
+
+---
+
 ### is_standard {#is_standard}
 
-**類型:** <code>input&nbsp;bool</code>
+**類型:** <code>simple&nbsp;bool</code>
 
 如果圖表類型不是以下之一，則傳回 `true`：Renko、Kagi、Line Break、Point &figure、Range、Heikin Ashi； `false` 否則。

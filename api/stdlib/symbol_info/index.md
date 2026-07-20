@@ -214,7 +214,7 @@ Returns the sector of the company (for stocks).
 
 **Type:** <code>simple&nbsp;<a class="stdlib-ref" href="/api/stdlib/prelude/Session">Session</a></code>
 
-Returns the session type of the chart main series (either `session.regular` or `session.extended`).
+Returns the session type of the chart main series (`Session.Regular`, `Session.Extended`, or `Session.Overnight`).
 
 ---
 

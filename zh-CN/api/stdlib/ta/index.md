@@ -20,7 +20,7 @@ const _s7 = ref(0)
 
 | 名称 | 说明 |
 | --- | --- |
-| [`PivotType`](/zh-CN/api/stdlib/ta/PivotType) | Pivot point calculation method for <a class="stdlib-ref" data-key="ta::pivot_point_levels" href="/zh-CN/api/stdlib/ta/#pivot_point_levels">ta.pivot_point_levels</a>. |
+| [`PivotType`](/zh-CN/api/stdlib/ta/PivotType) | `ta.pivot_point_levels` 所使用的枢轴点计算方法。 |
 
 ## 属性
 
@@ -297,9 +297,7 @@ ta.cci(source: series float, length: series int): series float
 ta.chop(length: simple int): series float
 ```
 
-Choppiness Index (CHOP).
-
-Quantifies how directional (trending) or sideways (choppy) the market is. Values near 100 signal maximum choppiness; values near the lower bound (≈ `100/log10(length)`) signal strong trend. Formula: `100 * log10(sum(ATR(1), length) / (highest_high - lowest_low)) / log10(length)`.
+震荡指数（CHOP）。
 
 **参数**
 
@@ -317,9 +315,7 @@ Quantifies how directional (trending) or sideways (choppy) the market is. Values
 ta.cmf(length: simple int): series float
 ```
 
-Chaikin Money Flow (CMF).
-
-Measures buying and selling pressure over `length` bars using the Money Flow Multiplier weighted by volume. Positive values indicate accumulation; negative values indicate distribution. Formula: `sum(MFV, length) / sum(volume, length)` where `MFV = ((close - low) - (high - close)) / (high - low) * volume`.
+蔡金资金流量（CMF）。
 
 **参数**
 
@@ -494,9 +490,7 @@ ta.cum(source: series float): series float
 ta.dema(source: series float, length: simple int): series float
 ```
 
-Double Exponential Moving Average (DEMA).
-
-Reduces the lag of a standard EMA by subtracting an EMA of the EMA. Formula: `2 * EMA(source, length) - EMA(EMA(source, length), length)`.
+双重指数移动平均线（DEMA）。
 
 **参数**
 
@@ -1146,9 +1140,7 @@ ta.pivot_point_levels(
   ): series Array<float>
 ```
 
-Returns an array of pivot point levels for the specified pivot type.
-
-The returned array contains up to 11 values in the order: [P, S1, R1, S2, R2, S3, R3, S4, R4, S5, R5]. Levels that do not apply for the chosen type are `na`.
+返回指定枢轴类型的枢轴点价格水平数组。
 
 **参数**
 
@@ -1423,9 +1415,7 @@ ta.swma(source: series float): series float
 ta.tema(source: series float, length: simple int): series float
 ```
 
-Triple Exponential Moving Average (TEMA).
-
-Further reduces EMA lag using three layers of smoothing. Formula: `3*EMA1 - 3*EMA2 + EMA3` where each EMA is applied to the previous layer's output.
+三重指数移动平均线（TEMA）。
 
 **参数**
 
@@ -1534,9 +1524,7 @@ ta.variance(
 ta.vhf(source: series float, length: simple int): series float
 ```
 
-Vertical Horizontal Filter (VHF).
-
-Identifies whether the market is trending or ranging by comparing the price range to the sum of absolute bar-to-bar changes. Higher values indicate a stronger trend; lower values indicate choppiness. Formula: `(highest - lowest) / sum(|change|, length)`.
+垂直水平过滤器（VHF）。
 
 **参数**
 

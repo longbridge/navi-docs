@@ -27,6 +27,7 @@ Navi 标准库内置模块完整 API 参考。
 | [strategy](/zh-CN/api/stdlib/strategy/) | `strategy.*` 函数 |
 | [symbol_info](/zh-CN/api/stdlib/symbol_info/) | `symbol_info.*` 函数 |
 | [ta](/zh-CN/api/stdlib/ta/) | `ta.*` 函数 |
+| [ticker](/zh-CN/api/stdlib/ticker/) | `ticker.*` 函数 |
 | [timeframe](/zh-CN/api/stdlib/timeframe/) | `timeframe.*` 函数 |
 
 ## 子模块

@@ -14,3 +14,4 @@ title: "Session"
 | --- | --- |
 | `Regular` | 仅常规交易时段。 |
 | `Extended` | 延长交易时段（盘前及盘后）。 |
+| `Overnight` | 常规、延长及隔夜全时段（所有时段）。 |

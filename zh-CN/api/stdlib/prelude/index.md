@@ -27,11 +27,14 @@ Prelude 会自动加载到每个脚本中。它的类型和函数都应直接用
 
 | 名称 | 说明 |
 | --- | --- |
+| [`Adjustment`](/zh-CN/api/stdlib/prelude/Adjustment) | 请求数据的价格复权类型。 |
 | [`AlertFreq`](/zh-CN/api/stdlib/prelude/AlertFreq) | alert() 的触发频率常量。 |
 | [`Array<T>`](/zh-CN/api/stdlib/prelude/Array) | 类型为 `T` 的有序、可索引的元素集合。 |
+| [`BackAdjustment`](/zh-CN/api/stdlib/prelude/BackAdjustment) | 连续期货合约的历史价格复权方式。 |
 | [`BarmergeGaps`](/zh-CN/api/stdlib/prelude/BarmergeGaps) | `request.*()` 函数的间隙模式。 |
 | [`BarmergeLookahead`](/zh-CN/api/stdlib/prelude/BarmergeLookahead) | `request.*()` 函数的前瞻模式。 |
 | [`Box`](/zh-CN/api/stdlib/prelude/Box) | 方框图的句柄。 |
+| [`BoxStyle`](/zh-CN/api/stdlib/prelude/BoxStyle) | 砖形图/卡吉图/点数图的箱体大小计算方式。 |
 | [`Color`](/zh-CN/api/stdlib/prelude/Color) | 32 位 RGBA 颜色值。 |
 | [`CommissionType`](/zh-CN/api/stdlib/prelude/CommissionType) | strategy() 的佣金计算方式。 |
 | [`Currency`](/zh-CN/api/stdlib/prelude/Currency) | 货币代码（ISO 4217）。 |
@@ -57,10 +60,13 @@ Prelude 会自动加载到每个脚本中。它的类型和函数都应直接用
 | [`Plot`](/zh-CN/api/stdlib/prelude/Plot) | 由 <a class="stdlib-ref" data-key="prelude::plot" href="/zh-CN/api/stdlib/prelude/#plot">plot</a> 创建的绘图的句柄。 |
 | [`PlotDisplay`](/zh-CN/api/stdlib/prelude/PlotDisplay) | 控制绘图和视觉效果显示位置的位标志类型。 |
 | [`PlotStyle`](/zh-CN/api/stdlib/prelude/PlotStyle) | 图表系列的绘图样式。 |
+| [`PnfSource`](/zh-CN/api/stdlib/prelude/PnfSource) | 计算点数图箱格所用的价格来源。 |
 | [`Polyline`](/zh-CN/api/stdlib/prelude/Polyline) | 多段线绘图的句柄。 |
 | [`Position`](/zh-CN/api/stdlib/prelude/Position) | 表格和标签在图表面板上的位置。 |
+| [`RenkoSource`](/zh-CN/api/stdlib/prelude/RenkoSource) | 计算砖形图砖块所用的价格来源。 |
 | [`ScaleType`](/zh-CN/api/stdlib/prelude/ScaleType) | indicator() 和 strategy() 的价格坐标轴挂载模式。 |
 | [`Session`](/zh-CN/api/stdlib/prelude/Session) | 交易时段类型。 |
+| [`SettlementAsClose`](/zh-CN/api/stdlib/prelude/SettlementAsClose) | 期货品种在日线及以上周期是否以结算价作为收盘价。 |
 | [`Shape`](/zh-CN/api/stdlib/prelude/Shape) | plot_shape() 绘制的图形。 |
 | [`Size`](/zh-CN/api/stdlib/prelude/Size) | 绘图和标签的尺寸常量。 |
 | [`SortOrder`](/zh-CN/api/stdlib/prelude/SortOrder) | 数组和矩阵操作的排序方向。 |
@@ -1628,7 +1634,7 @@ table(x: Table): Table
 
 <div v-show="_s9 === 1">
 
-将当前图表 bar 映射到另一个时间范围并返回该目标 bar 的结束时间戳。它使用与 <a class="stdlib-ref" data-key="prelude::time" href="/zh-CN/api/stdlib/prelude/#fn-time">time</a> 相同的两阶段偏移模型，但报告 bar 结束而不是 bar 开始。
+将当前图表 bar 映射到另一个时间范围并返回该目标 bar 的结束时间戳。它使用与 <a class="stdlib-ref" data-key="prelude::time" href="/zh-CN/api/stdlib/prelude/#prop-time">time</a> 相同的两阶段偏移模型，但报告 bar 结束而不是 bar 开始。
 
 **参数**
 

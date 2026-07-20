@@ -3,6 +3,10 @@
     "prelude": {
       "types": [
         {
+          "name": "Adjustment",
+          "genericParams": []
+        },
+        {
           "name": "AlertFreq",
           "genericParams": []
         },
@@ -11,6 +15,10 @@
           "genericParams": [
             "T"
           ]
+        },
+        {
+          "name": "BackAdjustment",
+          "genericParams": []
         },
         {
           "name": "BarmergeGaps",
@@ -22,6 +30,10 @@
         },
         {
           "name": "Box",
+          "genericParams": []
+        },
+        {
+          "name": "BoxStyle",
           "genericParams": []
         },
         {
@@ -130,6 +142,10 @@
           "genericParams": []
         },
         {
+          "name": "PnfSource",
+          "genericParams": []
+        },
+        {
           "name": "Polyline",
           "genericParams": []
         },
@@ -138,11 +154,19 @@
           "genericParams": []
         },
         {
+          "name": "RenkoSource",
+          "genericParams": []
+        },
+        {
           "name": "ScaleType",
           "genericParams": []
         },
         {
           "name": "Session",
+          "genericParams": []
+        },
+        {
+          "name": "SettlementAsClose",
           "genericParams": []
         },
         {
@@ -281,6 +305,7 @@
       "strategy.risk",
       "symbol_info",
       "ta",
+      "ticker",
       "timeframe"
     ]
   },
@@ -288,6 +313,10 @@
     "prelude": {
       "types": [
         {
+          "name": "Adjustment",
+          "genericParams": []
+        },
+        {
           "name": "AlertFreq",
           "genericParams": []
         },
@@ -296,6 +325,10 @@
           "genericParams": [
             "T"
           ]
+        },
+        {
+          "name": "BackAdjustment",
+          "genericParams": []
         },
         {
           "name": "BarmergeGaps",
@@ -307,6 +340,10 @@
         },
         {
           "name": "Box",
+          "genericParams": []
+        },
+        {
+          "name": "BoxStyle",
           "genericParams": []
         },
         {
@@ -415,6 +452,10 @@
           "genericParams": []
         },
         {
+          "name": "PnfSource",
+          "genericParams": []
+        },
+        {
           "name": "Polyline",
           "genericParams": []
         },
@@ -423,11 +464,19 @@
           "genericParams": []
         },
         {
+          "name": "RenkoSource",
+          "genericParams": []
+        },
+        {
           "name": "ScaleType",
           "genericParams": []
         },
         {
           "name": "Session",
+          "genericParams": []
+        },
+        {
+          "name": "SettlementAsClose",
           "genericParams": []
         },
         {
@@ -566,6 +615,7 @@
       "strategy.risk",
       "symbol_info",
       "ta",
+      "ticker",
       "timeframe"
     ]
   },
@@ -573,6 +623,10 @@
     "prelude": {
       "types": [
         {
+          "name": "Adjustment",
+          "genericParams": []
+        },
+        {
           "name": "AlertFreq",
           "genericParams": []
         },
@@ -581,6 +635,10 @@
           "genericParams": [
             "T"
           ]
+        },
+        {
+          "name": "BackAdjustment",
+          "genericParams": []
         },
         {
           "name": "BarmergeGaps",
@@ -592,6 +650,10 @@
         },
         {
           "name": "Box",
+          "genericParams": []
+        },
+        {
+          "name": "BoxStyle",
           "genericParams": []
         },
         {
@@ -700,6 +762,10 @@
           "genericParams": []
         },
         {
+          "name": "PnfSource",
+          "genericParams": []
+        },
+        {
           "name": "Polyline",
           "genericParams": []
         },
@@ -708,11 +774,19 @@
           "genericParams": []
         },
         {
+          "name": "RenkoSource",
+          "genericParams": []
+        },
+        {
           "name": "ScaleType",
           "genericParams": []
         },
         {
           "name": "Session",
+          "genericParams": []
+        },
+        {
+          "name": "SettlementAsClose",
           "genericParams": []
         },
         {
@@ -851,6 +925,7 @@
       "strategy.risk",
       "symbol_info",
       "ta",
+      "ticker",
       "timeframe"
     ]
   }

@@ -14,7 +14,7 @@ const _s3 = ref(0)
 
 ## 属性
 
-### e {#e}
+### E {#E}
 
 **类型:** <code>const&nbsp;float</code>
 
@@ -22,7 +22,7 @@ const _s3 = ref(0)
 
 ---
 
-### phi {#phi}
+### PHI {#PHI}
 
 **类型:** <code>const&nbsp;float</code>
 
@@ -30,7 +30,7 @@ const _s3 = ref(0)
 
 ---
 
-### pi {#pi}
+### PI {#PI}
 
 **类型:** <code>const&nbsp;float</code>
 
@@ -38,7 +38,7 @@ const _s3 = ref(0)
 
 ---
 
-### reciprocal_phi {#reciprocal_phi}
+### RECIPROCAL_PHI {#RECIPROCAL_PHI}
 
 **类型:** <code>const&nbsp;float</code>
 
@@ -195,9 +195,10 @@ Unlike <a class="stdlib-ref" data-key="math::atan" href="/zh-CN/api/stdlib/math/
 math.cbrt(n: float): float
 ```
 
-Returns the cube root of `n`.
+返回 `n` 的立方根。
 
-Correctly handles negative inputs (e.g., `cbrt(-8.0) = -2.0`), unlike `pow(n, 1.0/3.0)` which returns `na` for negatives.
+与 `pow(n, 1.0/3.0)` 不同，能正确处理负数输入（例如 `cbrt(-8.0) = -2.0`），而后者对负数返回 `na`。
+
 
 **参数**
 
@@ -233,9 +234,10 @@ math.ceil(n: float): int
 math.clamp(value: float, min: float, max: float): float
 ```
 
-Clamps `value` to the closed interval `[min, max]`.
+将 `value` 限制在闭区间 `[min, max]` 内。
 
-Returns `min` if `value &lt; min`, `max` if `value &gt; max`, otherwise `value`. Avoids the verbose `math.max(min, math.min(max, x))` pattern.
+若 `value &lt; min` 返回 `min`，若 `value &gt; max` 返回 `max`，否则返回 `value`。可替代繁琐的 `math.max(min, math.min(max, x))` 写法。
+
 
 **参数**
 
@@ -309,9 +311,10 @@ math.floor(n: float): int
 math.hypot(x: float, y: float): float
 ```
 
-Returns the hypotenuse of a right triangle with legs `x` and `y`.
+返回直角三角形两直角边 `x` 和 `y` 所对应的斜边长。
 
-Equivalent to `sqrt(x*x + y*y)` but numerically stable (avoids overflow for large inputs).
+等价于 `sqrt(x*x + y*y)`，但数值上更稳定（对大数值不会溢出）。
+
 
 **参数**
 
@@ -641,9 +644,10 @@ math.to_radians(deg: float): float
 math.trunc(n: float): int
 ```
 
-Truncates `n` toward zero (removes the fractional part).
+将 `n` 向零截断（去除小数部分）。
 
-Unlike <a class="stdlib-ref" data-key="math::floor" href="/zh-CN/api/stdlib/math/#floor">floor</a>, truncation toward zero is symmetric: `trunc(-1.9) = -1`, whereas `floor(-1.9) = -2`.
+与 <a class="stdlib-ref" data-key="math::floor" href="/zh-CN/api/stdlib/math/#floor">floor</a> 不同，向零截断是对称的：`trunc(-1.9) = -1`，而 `floor(-1.9) = -2`。
+
 
 **参数**
 

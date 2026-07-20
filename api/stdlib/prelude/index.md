@@ -27,11 +27,14 @@ The prelude is loaded automatically into every script. Its types and functions a
 
 | Name | Description |
 | --- | --- |
+| [`Adjustment`](/api/stdlib/prelude/Adjustment) | Price adjustment type for requested data. |
 | [`AlertFreq`](/api/stdlib/prelude/AlertFreq) | Alert frequency constant for <a class="stdlib-ref" data-key="prelude::alert" href="/api/stdlib/prelude/#alert">alert</a>. |
 | [`Array<T>`](/api/stdlib/prelude/Array) | An ordered, indexable collection of elements of type `T`. |
+| [`BackAdjustment`](/api/stdlib/prelude/BackAdjustment) | Back-adjustment for continuous futures contracts. |
 | [`BarmergeGaps`](/api/stdlib/prelude/BarmergeGaps) | Gap mode for `request.*()` functions. |
 | [`BarmergeLookahead`](/api/stdlib/prelude/BarmergeLookahead) | Lookahead mode for `request.*()` functions. |
 | [`Box`](/api/stdlib/prelude/Box) | Handle for a box drawing. |
+| [`BoxStyle`](/api/stdlib/prelude/BoxStyle) | Box size assignment method for Renko / Kagi / Point & Figure. |
 | [`Color`](/api/stdlib/prelude/Color) | A 32-bit RGBA color value. |
 | [`CommissionType`](/api/stdlib/prelude/CommissionType) | Commission calculation mode for <a class="stdlib-ref" data-key="prelude::strategy" href="/api/stdlib/prelude/#strategy">strategy</a>. |
 | [`Currency`](/api/stdlib/prelude/Currency) | Currency code (ISO 4217). |
@@ -57,10 +60,13 @@ The prelude is loaded automatically into every script. Its types and functions a
 | [`Plot`](/api/stdlib/prelude/Plot) | Handle for a plot created by <a class="stdlib-ref" data-key="prelude::plot" href="/api/stdlib/prelude/#plot">plot</a>. |
 | [`PlotDisplay`](/api/stdlib/prelude/PlotDisplay) | Bitflag type controlling where plots and visuals are shown. |
 | [`PlotStyle`](/api/stdlib/prelude/PlotStyle) | Style of a plot series. |
+| [`PnfSource`](/api/stdlib/prelude/PnfSource) | Source used to calculate Point & Figure boxes. |
 | [`Polyline`](/api/stdlib/prelude/Polyline) | Handle for a polyline drawing. |
 | [`Position`](/api/stdlib/prelude/Position) | Table and label position on the chart pane. |
+| [`RenkoSource`](/api/stdlib/prelude/RenkoSource) | Source used to calculate Renko bricks. |
 | [`ScaleType`](/api/stdlib/prelude/ScaleType) | Price scale attachment mode for <a class="stdlib-ref" data-key="prelude::indicator" href="/api/stdlib/prelude/#indicator">indicator</a> and <a class="stdlib-ref" data-key="prelude::strategy" href="/api/stdlib/prelude/#strategy">strategy</a>. |
 | [`Session`](/api/stdlib/prelude/Session) | Trading session type. |
+| [`SettlementAsClose`](/api/stdlib/prelude/SettlementAsClose) | Whether a futures symbol's close is the settlement price on `1D`+. |
 | [`Shape`](/api/stdlib/prelude/Shape) | Shape drawn by <a class="stdlib-ref" data-key="prelude::plot_shape" href="/api/stdlib/prelude/#plot_shape">plot_shape</a>. |
 | [`Size`](/api/stdlib/prelude/Size) | Size constant for drawings and labels. |
 | [`SortOrder`](/api/stdlib/prelude/SortOrder) | Sort order for array and matrix operations. |
