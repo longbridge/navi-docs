@@ -26,6 +26,18 @@ export interface CompletionItem {
   documentation?: string;
   /** Text inserted on commit; defaults to `label` when absent. */
   insertText?: string;
+  /**
+   * Format of `insertText`. `"Snippet"` means it contains `$0` /
+   * `${1:placeholder}` tab-stops the editor should expand (rather than insert
+   * literally). Defaults to plain text when absent.
+   */
+  insertTextFormat?: "PlainText" | "Snippet";
+  /**
+   * Editor command id to run right after this item is inserted, e.g.
+   * `"editor.action.triggerParameterHints"` to pop up signature help after a
+   * callable snippet.
+   */
+  command?: string;
   /** Sort key; defaults to `label`. */
   sortText?: string;
   /** Filter key used while typing; defaults to `label`. */
