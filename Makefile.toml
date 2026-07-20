@@ -64,6 +64,28 @@ script = ["rm -f \"${SITE}/public/navi-skill.zip\" && cd \"${SITE}/skills\" && z
 script_runner = "@shell"
 script = ["powershell -Command \"Compress-Archive -Path '${SITE}/skills/navi' -DestinationPath '${SITE}/public/navi-skill.zip' -Force\""]
 
+# Package the VS Code extension (bundles the wasm LSP + formatter via its own
+# build) and copy the resulting .vsix into public/ so it can be downloaded.
+# The .vsix is git-ignored and regenerated on each build, like navi-skill.zip.
+[tasks.package-vscode-extension]
+private = true
+workspace = false
+cwd = "${ROOT}/crates/lsp/editors/vscode"
+script_runner = "@shell"
+script = ["npm install --prefer-offline", "npm run package"]
+
+[tasks.copy-vsix-to-website]
+private = true
+workspace = false
+dependencies = ["package-vscode-extension"]
+command = "node"
+args = [
+    "-e",
+    "require('fs').copyFileSync(process.argv[1], process.argv[2])",
+    "${ROOT}/crates/lsp/editors/vscode/navi-0.1.0.vsix",
+    "${SITE}/public/navi-vscode.vsix",
+]
+
 # Commit all generated assets into the navi-docs submodule repo.
 # The "git diff --cached --quiet || git commit" pattern is idempotent:
 # it only creates a commit when files actually changed.
@@ -91,5 +113,6 @@ dependencies = [
     "npm-install",
     "generate-stdlib-docs",
     "package-skill",
+    "copy-vsix-to-website",
     "commit-website-assets",
 ]

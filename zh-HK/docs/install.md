@@ -52,6 +52,22 @@ navi --version
 
 獨立 CLI 不包含行情數據，只提供基礎的編譯、lint、格式化和執行能力，方便開發者及 AI 驗證腳本正確性。因此 `navi run` 必須透過 `--data` 接收調用方提供的 OHLCV CSV。快速開始會介紹如何構造模擬驗證數據，以及需要時如何取得真實 K 線。
 
+## VS Code 擴充功能
+
+Navi VS Code 擴充功能為 `.nv` 檔案提供語法高亮、診斷、自動完成、懸停提示、跳轉定義和格式化。它內置了 WebAssembly 語言伺服器，無需額外安裝即可使用——在網頁版 VS Code（vscode.dev / github.dev）中也能執行。
+
+[下載 VS Code 擴充功能（.vsix）](/navi-vscode.vsix)
+
+透過命令列安裝：
+
+```bash
+code --install-extension navi-vscode.vsix
+```
+
+或在 VS Code 中：開啟擴充功能檢視，使用 `···` 選單 → **從 VSIX 安裝…**，選擇下載的檔案。
+
+如需使用原生 `navi-lsp` 執行檔而非內置的 WebAssembly 伺服器，將 `navi.server.mode` 設為 `native`，並把 `navi.server.path` 指向該執行檔。
+
 ## 下一步
 
 - [快速開始](/zh-HK/docs/quick-start) — 編寫並驗證第一個 Navi 腳本

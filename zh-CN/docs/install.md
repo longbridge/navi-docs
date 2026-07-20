@@ -52,6 +52,22 @@ navi --version
 
 独立 CLI 不包含行情数据，只提供基础的编译、lint、格式化和运行能力，方便开发者及 AI 验证脚本正确性。因此 `navi run` 必须通过 `--data` 接收调用方提供的 OHLCV CSV。快速开始会介绍如何构造模拟验证数据，以及需要时如何获取真实 K 线。
 
+## VS Code 扩展
+
+Navi VS Code 扩展为 `.nv` 文件提供语法高亮、诊断、补全、悬停提示、跳转定义和格式化。它内置了 WebAssembly 语言服务器，无需额外安装即可使用——在网页版 VS Code（vscode.dev / github.dev）中也能运行。
+
+[下载 VS Code 扩展（.vsix）](/navi-vscode.vsix)
+
+通过命令行安装：
+
+```bash
+code --install-extension navi-vscode.vsix
+```
+
+或在 VS Code 中：打开扩展视图，点击 `···` 菜单 → **从 VSIX 安装…**，选择下载的文件。
+
+如需使用原生 `navi-lsp` 可执行文件而非内置的 WebAssembly 服务器，将 `navi.server.mode` 设为 `native`，并把 `navi.server.path` 指向该可执行文件。
+
 ## 下一步
 
 - [快速开始](/zh-CN/docs/quick-start) — 编写并验证第一个 Navi 脚本

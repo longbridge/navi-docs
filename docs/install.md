@@ -52,6 +52,22 @@ navi --version
 
 The standalone CLI contains no market data; it provides basic compile, lint, format, and run capabilities so developers and AI agents can verify script correctness. `navi run` therefore requires a caller-provided OHLCV CSV through `--data`. The Quick Start shows how to build synthetic validation data and where to obtain real candles when needed.
 
+## VS Code Extension
+
+The Navi VS Code extension adds syntax highlighting, diagnostics, completion, hover, go-to-definition, and formatting for `.nv` files. It bundles a WebAssembly language server, so it works with no separate install — including in browser VS Code (vscode.dev / github.dev).
+
+[Download the VS Code extension (.vsix)](/navi-vscode.vsix)
+
+Install it from the command line:
+
+```bash
+code --install-extension navi-vscode.vsix
+```
+
+Or in VS Code: open the Extensions view, use the `···` menu → **Install from VSIX…**, and select the downloaded file.
+
+To use a native `navi-lsp` binary instead of the bundled WebAssembly server, set `navi.server.mode` to `native` and point `navi.server.path` at the binary.
+
 ## Next Steps
 
 - [Quick Start](/docs/quick-start) — write and validate your first Navi script
