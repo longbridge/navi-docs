@@ -32,9 +32,9 @@ let crossUp   = ta.cross_over(fast, slow);
 let crossDown = ta.cross_under(fast, slow);
 
 // ⑤ Plot the two moving averages as continuous lines.
-//   linewidth=2 makes them slightly thicker than the default 1.
-plot(fast, title:  "Fast SMA", color:  color.BLUE,   linewidth:  2);
-plot(slow, title:  "Slow SMA", color:  color.ORANGE, linewidth:  2);
+//   line_width=2 makes them slightly thicker than the default 1.
+plot(fast, title:  "Fast SMA", color:  Color.BLUE,   line_width:  2);
+plot(slow, title:  "Slow SMA", color:  Color.ORANGE, line_width:  2);
 
 // ⑥ Mark bullish crossovers with an upward triangle below the bar.
 //   plot_shape only draws on bars where the first argument is true.
@@ -42,7 +42,7 @@ plot_shape(crossUp,
     title:  "Bullish Cross",
     style:  Shape.TriangleUp,
     location:  Location.BelowBar,
-    color:  color.GREEN,
+    color:  Color.GREEN,
     size:  Size.Small);
 
 // ⑦ Mark bearish crossunders with a downward triangle above the bar.
@@ -50,14 +50,14 @@ plot_shape(crossDown,
     title:  "Bearish Cross",
     style:  Shape.TriangleDown,
     location:  Location.AboveBar,
-    color:  color.RED,
+    color:  Color.RED,
     size:  Size.Small);
 
 // ⑧ Color the chart background on bullish or bearish cross bars for emphasis.
-//   color.new(c, transp) creates a transparent version of the color (0=opaque, 100=invisible).
+//   Color.new(c, transp) creates a transparent version of the color (0=opaque, 100=invisible).
 //   The ternary operator ?: picks the color based on which event occurred.
-let bgColor = crossUp   ? color.new(color.GREEN, 85) :
-              crossDown ? color.new(color.RED,   85) : na;
+let bgColor = crossUp   ? Color.new(Color.GREEN, 85) :
+              crossDown ? Color.new(Color.RED,   85) : na;
 bg_color(bgColor);
 ```
 
@@ -71,7 +71,7 @@ bg_color(bgColor);
 | `ta` module | `ta.sma`, `ta.cross_over`, `ta.cross_under` — lines ③④ |
 | Plotting lines | `plot(...)` — line ⑤ |
 | Plotting shapes | `plot_shape(...)` — lines ⑥⑦ |
-| Transparent colors | `color.new(c, transp)` — line ⑧ |
+| Transparent colors | `Color.new(c, transp)` — line ⑧ |
 | Ternary operator | `c ? a : b` — line ⑧ |
 | `na` as "no value" | `na` used to skip background coloring — line ⑧ |
 

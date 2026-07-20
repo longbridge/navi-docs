@@ -32,9 +32,9 @@ let crossUp   = ta.cross_over(fast, slow);
 let crossDown = ta.cross_under(fast, slow);
 
 // ⑤ 將兩條均線繪製為連續折線。
-//   linewidth=2 使線條略粗於預設值 1。
-plot(fast, title:  "Fast SMA", color:  color.BLUE,   linewidth:  2);
-plot(slow, title:  "Slow SMA", color:  color.ORANGE, linewidth:  2);
+//   line_width=2 使線條略粗於預設值 1。
+plot(fast, title:  "Fast SMA", color:  Color.BLUE,   line_width:  2);
+plot(slow, title:  "Slow SMA", color:  Color.ORANGE, line_width:  2);
 
 // ⑥ 在金叉 Bar 的下方繪製向上的三角形標記。
 //   plot_shape 僅在第一個參數為 true 的 Bar 上繪製。
@@ -42,7 +42,7 @@ plot_shape(crossUp,
     title:  "Bullish Cross",
     style:  Shape.TriangleUp,
     location:  Location.BelowBar,
-    color:  color.GREEN,
+    color:  Color.GREEN,
     size:  Size.Small);
 
 // ⑦ 在死叉 Bar 的上方繪製向下的三角形標記。
@@ -50,14 +50,14 @@ plot_shape(crossDown,
     title:  "Bearish Cross",
     style:  Shape.TriangleDown,
     location:  Location.AboveBar,
-    color:  color.RED,
+    color:  Color.RED,
     size:  Size.Small);
 
 // ⑧ 在金叉或死叉 Bar 上為圖表背景新增淡色高亮。
-//   color.new(c, transp) 建立帶透明度的顏色（0=不透明，100=完全透明）。
+//   Color.new(c, transp) 建立帶透明度的顏色（0=不透明，100=完全透明）。
 //   三元運算符 ?: 根據事件類型選擇顏色。
-let bgColor = crossUp   ? color.new(color.GREEN, 85) :
-              crossDown ? color.new(color.RED,   85) : na;
+let bgColor = crossUp   ? Color.new(Color.GREEN, 85) :
+              crossDown ? Color.new(Color.RED,   85) : na;
 bg_color(bgColor);
 ```
 
@@ -71,7 +71,7 @@ bg_color(bgColor);
 | `ta` 模組 | `ta.sma`、`ta.cross_over`、`ta.cross_under` — 行 ③④ |
 | 繪製折線 | `plot(...)` — 行 ⑤ |
 | 繪製形狀標記 | `plot_shape(...)` — 行 ⑥⑦ |
-| 透明顏色 | `color.new(c, transp)` — 行 ⑧ |
+| 透明顏色 | `Color.new(c, transp)` — 行 ⑧ |
 | 三元運算符 | `c ? a : b` — 行 ⑧ |
 | `na` 表示「無值」 | `na` 用於跳過背景著色 — 行 ⑧ |
 
