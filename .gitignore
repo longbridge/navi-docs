@@ -4,5 +4,4 @@ dist/
 .vitepress/cache/
 stdlib-docs*.json
 public/navi-skill.zip
-public/navi-vscode.vsix
 .DS_Store
