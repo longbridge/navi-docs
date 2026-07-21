@@ -66,7 +66,8 @@ script = ["powershell -Command \"Compress-Archive -Path '${SITE}/skills/navi' -D
 
 # Package the VS Code extension (bundles the wasm LSP + formatter via its own
 # build) and copy the resulting .vsix into public/ so it can be downloaded.
-# The .vsix is git-ignored and regenerated on each build, like navi-skill.zip.
+# Unlike navi-skill.zip, the website's own `npm run build` has no Rust
+# toolchain to regenerate this, so it is committed rather than git-ignored.
 [tasks.package-vscode-extension]
 private = true
 workspace = false
@@ -95,7 +96,7 @@ workspace = false
 cwd = "${SITE}"
 script_runner = "@shell"
 script = [
-    "git add wasm-pkg/ api/stdlib/ zh-CN/api/stdlib/ zh-HK/api/stdlib/ stdlib-sidebar.json",
+    "git add wasm-pkg/ api/stdlib/ zh-CN/api/stdlib/ zh-HK/api/stdlib/ stdlib-sidebar.json public/navi-vscode.vsix",
     'git diff --cached --quiet || git commit -m "chore: update generated assets"',
 ]
 

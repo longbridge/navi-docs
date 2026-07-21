@@ -9,7 +9,7 @@
     "check:playground-url": "node scripts/check-playground-url.mjs",
     "check:monarch": "node scripts/check-monarch.mjs",
     "prebuild": "npm run check:skill-links && npm run check:playground-url && npm run check:monarch && npm run package-skill",
-    "build": "vitepress build",
+    "build": "VITE_EXTRA_EXTENSIONS=vsix vitepress build",
     "preview": "vitepress preview"
   },
   "devDependencies": {
