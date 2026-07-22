@@ -1,0 +1,7 @@
+// 正确结果：蓝线每隔一柱为 na，断口处两端不连接；
+// 红线（PlotStyle.Line）跨 na 连线，两者对比明显
+indicator("Chart Test: plot/style_linebr", overlay: true);
+
+let src = bar_index % 2 == 0 ? close : na;
+plot(src, "LineBr", style: PlotStyle.LineBr, color: Color.BLUE);
+plot(src, "Line", style: PlotStyle.Line, color: Color.RED);

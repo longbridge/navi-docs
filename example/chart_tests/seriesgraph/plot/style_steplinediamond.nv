@@ -1,0 +1,4 @@
+// 正确结果：与 Stepline 相同的阶梯折线，但在每个数据点（垂直跳变处）额外绘制菱形标记
+indicator("Chart Test: plot/style_steplinediamond", overlay: true);
+
+plot(ta.sma(close, 5), "SMA5", style: PlotStyle.SteplineDiamond, color: Color.BLUE, line_width: 2);

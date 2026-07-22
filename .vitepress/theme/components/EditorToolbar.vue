@@ -6,7 +6,7 @@ import {
 } from 'radix-vue'
 import { Plus, Save, CopyPlus, Pencil, Trash2, ChevronsUpDown, Search, Check, ChartLine } from 'lucide-vue-next'
 import type { ScriptItem } from '../composables/script-store'
-import { isBuiltinId, getBuiltinScript, builtinIndicators, builtinStrategies } from '../composables/builtin-scripts'
+import { isBuiltinId, getBuiltinScript, builtinIndicators, builtinStrategies, builtinChartTests } from '../composables/builtin-scripts'
 
 const { t } = useI18n()
 
@@ -87,6 +87,25 @@ const filteredStrategies = computed(() =>
       )
     : builtinStrategies,
 )
+
+const filteredChartTests = computed(() =>
+  query.value
+    ? builtinChartTests.filter(s =>
+        s.title.toLowerCase().includes(query.value) ||
+        (s.group?.toLowerCase().includes(query.value) ?? false),
+      )
+    : builtinChartTests,
+)
+
+const filteredChartTestGroups = computed(() => {
+  const map = new Map<string, typeof builtinChartTests>()
+  for (const s of filteredChartTests.value) {
+    const g = s.group ?? ''
+    if (!map.has(g)) map.set(g, [])
+    map.get(g)!.push(s)
+  }
+  return Array.from(map.entries()).map(([group, scripts]) => ({ group, scripts }))
+})
 </script>
 
 <template>
@@ -183,9 +202,30 @@ const filteredStrategies = computed(() =>
                 </template>
               </template>
 
+              <!-- Chart Tests -->
+              <template v-if="filteredChartTests.length > 0">
+                <div class="-mx-1 my-1 h-px bg-border" />
+                <div class="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Chart Tests</div>
+                <template v-for="{ group, scripts } in filteredChartTestGroups" :key="group">
+                  <div class="px-2 py-1 text-xs text-muted-foreground/70 mt-1">{{ group }}</div>
+                  <button
+                    v-for="s in scripts"
+                    :key="s.id"
+                    :data-active="s.id === activeScriptId"
+                    class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-none transition-colors hover:bg-foreground/10 hover:text-foreground"
+                    :class="s.id === activeScriptId ? 'bg-primary/10 text-primary font-medium' : ''"
+                    @click="selectScript(s.id)"
+                  >
+                    <span class="flex-1 min-w-0 truncate">{{ s.title }}</span>
+                    <Check v-if="scriptsOnChart.has(s.id)" class="h-3.5 w-3.5 shrink-0" />
+                    <span v-else class="w-3.5 shrink-0" />
+                  </button>
+                </template>
+              </template>
+
               <!-- No results -->
               <div
-                v-if="filteredUserScripts.length === 0 && filteredIndicators.length === 0 && filteredStrategies.length === 0"
+                v-if="filteredUserScripts.length === 0 && filteredIndicators.length === 0 && filteredStrategies.length === 0 && filteredChartTests.length === 0"
                 class="px-2 py-4 text-center text-sm text-muted-foreground"
               >
                 {{ t('toolbar.noResults') }}

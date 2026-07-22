@@ -1,0 +1,7 @@
+// 正确结果：SMA5 上穿 SMA20 时（ta.crossover），在柱子上方显示一个星号"⭐"标记
+indicator("Chart Test: plotchar/basic_bool", overlay: true);
+
+let cond = ta.crossover(ta.sma(close, 5), ta.sma(close, 20));
+plot_char(cond, "Crossover", char: "⭐", location: Location.AboveBar, color: Color.BLUE);
+plot(ta.sma(close, 5), "SMA5", color: Color.BLUE);
+plot(ta.sma(close, 20), "SMA20", color: Color.RED);

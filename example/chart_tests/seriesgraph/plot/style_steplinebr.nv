@@ -1,0 +1,5 @@
+// 正确结果：偶数柱有值、奇数柱为 na，阶梯折线在 na 处断开，断口两侧不连接
+indicator("Chart Test: plot/style_steplinebr", overlay: true);
+
+let src = bar_index % 2 == 0 ? ta.sma(close, 5) : na;
+plot(src, "SMA5 (gaps)", style: PlotStyle.SteplineBr, color: Color.BLUE, line_width: 2);

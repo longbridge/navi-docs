@@ -1,0 +1,7 @@
+// 正确结果：每 15 根柱出现绿色 ArrowUp 形状，旁边附带蓝色文字"Buy"；
+// 形状颜色（绿）与文字颜色（蓝）各自独立
+indicator("Chart Test: plotshape/text", overlay: true);
+
+let t = bar_index % 15 == 0;
+plot_shape(t, "Signal", style: Shape.ArrowUp, location: Location.BelowBar,
+    color: Color.GREEN, text: "Buy", text_color: Color.BLUE, size: Size.Small);

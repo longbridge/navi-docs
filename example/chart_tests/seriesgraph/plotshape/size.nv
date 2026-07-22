@@ -1,0 +1,10 @@
+// 正确结果：每 8 根柱出现五种尺寸的圆形，从小到大依次为 Tiny/Small/Normal/Large/Huge，
+// 颜色各异以便区分，大小差异明显
+indicator("Chart Test: plotshape/size", overlay: true);
+
+let t = bar_index % 8 == 0;
+plot_shape(t, "Tiny", style: Shape.Circle, location: Location.AboveBar, color: Color.BLUE, size: Size.Tiny);
+plot_shape(t, "Small", style: Shape.Circle, location: Location.AboveBar, color: Color.RED, size: Size.Small);
+plot_shape(t, "Normal", style: Shape.Circle, location: Location.AboveBar, color: Color.GREEN, size: Size.Normal);
+plot_shape(t, "Large", style: Shape.Circle, location: Location.AboveBar, color: Color.PURPLE, size: Size.Large);
+plot_shape(t, "Huge", style: Shape.Circle, location: Location.AboveBar, color: Color.ORANGE, size: Size.Huge);

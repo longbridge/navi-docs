@@ -1,0 +1,4 @@
+// 正确结果：OHLC 柱只显示最后 50 根，历史区域为空（主图 K 线仍正常显示）
+indicator("Chart Test: plotbar/show_last", overlay: true);
+
+plot_bar(open, high, low, close, "OHLC", show_last: 50);

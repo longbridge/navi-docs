@@ -1,0 +1,4 @@
+// 正确结果：背景色只出现在最后 50 根柱子，历史区域无背景色
+indicator("Chart Test: bgcolor/show_last", overlay: true);
+
+bg_color(Color.rgb(33, 150, 243, 60), show_last: 50);

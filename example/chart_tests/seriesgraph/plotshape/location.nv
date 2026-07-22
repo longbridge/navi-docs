@@ -1,0 +1,11 @@
+// 正确结果：每 20 根柱出现五种位置的形状：
+// "A"=AboveBar（柱上）、"B"=BelowBar（柱下）、"T"=Top（面板顶部）、
+// "D"=Bottom（面板底部）、"P"=Absolute（跟随 close 绝对价格位置）
+indicator("Chart Test: plotshape/location", overlay: true);
+
+let t = bar_index % 20 == 0;
+plot_shape(t, "AboveBar", style: Shape.Circle, location: Location.AboveBar, color: Color.BLUE, size: Size.Small);
+plot_shape(t, "BelowBar", style: Shape.Circle, location: Location.BelowBar, color: Color.RED, size: Size.Small);
+plot_shape(t, "Top", style: Shape.Circle, location: Location.Top, color: Color.GREEN, size: Size.Small);
+plot_shape(t, "Bottom", style: Shape.Circle, location: Location.Bottom, color: Color.PURPLE, size: Size.Small);
+plot_shape(close, "Absolute", style: Shape.Circle, location: Location.Absolute, color: Color.ORANGE, size: Size.Small);

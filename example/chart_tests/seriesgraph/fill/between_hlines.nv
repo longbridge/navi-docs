@@ -1,0 +1,9 @@
+// 正确结果：70 和 30 两条水平线之间的固定区域填充半透明绿色
+indicator("Chart Test: fill/between_hlines", overlay: false);
+
+let h1 = hline(70, "Upper", color: Color.RED);
+let h2 = hline(30, "Lower", color: Color.GREEN);
+fill(h1, h2, color: Color.rgb(0, 255, 0, 80), title: "Fill");
+
+let rsi = ta.rsi(close, 14);
+plot(rsi, "RSI", color: Color.BLUE);

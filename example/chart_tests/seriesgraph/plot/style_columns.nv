@@ -1,0 +1,7 @@
+// 正确结果：蓝色 Columns 与红色 Histogram 绘制同一数据，
+// 对比两者矩形宽度与间距的视觉差异
+indicator("Chart Test: plot/style_columns", overlay: false);
+
+let val = close - open;
+plot(val + 2, "Columns", style: PlotStyle.Columns, color: Color.BLUE);
+plot(val - 2, "Histogram", style: PlotStyle.Histogram, color: Color.RED);

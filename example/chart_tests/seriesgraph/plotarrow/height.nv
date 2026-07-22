@@ -1,0 +1,5 @@
+// 正确结果：所有箭头高度被限制在 10-30 像素范围内，
+// 无论数值大小，箭头高度不超过 30px 也不低于 10px
+indicator("Chart Test: plotarrow/height", overlay: true);
+
+plot_arrow(close - open, "Clamped height", min_height: 10, max_height: 30);

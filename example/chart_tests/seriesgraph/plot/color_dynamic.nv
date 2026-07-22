@@ -1,0 +1,8 @@
+// 正确结果：close 高于 SMA20 时线条为绿色，低于时为红色，
+// 颜色随价格穿越 SMA20 逐柱动态切换
+indicator("Chart Test: plot/color_dynamic", overlay: true);
+
+let sma = ta.sma(close, 20);
+let col = close > sma ? Color.GREEN : Color.RED;
+plot(close, "Close", color: col);
+plot(sma, "SMA20", color: Color.GRAY);

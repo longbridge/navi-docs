@@ -1,0 +1,6 @@
+// 正确结果：三条线分别显示为蓝、红、绿三种固定颜色，颜色不随数据变化
+indicator("Chart Test: plot/color_static", overlay: true);
+
+plot(close, "Close", color: Color.BLUE);
+plot(ta.sma(close, 10), "SMA10", color: Color.RED);
+plot(ta.sma(close, 20), "SMA20", color: Color.GREEN);

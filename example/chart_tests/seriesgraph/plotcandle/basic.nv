@@ -1,0 +1,4 @@
+// 正确结果：叠加在主图上的自定义蜡烛图，实体蓝色，影线蓝色，边框黑色
+indicator("Chart Test: plotcandle/basic", overlay: true);
+
+plot_candle(open, high, low, close, "Candle");

@@ -1,0 +1,4 @@
+// 正确结果：自定义蜡烛只显示最后 50 根，历史区域为空
+indicator("Chart Test: plotcandle/show_last", overlay: true);
+
+plot_candle(open, high, low, close, "Candle", show_last: 50);

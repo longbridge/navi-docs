@@ -1,0 +1,8 @@
+// 正确结果：蓝色 AreaBr 每三柱出现一次 na，na 处面积断开不填充；
+// 红色 Area 在相同数据下 na 处连续填充，两者对比明显
+indicator("Chart Test: plot/style_areabr", overlay: false);
+
+let base = close - ta.sma(close, 20);
+let src = bar_index % 3 != 0 ? base : na;
+plot(src, "AreaBr", style: PlotStyle.AreaBr, color: Color.rgb(33, 150, 243, 60));
+plot(src, "Area", style: PlotStyle.Area, color: Color.rgb(243, 54, 69, 60));

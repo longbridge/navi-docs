@@ -1,0 +1,5 @@
+// 正确结果：close - open 正值时绘制蓝色向上箭头，负值时绘制黑色向下箭头，
+// 箭头高度与数值大小成正比
+indicator("Chart Test: plotarrow/basic", overlay: true);
+
+plot_arrow(close - open, "Close-Open");

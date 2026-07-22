@@ -1,0 +1,6 @@
+// 正确结果：SMA10 与 SMA20 之间的区域填充半透明蓝色，两条线之间距离越大填充面积越宽
+indicator("Chart Test: fill/between_plots", overlay: true);
+
+let p1 = plot(ta.sma(close, 10), "SMA10", color: Color.BLUE);
+let p2 = plot(ta.sma(close, 20), "SMA20", color: Color.RED);
+fill(p1, p2, color: Color.rgb(33, 150, 243, 80), title: "Fill");

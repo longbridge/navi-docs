@@ -13,18 +13,36 @@ const strategyModules = import.meta.glob('/example/strategies/*.nv', {
   import: 'default',
 }) as Record<string, string>
 
+const chartTestModules = import.meta.glob('/example/chart_tests/**/*.nv', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+}) as Record<string, string>
+
 export interface BuiltinScript {
   id: string
   name: string
   title: string
   shortTitle: string | null
   source: string
-  category: 'indicator' | 'strategy'
+  category: 'indicator' | 'strategy' | 'chart-test'
+  /** Sub-directory group path, e.g. "seriesgraph/plot". Only set for chart-test category. */
+  group?: string
 }
 
 function nameFromPath(path: string): string {
   const file = path.split('/').pop() ?? path
   return file.replace(/\.nv$/, '')
+}
+
+/**
+ * Extract the group from a chart_tests path, e.g.:
+ *   /example/chart_tests/seriesgraph/plot/style_line.nv → "seriesgraph/plot"
+ */
+function groupFromChartTestPath(path: string): string {
+  // Strip prefix up to and including "chart_tests/"
+  const match = path.match(/chart_tests\/(.+)\/[^/]+\.nv$/)
+  return match ? match[1] : ''
 }
 
 /**
@@ -90,9 +108,34 @@ function buildScripts(
     .sort((a, b) => a.title.localeCompare(b.title))
 }
 
+function buildChartTestScripts(modules: Record<string, string>): BuiltinScript[] {
+  return Object.entries(modules)
+    .map(([path, source]) => {
+      const name = nameFromPath(path)
+      const group = groupFromChartTestPath(path)
+      const { title, shortTitle } = parseTitleAndShortTitle(source)
+      // Use "group/name" as unique id to avoid collisions across sub-directories
+      const uniqueName = group ? `${group}/${name}` : name
+      return {
+        id: `builtin:chart-test:${uniqueName}`,
+        name: uniqueName,
+        title: title ?? uniqueName,
+        shortTitle: shortTitle !== title ? shortTitle : null,
+        source,
+        category: 'chart-test' as const,
+        group,
+      }
+    })
+    .sort((a, b) => {
+      const gCmp = (a.group ?? '').localeCompare(b.group ?? '')
+      return gCmp !== 0 ? gCmp : a.title.localeCompare(b.title)
+    })
+}
+
 export const builtinIndicators: BuiltinScript[] = buildScripts(indicatorModules, 'indicator')
 export const builtinStrategies: BuiltinScript[] = buildScripts(strategyModules, 'strategy')
-export const builtinScripts: BuiltinScript[] = [...builtinIndicators, ...builtinStrategies]
+export const builtinChartTests: BuiltinScript[] = buildChartTestScripts(chartTestModules)
+export const builtinScripts: BuiltinScript[] = [...builtinIndicators, ...builtinStrategies, ...builtinChartTests]
 
 export function isBuiltinId(id: string | null): boolean {
   return id != null && id.startsWith('builtin:')

@@ -1,0 +1,6 @@
+// 正确结果：字符"▲"为蓝色，旁边标注文字"Signal"为红色，两者颜色各自独立
+indicator("Chart Test: plotchar/text_color", overlay: true);
+
+let trigger = bar_index % 10 == 0;
+plot_char(trigger, "Signal", char: "▲", location: Location.AboveBar,
+    color: Color.BLUE, text: "Signal", text_color: Color.RED, size: Size.Normal);

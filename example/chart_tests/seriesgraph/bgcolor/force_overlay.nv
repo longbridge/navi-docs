@@ -1,0 +1,6 @@
+// 正确结果：indicator 在独立子图，但背景色（蓝色）通过 force_overlay: true 出现在主图上；
+// 子图自身无背景色（bg_color 被强制绘制到主图）
+indicator("Chart Test: bgcolor/force_overlay", overlay: false);
+
+bg_color(Color.rgb(33, 150, 243, 40), force_overlay: true);
+plot(close - ta.sma(close, 20), "Dev", color: Color.RED);

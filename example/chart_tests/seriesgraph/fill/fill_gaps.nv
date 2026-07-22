@@ -1,0 +1,12 @@
+// 正确结果：蓝色 fill（fill_gaps: true）在 na 处填充连续；
+// 红色 fill（fill_gaps: false）在 na 处填充断开，两者对比明显
+indicator("Chart Test: fill/fill_gaps", overlay: true);
+
+let src = bar_index % 5 != 0 ? close : na;
+let p1a = plot(src + 2, "A1", color: Color.BLUE);
+let p2a = plot(src - 2, "A2", color: Color.BLUE);
+fill(p1a, p2a, color: Color.rgb(33, 150, 243, 60), fill_gaps: true, title: "fill_gaps=true");
+
+let p1b = plot(src + 6, "B1", color: Color.RED);
+let p2b = plot(src + 2, "B2", color: Color.RED);
+fill(p1b, p2b, color: Color.rgb(243, 54, 69, 60), fill_gaps: false, title: "fill_gaps=false");

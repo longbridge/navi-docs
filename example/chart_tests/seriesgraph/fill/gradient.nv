@@ -1,0 +1,10 @@
+// 正确结果：两条 SMA 之间的填充呈垂直渐变，
+// 顶部（top_value = close 最大值区域）为蓝色，底部为红色，中间过渡
+indicator("Chart Test: fill/gradient", overlay: true);
+
+let p1 = plot(ta.sma(close, 5), "SMA5", color: Color.BLUE);
+let p2 = plot(ta.sma(close, 20), "SMA20", color: Color.RED);
+fill(p1, p2, ta.highest(close, 50), ta.lowest(close, 50),
+    top_color: Color.rgb(33, 150, 243, 70),
+    bottom_color: Color.rgb(243, 54, 69, 70),
+    title: "Gradient Fill");

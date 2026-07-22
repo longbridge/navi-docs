@@ -1,0 +1,5 @@
+// 正确结果：close 上涨（close > close[1]）的柱子背景为绿色，下跌为红色，逐柱变色
+indicator("Chart Test: bgcolor/dynamic_color", overlay: true);
+
+let col = close > close[1] ? Color.rgb(0, 200, 100, 50) : Color.rgb(243, 54, 69, 50);
+bg_color(col);

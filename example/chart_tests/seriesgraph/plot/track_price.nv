@@ -1,0 +1,6 @@
+// 正确结果：蓝线（track_price: true）在价格坐标轴上持续显示当前值的价格标签；
+// 红线（track_price: false）价格轴无标签，两者对比
+indicator("Chart Test: plot/track_price", overlay: true);
+
+plot(ta.sma(close, 10), "SMA10 track=true", color: Color.BLUE, track_price: true);
+plot(ta.sma(close, 20), "SMA20 track=false", color: Color.RED, track_price: false);

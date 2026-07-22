@@ -1,0 +1,6 @@
+// 正确结果：蓝色 Circles（join: true）各标记之间有细线连接；
+// 红色 Circles（join: false）各标记孤立，无连线
+indicator("Chart Test: plot/join", overlay: true);
+
+plot(close + 2, "Circles join=true", style: PlotStyle.Circles, color: Color.BLUE, line_width: 3, join: true);
+plot(close - 2, "Circles join=false", style: PlotStyle.Circles, color: Color.RED, line_width: 3, join: false);

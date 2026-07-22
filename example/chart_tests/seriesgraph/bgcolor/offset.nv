@@ -1,0 +1,6 @@
+// 正确结果：背景色（蓝色）相对于 K 线向右偏移 5 根柱子，
+// 即背景颜色落后于实际信号 5 根柱子
+indicator("Chart Test: bgcolor/offset", overlay: true);
+
+let isUp = close > close[1];
+bg_color(isUp ? Color.rgb(0, 200, 100, 50) : Color.rgb(243, 54, 69, 50), offset: 5);

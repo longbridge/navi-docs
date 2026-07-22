@@ -1,0 +1,6 @@
+// 正确结果：蓝线（show_last: 50）只在最后 50 根柱子可见，历史区域空白；
+// 红线（无限制）显示所有历史作为参照
+indicator("Chart Test: plot/show_last", overlay: true);
+
+plot(close, "All", color: Color.RED, line_width: 1);
+plot(close, "Last 50", color: Color.BLUE, line_width: 2, show_last: 50);

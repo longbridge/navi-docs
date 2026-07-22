@@ -1,0 +1,6 @@
+// 正确结果：每根柱子绘制一个竖向矩形，从 0 延伸到当前值，
+// 正值（close > open）蓝色向上，负值红色向下，宽度铺满柱宽
+indicator("Chart Test: plot/style_histogram", overlay: false);
+
+let val = close - open;
+plot(val, "Close-Open", style: PlotStyle.Histogram, color: val >= 0 ? Color.BLUE : Color.RED);

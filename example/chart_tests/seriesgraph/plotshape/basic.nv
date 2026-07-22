@@ -1,0 +1,7 @@
+// 正确结果：SMA5 上穿 SMA20 时（ta.crossover），在柱子上方显示蓝色 XCross 形状
+indicator("Chart Test: plotshape/basic", overlay: true);
+
+let cond = ta.crossover(ta.sma(close, 5), ta.sma(close, 20));
+plot_shape(cond, "Crossover", style: Shape.XCross, location: Location.AboveBar, color: Color.BLUE);
+plot(ta.sma(close, 5), "SMA5", color: Color.BLUE);
+plot(ta.sma(close, 20), "SMA20", color: Color.RED);

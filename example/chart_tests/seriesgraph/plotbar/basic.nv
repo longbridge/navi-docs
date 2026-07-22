@@ -1,0 +1,4 @@
+// 正确结果：叠加在主图上的 OHLC 柱，每根柱子绘制竖线（high-low）+ 左横线（open）+ 右横线（close）
+indicator("Chart Test: plotbar/basic", overlay: true);
+
+plot_bar(open, high, low, close, "OHLC");

@@ -1,0 +1,7 @@
+// 正确结果：三条线形状相同（均为 close），蓝线居中无偏移，
+// 红线向右偏移 5 根柱子，绿线向左偏移 5 根柱子
+indicator("Chart Test: plot/offset", overlay: true);
+
+plot(close, "Normal (0)", color: Color.BLUE, offset: 0);
+plot(close, "Offset +5", color: Color.RED, offset: 5);
+plot(close, "Offset -5", color: Color.GREEN, offset: -5);

@@ -1,0 +1,4 @@
+// 正确结果：每根柱子在 close 处绘制一个蓝色十字"+"标记，各标记之间无连线
+indicator("Chart Test: plot/style_cross", overlay: true);
+
+plot(close, "Close", style: PlotStyle.Cross, color: Color.BLUE, line_width: 2);

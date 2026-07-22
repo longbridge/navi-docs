@@ -1,0 +1,4 @@
+// 正确结果：正值（涨）时箭头为绿色向上，负值（跌）时箭头为红色向下
+indicator("Chart Test: plotarrow/colors", overlay: true);
+
+plot_arrow(close - open, "Close-Open", color_up: Color.GREEN, color_down: Color.RED);

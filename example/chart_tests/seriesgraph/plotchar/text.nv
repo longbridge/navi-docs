@@ -1,0 +1,6 @@
+// 正确结果：每 15 根柱出现字符"▲"，旁边附带文字标注"Buy"
+indicator("Chart Test: plotchar/text", overlay: true);
+
+let trigger = bar_index % 15 == 0;
+plot_char(trigger, "Signal", char: "▲", location: Location.BelowBar,
+    color: Color.GREEN, text: "Buy", text_color: Color.GREEN, size: Size.Small);

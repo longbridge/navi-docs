@@ -1,0 +1,9 @@
+// 正确结果：每 10 根柱出现四种箭头形状，从上到下分别为：
+// 蓝色 ArrowUp、红色 ArrowDown、绿色 TriangleUp、橙色 TriangleDown，形状各异
+indicator("Chart Test: plotshape/style_arrows", overlay: true);
+
+let t = bar_index % 10 == 0;
+plot_shape(t, "ArrowUp", style: Shape.ArrowUp, location: Location.AboveBar, color: Color.BLUE, size: Size.Small);
+plot_shape(t, "ArrowDown", style: Shape.ArrowDown, location: Location.BelowBar, color: Color.RED, size: Size.Small);
+plot_shape(t, "TriangleUp", style: Shape.TriangleUp, location: Location.AboveBar, color: Color.GREEN, size: Size.Small);
+plot_shape(t, "TriangleDown", style: Shape.TriangleDown, location: Location.BelowBar, color: Color.ORANGE, size: Size.Small);

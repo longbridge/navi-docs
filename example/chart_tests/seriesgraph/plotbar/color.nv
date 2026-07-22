@@ -1,0 +1,5 @@
+// 正确结果：close > open（涨）时 OHLC 柱为蓝色，否则为红色，逐柱动态变色
+indicator("Chart Test: plotbar/color", overlay: true);
+
+let col = close >= open ? Color.BLUE : Color.RED;
+plot_bar(open, high, low, close, "OHLC", color: col);

@@ -1,0 +1,10 @@
+// 正确结果：六个字符从左到右（每 8 根柱出现一次）分别为 Tiny/Small/Normal/Large/Huge/Auto，
+// 大小依次递增，差异明显可辨
+indicator("Chart Test: plotchar/size", overlay: true);
+
+let t = bar_index % 8 == 0;
+plot_char(t, "Tiny", char: "★", location: Location.AboveBar, color: Color.BLUE, size: Size.Tiny);
+plot_char(t, "Small", char: "★", location: Location.AboveBar, color: Color.RED, size: Size.Small);
+plot_char(t, "Normal", char: "★", location: Location.AboveBar, color: Color.GREEN, size: Size.Normal);
+plot_char(t, "Large", char: "★", location: Location.AboveBar, color: Color.PURPLE, size: Size.Large);
+plot_char(t, "Huge", char: "★", location: Location.AboveBar, color: Color.ORANGE, size: Size.Huge);

@@ -1,0 +1,4 @@
+// 正确结果：箭头整体向右偏移 5 根柱子，即每根柱子的箭头显示在该柱右侧第 5 根柱子处
+indicator("Chart Test: plotarrow/offset", overlay: true);
+
+plot_arrow(close - open, "Offset +5", offset: 5);

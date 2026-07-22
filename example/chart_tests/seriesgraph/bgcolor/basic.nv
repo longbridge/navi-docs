@@ -1,0 +1,4 @@
+// 正确结果：所有柱子背景显示半透明蓝色，K 线可透过颜色正常显示
+indicator("Chart Test: bgcolor/basic", overlay: true);
+
+bg_color(Color.rgb(33, 150, 243, 80));

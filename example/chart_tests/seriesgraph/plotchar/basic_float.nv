@@ -1,0 +1,4 @@
+// 正确结果：每根柱子在 close 价格处显示"◆"字符，字符跟随价格高低位置变化
+indicator("Chart Test: plotchar/basic_float", overlay: true);
+
+plot_char(close, "Close char", char: "◆", location: Location.Absolute, color: Color.BLUE);

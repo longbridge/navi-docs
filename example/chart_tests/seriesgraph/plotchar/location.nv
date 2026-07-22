@@ -1,0 +1,11 @@
+// 正确结果：五个字符分别显示在五个不同位置：
+// "A"=AboveBar（柱子正上方）、"B"=BelowBar（柱子正下方）、
+// "T"=Top（面板顶部边缘）、"D"=Bottom（面板底部边缘）、"●"=Absolute（跟随价格绝对位置）
+indicator("Chart Test: plotchar/location", overlay: true);
+
+let trigger = bar_index % 20 == 0;
+plot_char(trigger, "AboveBar", char: "A", location: Location.AboveBar, color: Color.BLUE);
+plot_char(trigger, "BelowBar", char: "B", location: Location.BelowBar, color: Color.RED);
+plot_char(trigger, "Top", char: "T", location: Location.Top, color: Color.GREEN);
+plot_char(trigger, "Bottom", char: "D", location: Location.Bottom, color: Color.PURPLE);
+plot_char(close, "Absolute", char: "●", location: Location.Absolute, color: Color.ORANGE);

@@ -1,0 +1,8 @@
+// 正确结果：蜡烛实体为蓝/红色（涨/跌），影线为黄色，边框为绿色，三者颜色独立
+indicator("Chart Test: plotcandle/colors", overlay: true);
+
+let bodyCol = close >= open ? Color.BLUE : Color.RED;
+plot_candle(open, high, low, close, "Candle",
+    color: bodyCol,
+    wick_color: Color.YELLOW,
+    border_color: Color.GREEN);

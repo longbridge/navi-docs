@@ -1,0 +1,6 @@
+// 正确结果：偏差值以面积图绘制，正偏差向上填充蓝色，负偏差向下填充蓝色，
+// 基准线为 0，na 处面积连续跨越不断开
+indicator("Chart Test: plot/style_area", overlay: false);
+
+let dev = close - ta.sma(close, 20);
+plot(dev, "Dev", style: PlotStyle.Area, color: Color.rgb(33, 150, 243, 60));

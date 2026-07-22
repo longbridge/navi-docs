@@ -1,0 +1,6 @@
+// 正确结果：indicator 在独立子图，但蓝线（force_overlay: true）强制绘制在主图 K 线上；
+// 红线保持在子图内
+indicator("Chart Test: plot/force_overlay", overlay: false);
+
+plot(close, "Main chart", color: Color.BLUE, force_overlay: true);
+plot(close - ta.sma(close, 20), "Subpane", color: Color.RED);

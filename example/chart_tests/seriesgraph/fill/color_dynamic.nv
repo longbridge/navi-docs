@@ -1,0 +1,8 @@
+// 正确结果：close 高于 SMA20 时两线间填充绿色，低于时填充红色，逐柱动态变色
+indicator("Chart Test: fill/color_dynamic", overlay: true);
+
+let sma = ta.sma(close, 20);
+let fillCol = close > sma ? Color.rgb(0, 200, 100, 70) : Color.rgb(243, 54, 69, 70);
+let p1 = plot(close, "Close", color: Color.BLUE);
+let p2 = plot(sma, "SMA20", color: Color.GRAY);
+fill(p1, p2, color: fillCol, title: "Dynamic Fill");

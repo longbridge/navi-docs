@@ -1,0 +1,4 @@
+// 正确结果：每根柱子在 close 处绘制一个蓝色圆形标记，各标记之间无连线
+indicator("Chart Test: plot/style_circles", overlay: true);
+
+plot(close, "Close", style: PlotStyle.Circles, color: Color.BLUE, line_width: 3);

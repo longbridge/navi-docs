@@ -1,0 +1,4 @@
+// 正确结果：close 价格以连续实线绘制，线条随价格高低起伏，na 处跨越连接（无断点）
+indicator("Chart Test: plot/style_line", overlay: true);
+
+plot(close, "Close", style: PlotStyle.Line, color: Color.BLUE);

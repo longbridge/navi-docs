@@ -1,0 +1,6 @@
+// 正确结果：两线之间的填充只出现在最后 50 根柱子，历史区域无填充
+indicator("Chart Test: fill/show_last", overlay: true);
+
+let p1 = plot(ta.sma(close, 5), "SMA5", color: Color.BLUE);
+let p2 = plot(ta.sma(close, 20), "SMA20", color: Color.RED);
+fill(p1, p2, color: Color.rgb(33, 150, 243, 70), show_last: 50, title: "Last 50");

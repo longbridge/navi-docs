@@ -1,0 +1,5 @@
+// 正确结果：SMA5 以阶梯折线绘制，相邻两点间先水平延伸再垂直跳变，
+// 每段水平线持续到下一根柱子处才垂直变化
+indicator("Chart Test: plot/style_stepline", overlay: true);
+
+plot(ta.sma(close, 5), "SMA5", style: PlotStyle.Stepline, color: Color.BLUE, line_width: 2);

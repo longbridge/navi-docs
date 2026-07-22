@@ -1,0 +1,5 @@
+// 正确结果：Histogram 基准线在价格 50 处，
+// close 高于 50 时柱子向上延伸，低于 50 时向下延伸
+indicator("Chart Test: plot/hist_base", overlay: false);
+
+plot(close, "Close", style: PlotStyle.Histogram, color: Color.BLUE, hist_base: 50.0);
