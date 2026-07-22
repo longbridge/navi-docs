@@ -1,4 +1,8 @@
-// 正确结果：箭头整体向右偏移 5 根柱子，即每根柱子的箭头显示在该柱右侧第 5 根柱子处
+// 正确结果：每 20 根柱子触发一次（红色圆形标记触发点），
+// 向上箭头出现在触发点右侧第 5 根柱子处，可直接数出偏移量
 indicator("Chart Test: plotarrow/offset", overlay: true);
 
-plot_arrow(close - open, "Offset +5", offset: 5);
+let trigger = bar_index % 20 == 0 ? 1.0 : na;
+plot_arrow(trigger, "Offset +5", offset: 5);
+plot_shape(bar_index % 20 == 0, "Trigger", style: Shape.Circle,
+    location: Location.AboveBar, color: Color.RED, size: Size.Tiny);

@@ -1,6 +1,8 @@
-// 正确结果：背景色（蓝色）相对于 K 线向右偏移 5 根柱子，
-// 即背景颜色落后于实际信号 5 根柱子
+// 正确结果：每 20 根柱子触发一次（红色向下箭头标记触发点），
+// 绿色背景出现在触发点右侧第 5 根柱子处，可直接数出偏移量
 indicator("Chart Test: bgcolor/offset", overlay: true);
 
-let isUp = close > close[1];
-bg_color(isUp ? Color.rgb(0, 200, 100, 50) : Color.rgb(243, 54, 69, 50), offset: 5);
+let trigger = bar_index % 20 == 0;
+bg_color(trigger ? Color.rgb(0, 200, 100, 60) : na, offset: 5);
+plot_shape(trigger, "Trigger", style: Shape.ArrowDown, location: Location.AboveBar,
+    color: Color.RED, size: Size.Small);
