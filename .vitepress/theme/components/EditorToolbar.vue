@@ -112,12 +112,12 @@ const filteredChartTestGroups = computed(() => {
 </script>
 
 <template>
-  <div ref="rootEl" class="flex min-h-11 shrink-0 items-center gap-2 overflow-x-auto border-b border-border bg-background px-3 py-1.5">
+  <div ref="rootEl" class="flex min-h-11 shrink-0 items-center gap-2 border-b border-border bg-background px-3 py-1.5">
     <!-- Script selector -->
-    <div class="flex flex-1 min-w-0 items-center gap-1">
+    <div class="flex flex-1 min-w-0 overflow-hidden items-center gap-1">
       <PopoverRoot v-model:open="scriptMenuOpen">
         <PopoverTrigger
-          class="flex h-8 min-w-0 items-center whitespace-nowrap rounded-md border px-2 text-xs font-medium ring-offset-background transition-all hover:bg-foreground/10 focus:outline-none focus:ring-1 focus:ring-ring"
+          class="flex h-8 min-w-0 items-center whitespace-nowrap rounded-md border px-2 text-xs font-medium ring-offset-background transition-all hover:bg-foreground/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           :class="scriptMenuOpen
             ? 'flex-1 justify-between border-input bg-background px-3 shadow-sm'
             : 'w-auto flex-none justify-start gap-1 border-transparent bg-transparent shadow-none'"

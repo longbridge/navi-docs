@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, shallowRef, onMounted, onUnmounted, watch, watchEffect, nextTick } from 'vue'
+import { ref, computed, shallowRef, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useData } from 'vitepress'
 import { useI18n } from 'vue-i18n'
 import { Check, ChevronsLeft, ChevronsRight, CircleAlert, Lock, Share2 } from 'lucide-vue-next'
@@ -606,41 +606,13 @@ async function selectResultTab(tab: 'chart' | 'report') {
 }
 
 const CHART_MIN = 20
+const EDITOR_MIN = 25
 const savedRatio = parseFloat(localStorage.getItem(LS_PANEL) || '60')
-
-// Dynamically compute editor min-size (%) from the toolbar's content width.
-const editorToolbarRef = shallowRef<InstanceType<typeof EditorToolbar> | null>(null)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const panelGroupEl = shallowRef<any>(null)
-const editorMinSize = ref(25)
-// Cached toolbar content min-width in px. Updated only when toolbar content
-// changes (not on every panel resize) to avoid a feedback loop where a wider
-// panel → wider toolbar scrollWidth → larger min-size → wider panel → …
-let toolbarMinPx = 0
-
-function measureToolbarMinPx() {
-  const el = editorToolbarRef.value?.rootEl
-  if (!el) return
-  // Temporarily let the element size to its content so scrollWidth reflects
-  // the true minimum, independent of the current panel width.
-  const prev = el.style.width
-  el.style.width = 'max-content'
-  toolbarMinPx = el.scrollWidth
-  el.style.width = prev
-}
-
-function updateEditorMinSize() {
-  const containerEl: HTMLElement | null = panelGroupEl.value?.$el ?? panelGroupEl.value
-  if (!containerEl || !toolbarMinPx) return
-  const containerWidth = containerEl.offsetWidth
-  if (!containerWidth) return
-  editorMinSize.value = Math.ceil((toolbarMinPx / containerWidth) * 100)
-}
 
 // Clamp so neither panel falls below its min-size on restore.  Floating-
 // point drift in the saved value can push the editor below min-size,
 // causing SplitterGroup to collapse it on load.
-const defaultPanelSize = isNaN(savedRatio) ? 60 : Math.max(CHART_MIN, Math.min(savedRatio, 100 - editorMinSize.value))
+const defaultPanelSize = isNaN(savedRatio) ? 60 : Math.max(CHART_MIN, Math.min(savedRatio, 100 - EDITOR_MIN))
 const editorPanel = shallowRef<InstanceType<typeof ResizablePanel> | null>(null)
 // Capture the saved collapsed state before SplitterPanel mounts. Radix-vue's
 // SplitterPanel fires `onExpand` during its own onMounted (child mounts before
@@ -1597,29 +1569,6 @@ function handleChartEvent(event: unknown) {
 onMounted(async () => {
   window.addEventListener('keydown', onKeyDown)
 
-  // Only observe the panel-group container for width changes (to keep the
-  // percentage accurate when the window resizes). Do NOT observe the toolbar
-  // itself — that would create a feedback loop: wider panel → wider toolbar
-  // scrollWidth → larger min-size → panel forced wider → …
-  const resizeObs = new ResizeObserver(updateEditorMinSize)
-  watchEffect((onCleanup) => {
-    const container: HTMLElement | null = panelGroupEl.value?.$el ?? panelGroupEl.value
-    resizeObs.disconnect()
-    if (container) resizeObs.observe(container)
-    onCleanup(() => resizeObs.disconnect())
-  })
-  // Measure the toolbar content once after mount, then whenever toolbar
-  // content may change (script switching affects the script-name button width;
-  // scriptsOnChart affects the Add-to-chart button visibility).
-  await nextTick()
-  measureToolbarMinPx()
-  updateEditorMinSize()
-  watch([activeScriptId, scriptsOnChart], async () => {
-    await nextTick()
-    measureToolbarMinPx()
-    updateEditorMinSize()
-  })
-
   // Wait one tick so SplitterGroup computes the initial panel layout.
   // Without this, collapse() throws "Panel size not found".
   await nextTick()
@@ -1793,7 +1742,6 @@ watch(strategyReport, (report) => {
     <!-- Main content -->
     <ResizablePanelGroup
       id="playground-panels"
-      ref="panelGroupEl"
       direction="horizontal"
       class="flex-1 min-h-0"
       @layout="onPanelResize"
@@ -1953,7 +1901,7 @@ watch(strategyReport, (report) => {
       <ResizablePanel
         ref="editorPanel"
         :default-size="100 - defaultPanelSize"
-        :min-size="editorMinSize"
+        :min-size="EDITOR_MIN"
         :collapsible="editorCollapsible"
         :collapsed-size="0"
         @collapse="onEditorCollapse"
@@ -1961,7 +1909,6 @@ watch(strategyReport, (report) => {
       >
         <div class="flex h-full flex-col overflow-hidden bg-background">
           <EditorToolbar
-            ref="editorToolbarRef"
             :active-script-id="activeScriptId"
             :script-tag="currentTagComputed"
             :dirty="dirty"
