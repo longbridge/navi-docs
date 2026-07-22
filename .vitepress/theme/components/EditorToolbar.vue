@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, nextTick } from 'vue'
+import { computed, ref, nextTick, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   PopoverRoot, PopoverTrigger, PopoverPortal, PopoverContent,
@@ -97,6 +97,9 @@ const filteredChartTests = computed(() =>
     : builtinChartTests,
 )
 
+const rootEl = useTemplateRef<HTMLElement>('rootEl')
+defineExpose({ rootEl })
+
 const filteredChartTestGroups = computed(() => {
   const map = new Map<string, typeof builtinChartTests>()
   for (const s of filteredChartTests.value) {
@@ -109,9 +112,9 @@ const filteredChartTestGroups = computed(() => {
 </script>
 
 <template>
-  <div class="flex min-h-11 shrink-0 items-center justify-between gap-4 overflow-x-auto border-b border-border bg-background px-3 py-1.5">
+  <div ref="rootEl" class="flex min-h-11 shrink-0 items-center gap-2 overflow-x-auto border-b border-border bg-background px-3 py-1.5">
     <!-- Script selector -->
-    <div class="flex w-[clamp(16rem,36vw,32rem)] shrink-0 items-center gap-1">
+    <div class="flex flex-1 min-w-0 items-center gap-1">
       <PopoverRoot v-model:open="scriptMenuOpen">
         <PopoverTrigger
           class="flex h-8 min-w-0 items-center whitespace-nowrap rounded-md border px-2 text-xs font-medium ring-offset-background transition-all hover:bg-foreground/10 focus:outline-none focus:ring-1 focus:ring-ring"
