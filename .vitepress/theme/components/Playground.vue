@@ -1930,12 +1930,12 @@ watch(strategyReport, (report, previousReport) => {
               @point-change="onAnnPropsPointChange"
               @reset-to-default="onAnnPropsResetToDefault"
             />
-          <StrategyTester
-            v-if="strategyReport && resultTab === 'report'"
-            class="min-h-0 flex-1"
-            :report="strategyReport"
-            @scroll-to-bar="scrollToBar"
-          />
+          <div v-if="strategyReport && resultTab === 'report'" class="min-h-0 flex-1">
+            <StrategyTester
+              :report="strategyReport"
+              @scroll-to-bar="scrollToBar"
+            />
+          </div>
         </div>
       </ResizablePanel>
 
