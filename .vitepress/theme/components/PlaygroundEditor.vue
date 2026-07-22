@@ -3,7 +3,6 @@ import { ref, shallowRef, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { registerNaviLanguage, NAVI_LANG_ID, NAVI_LIGHT_THEME } from '../monarch'
 import type { PlaygroundEngine } from '../composables/playground-engine'
-import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker'
 
 const props = defineProps<{
   source: string
@@ -65,7 +64,10 @@ onMounted(async () => {
   // Setup Monaco environment for workers
   self.MonacoEnvironment = {
     getWorker(_: string, _label: string) {
-      return new EditorWorker()
+      return new Worker(
+        new URL('monaco-editor/esm/vs/editor/editor.worker.js', import.meta.url),
+        { type: 'module' },
+      )
     },
   }
 
