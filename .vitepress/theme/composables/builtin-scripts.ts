@@ -132,9 +132,14 @@ function buildChartTestScripts(modules: Record<string, string>): BuiltinScript[]
     })
 }
 
+const chartTestsEnabled = typeof window !== 'undefined' &&
+  new URLSearchParams(window.location.search).has('chart_tests')
+
 export const builtinIndicators: BuiltinScript[] = buildScripts(indicatorModules, 'indicator')
 export const builtinStrategies: BuiltinScript[] = buildScripts(strategyModules, 'strategy')
-export const builtinChartTests: BuiltinScript[] = buildChartTestScripts(chartTestModules)
+export const builtinChartTests: BuiltinScript[] = chartTestsEnabled
+  ? buildChartTestScripts(chartTestModules)
+  : []
 export const builtinScripts: BuiltinScript[] = [...builtinIndicators, ...builtinStrategies, ...builtinChartTests]
 
 export function isBuiltinId(id: string | null): boolean {
