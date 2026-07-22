@@ -1,11 +1,11 @@
-// 正确结果：每 10 根柱出现一组，6 种形状同时叠加在柱子上方，
-// 轮廓各异：Circle（圆形）、Cross（+号）、Diamond（菱形）、Flag（旗帜）、Square（方形）、XCross（×号）
+// 正确结果：6 种形状依次出现（每 10 根柱一种，60 根柱一循环），
+// Circle、Cross、Diamond（柱上）、Flag（柱上）、Square、XCross（柱下），轮廓各异
 indicator("Chart Test: plotshape/style_misc", overlay: true);
 
-let t = bar_index % 10 == 0;
-plot_shape(t, "Circle",  style: Shape.Circle,  location: Location.AboveBar, color: Color.BLUE,   size: Size.Normal);
-plot_shape(t, "Cross",   style: Shape.Cross,   location: Location.AboveBar, color: Color.RED,    size: Size.Normal);
-plot_shape(t, "Diamond", style: Shape.Diamond, location: Location.AboveBar, color: Color.GREEN,  size: Size.Normal);
-plot_shape(t, "Flag",    style: Shape.Flag,    location: Location.AboveBar, color: Color.PURPLE, size: Size.Normal);
-plot_shape(t, "Square",  style: Shape.Square,  location: Location.BelowBar, color: Color.ORANGE, size: Size.Normal);
-plot_shape(t, "XCross",  style: Shape.XCross,  location: Location.BelowBar, color: Color.TEAL,   size: Size.Normal);
+let cycle = bar_index % 60;
+plot_shape(cycle == 0,  "Circle",  style: Shape.Circle,  location: Location.AboveBar, color: Color.BLUE,   size: Size.Normal);
+plot_shape(cycle == 10, "Cross",   style: Shape.Cross,   location: Location.AboveBar, color: Color.RED,    size: Size.Normal);
+plot_shape(cycle == 20, "Diamond", style: Shape.Diamond, location: Location.AboveBar, color: Color.GREEN,  size: Size.Normal);
+plot_shape(cycle == 30, "Flag",    style: Shape.Flag,    location: Location.AboveBar, color: Color.PURPLE, size: Size.Normal);
+plot_shape(cycle == 40, "Square",  style: Shape.Square,  location: Location.BelowBar, color: Color.ORANGE, size: Size.Normal);
+plot_shape(cycle == 50, "XCross",  style: Shape.XCross,  location: Location.BelowBar, color: Color.TEAL,   size: Size.Normal);

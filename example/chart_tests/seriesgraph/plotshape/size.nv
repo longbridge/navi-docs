@@ -1,11 +1,10 @@
-// 正确结果：每 10 根柱出现一组，5 种尺寸叠加在柱子上方，
-// 从外到内：Huge→Large→Normal→Small→Tiny，大小差异一目了然
+// 正确结果：5 种尺寸依次出现（每 10 根柱一种，50 根柱一循环），
+// Tiny→Small→Normal→Large→Huge，大小差异肉眼清晰可辨
 indicator("Chart Test: plotshape/size", overlay: true);
 
-let t = bar_index % 10 == 0;
-// 从大到小绘制，小的后绘制在上层
-plot_shape(t, "Huge",   style: Shape.Circle, location: Location.AboveBar, color: Color.ORANGE, size: Size.Huge);
-plot_shape(t, "Large",  style: Shape.Circle, location: Location.AboveBar, color: Color.PURPLE, size: Size.Large);
-plot_shape(t, "Normal", style: Shape.Circle, location: Location.AboveBar, color: Color.GREEN,  size: Size.Normal);
-plot_shape(t, "Small",  style: Shape.Circle, location: Location.AboveBar, color: Color.RED,    size: Size.Small);
-plot_shape(t, "Tiny",   style: Shape.Circle, location: Location.AboveBar, color: Color.BLUE,   size: Size.Tiny);
+let cycle = bar_index % 50;
+plot_shape(cycle == 0,  "Tiny",   style: Shape.Circle, location: Location.AboveBar, color: Color.BLUE,   size: Size.Tiny);
+plot_shape(cycle == 10, "Small",  style: Shape.Circle, location: Location.AboveBar, color: Color.RED,    size: Size.Small);
+plot_shape(cycle == 20, "Normal", style: Shape.Circle, location: Location.AboveBar, color: Color.GREEN,  size: Size.Normal);
+plot_shape(cycle == 30, "Large",  style: Shape.Circle, location: Location.AboveBar, color: Color.PURPLE, size: Size.Large);
+plot_shape(cycle == 40, "Huge",   style: Shape.Circle, location: Location.AboveBar, color: Color.ORANGE, size: Size.Huge);

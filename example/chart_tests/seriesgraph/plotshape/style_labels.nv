@@ -1,8 +1,8 @@
 // 正确结果：每 10 根柱出现两种标签气泡形状：
-// 蓝色 LabelUp（气泡朝上，尖角在下）显示在柱下方；
-// 红色 LabelDown（气泡朝下，尖角在上）显示在柱上方
+// 蓝色 LabelUp（尖角在上指向柱子，气泡主体向下延伸）显示在柱下方；
+// 红色 LabelDown（尖角在下指向柱子，气泡主体向上延伸）显示在柱上方
 indicator("Chart Test: plotshape/style_labels", overlay: true);
 
 let t = bar_index % 10 == 0;
-plot_shape(t, "LabelUp", style: Shape.LabelUp, location: Location.BelowBar, color: Color.BLUE, size: Size.Normal);
-plot_shape(t, "LabelDown", style: Shape.LabelDown, location: Location.AboveBar, color: Color.RED, size: Size.Normal);
+plot_shape(t, "LabelUp",   style: Shape.LabelUp,   location: Location.BelowBar, color: Color.BLUE, size: Size.Normal);
+plot_shape(t, "LabelDown", style: Shape.LabelDown, location: Location.AboveBar, color: Color.RED,  size: Size.Normal);

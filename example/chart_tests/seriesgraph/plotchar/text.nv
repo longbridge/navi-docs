@@ -1,4 +1,4 @@
-// 正确结果：每 15 根柱出现字符"▲"，旁边附带文字标注"Buy"
+// 正确结果：每 15 根柱出现字符"▲"，文字标注"Buy"显示在字符正下方（BelowBar 时文字在下）
 indicator("Chart Test: plotchar/text", overlay: true);
 
 let trigger = bar_index % 15 == 0;

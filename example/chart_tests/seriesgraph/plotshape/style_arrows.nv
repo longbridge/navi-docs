@@ -1,9 +1,9 @@
-// 正确结果：每 10 根柱出现四种箭头形状，从上到下分别为：
-// 蓝色 ArrowUp、红色 ArrowDown、绿色 TriangleUp、橙色 TriangleDown，形状各异
+// 正确结果：4 种箭头形状依次出现（每 10 根柱一种，40 根柱一循环），
+// ArrowUp（柱上）、ArrowDown（柱下）、TriangleUp（柱上）、TriangleDown（柱下），形状各异
 indicator("Chart Test: plotshape/style_arrows", overlay: true);
 
-let t = bar_index % 10 == 0;
-plot_shape(t, "ArrowUp", style: Shape.ArrowUp, location: Location.AboveBar, color: Color.BLUE, size: Size.Small);
-plot_shape(t, "ArrowDown", style: Shape.ArrowDown, location: Location.BelowBar, color: Color.RED, size: Size.Small);
-plot_shape(t, "TriangleUp", style: Shape.TriangleUp, location: Location.AboveBar, color: Color.GREEN, size: Size.Small);
-plot_shape(t, "TriangleDown", style: Shape.TriangleDown, location: Location.BelowBar, color: Color.ORANGE, size: Size.Small);
+let cycle = bar_index % 40;
+plot_shape(cycle == 0,  "ArrowUp",     style: Shape.ArrowUp,     location: Location.AboveBar, color: Color.BLUE,   size: Size.Small);
+plot_shape(cycle == 10, "ArrowDown",   style: Shape.ArrowDown,   location: Location.BelowBar, color: Color.RED,    size: Size.Small);
+plot_shape(cycle == 20, "TriangleUp",  style: Shape.TriangleUp,  location: Location.AboveBar, color: Color.GREEN,  size: Size.Small);
+plot_shape(cycle == 30, "TriangleDown",style: Shape.TriangleDown,location: Location.BelowBar, color: Color.ORANGE, size: Size.Small);

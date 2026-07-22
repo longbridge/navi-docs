@@ -1,4 +1,4 @@
-// 正确结果：每 15 根柱出现绿色 ArrowUp 形状，旁边附带蓝色文字"Buy"；
+// 正确结果：每 15 根柱出现绿色 ArrowUp 形状，文字"Buy"显示在形状正下方；
 // 形状颜色（绿）与文字颜色（蓝）各自独立
 indicator("Chart Test: plotshape/text", overlay: true);
 
