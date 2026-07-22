@@ -1385,6 +1385,7 @@ function pollChartEvents() {
 }
 
 function scrollToBar(barIndex: number) {
+  selectResultTab('chart')
   const chart = engine.value?.chart
   if (!chart) return
 
@@ -1686,9 +1687,6 @@ onMounted(async () => {
       await waitForEditorSourceSync(currentSource.value)
       await addToChart(UNSAVED_TAG)
       await nextTick()
-      if (strategyReport.value) {
-        resultTab.value = 'report'
-      }
     }
 
     // Restore chart snapshot (scripts + configs + viewport + pane ratios).
@@ -1742,8 +1740,7 @@ watch(activeScriptId, (id) => {
   refreshStrategyReport()
 })
 
-watch(strategyReport, (report, previousReport) => {
-  if (report && !previousReport) resultTab.value = 'report'
+watch(strategyReport, (report) => {
   if (!report) resultTab.value = 'chart'
 })
 
