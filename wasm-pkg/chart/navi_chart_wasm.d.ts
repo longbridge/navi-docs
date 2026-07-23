@@ -1520,6 +1520,16 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly __wbg_localcharthandle_free: (a: number, b: number) => void;
+  readonly __wbg_localchartprovider_free: (a: number, b: number) => void;
+  readonly localcharthandle_addScript: (a: number, b: any) => [number, number, number];
+  readonly localcharthandle_extendHistory: (a: number, b: number) => number;
+  readonly localcharthandle_removeScript: (a: number, b: number) => void;
+  readonly localchartprovider_chartStream: (a: number, b: number, c: number, d: number, e: number, f: any) => [number, number, number];
+  readonly localchartprovider_new: (a: any) => number;
+  readonly __wbg_imageregistry_free: (a: number, b: number) => void;
+  readonly imageregistry_add: (a: number, b: number, c: any) => void;
+  readonly imageregistry_remove: (a: number, b: number) => void;
   readonly __wbg_chart_free: (a: number, b: number) => void;
   readonly chart_activeTool: (a: number) => [number, number];
   readonly chart_addAnnotation: (a: number, b: any) => [number, number];
@@ -1648,16 +1658,6 @@ export interface InitOutput {
   readonly chart_yAxisMode: (a: number) => number;
   readonly darkTheme: () => any;
   readonly lightTheme: () => any;
-  readonly __wbg_imageregistry_free: (a: number, b: number) => void;
-  readonly imageregistry_add: (a: number, b: number, c: any) => void;
-  readonly imageregistry_remove: (a: number, b: number) => void;
-  readonly __wbg_localcharthandle_free: (a: number, b: number) => void;
-  readonly __wbg_localchartprovider_free: (a: number, b: number) => void;
-  readonly localcharthandle_addScript: (a: number, b: any) => [number, number, number];
-  readonly localcharthandle_extendHistory: (a: number, b: number) => number;
-  readonly localcharthandle_removeScript: (a: number, b: number) => void;
-  readonly localchartprovider_chartStream: (a: number, b: number, c: number, d: number, e: number, f: any) => [number, number, number];
-  readonly localchartprovider_new: (a: any) => number;
   readonly __wbg_intounderlyingsource_free: (a: number, b: number) => void;
   readonly intounderlyingsource_cancel: (a: number) => void;
   readonly intounderlyingsource_pull: (a: number, b: any) => any;
@@ -1671,18 +1671,18 @@ export interface InitOutput {
   readonly intounderlyingbytesource_pull: (a: number, b: any) => any;
   readonly intounderlyingbytesource_start: (a: number, b: any) => void;
   readonly intounderlyingbytesource_type: (a: number) => number;
-  readonly wasm_bindgen__convert__closures_____invoke__h1c3b971bf5230278: (a: number, b: number, c: any) => void;
-  readonly wasm_bindgen__closure__destroy__h19febeda49f66582: (a: number, b: number) => void;
   readonly wasm_bindgen__convert__closures_____invoke__hdad8e08980442495: (a: number, b: number) => void;
   readonly wasm_bindgen__closure__destroy__hb26f619182e21929: (a: number, b: number) => void;
+  readonly wasm_bindgen__convert__closures_____invoke__h1c3b971bf5230278: (a: number, b: number, c: any) => void;
+  readonly wasm_bindgen__closure__destroy__h19febeda49f66582: (a: number, b: number) => void;
   readonly wasm_bindgen__convert__closures_____invoke__h09e1f75621400211: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_exn_store: (a: number) => void;
   readonly __externref_table_alloc: () => number;
   readonly __wbindgen_externrefs: WebAssembly.Table;
-  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __externref_table_dealloc: (a: number) => void;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_start: () => void;
 }
 
