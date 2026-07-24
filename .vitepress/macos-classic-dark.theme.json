@@ -1,0 +1,66 @@
+{
+  "$schema": "vscode://schemas/color-theme",
+  "name": "macOS Classic Dark",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#13182a",
+    "editor.foreground": "#dfdfd6",
+    "editor.lineHighlightBackground": "#1a2035",
+    "editor.lineHighlightBorder": "#00000000",
+    "editorLineNumber.foreground": "#4a5272",
+    "editorLineNumber.activeForeground": "#8892b0",
+    "editor.selectionBackground": "#2d4a6a"
+  },
+  "tokenColors": [
+    {
+      "settings": {
+        "foreground": "#dfdfd6",
+        "background": "#13182a"
+      }
+    },
+    {
+      "scope": ["comment", "comment.line", "comment.documentation"],
+      "settings": { "foreground": "#5a8fa8" }
+    },
+    {
+      "scope": ["string", "string.quoted"],
+      "settings": { "foreground": "#7eca9c" }
+    },
+    {
+      "scope": ["constant.character.escape"],
+      "settings": { "foreground": "#7eca9c" }
+    },
+    {
+      "scope": ["constant.language", "constant.other.color", "support.constant.color"],
+      "settings": { "foreground": "#ff9728" }
+    },
+    {
+      "scope": ["constant.numeric"],
+      "settings": { "foreground": "#82b1ff" }
+    },
+    {
+      "scope": ["keyword", "storage.type", "storage.modifier"],
+      "settings": { "foreground": "#00d4b0" }
+    },
+    {
+      "scope": ["support.type", "entity.name.type", "entity.other.inherited-class"],
+      "settings": { "foreground": "#b39ddb" }
+    },
+    {
+      "scope": ["entity.name.function", "entity.name.function.method"],
+      "settings": { "foreground": "#82aaff" }
+    },
+    {
+      "scope": ["constant.other.reference.link"],
+      "settings": { "foreground": "#8892b0", "fontStyle": "italic" }
+    },
+    {
+      "scope": ["variable", "variable.other", "meta.property-name"],
+      "settings": { "foreground": "#dfdfd6" }
+    },
+    {
+      "scope": ["punctuation", "keyword.operator"],
+      "settings": { "foreground": "#a0a8b8" }
+    }
+  ]
+}

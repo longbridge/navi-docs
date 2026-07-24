@@ -49,12 +49,20 @@ export default defineConfig({
   },
 
   markdown: {
-    theme: JSON.parse(
-      readFileSync(
-        resolve(__dirname, "macos-classic-light.theme.json"),
-        "utf-8",
+    theme: {
+      light: JSON.parse(
+        readFileSync(
+          resolve(__dirname, "macos-classic-light.theme.json"),
+          "utf-8",
+        ),
       ),
-    ),
+      dark: JSON.parse(
+        readFileSync(
+          resolve(__dirname, "macos-classic-dark.theme.json"),
+          "utf-8",
+        ),
+      ),
+    },
     languages: [
       {
         ...JSON.parse(
