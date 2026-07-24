@@ -111,6 +111,7 @@ export const naviLanguageConfiguration: languages.LanguageConfiguration = {
 
 export const NAVI_LANG_ID = 'navi'
 export const NAVI_LIGHT_THEME = 'navi-macos-classic-light'
+export const NAVI_DARK_THEME = 'navi-macos-classic-dark'
 
 const naviMonarchLanguage: languages.IMonarchLanguage = {
   defaultToken: '',
@@ -133,6 +134,52 @@ export function registerNaviLanguage(monaco: typeof import('monaco-editor')) {
   monaco.languages.register({ id: NAVI_LANG_ID, extensions: ['.nv'] })
   monaco.languages.setMonarchTokensProvider(NAVI_LANG_ID, naviMonarchLanguage)
   monaco.languages.setLanguageConfiguration(NAVI_LANG_ID, naviLanguageConfiguration)
+  monaco.editor.defineTheme(NAVI_DARK_THEME, {
+    base: 'vs-dark',
+    inherit: true,
+    semanticHighlighting: true,
+    rules: [
+      { token: '', foreground: 'DFDFD6', background: '13182A' },
+      { token: 'identifier', foreground: 'DFDFD6' },
+      { token: 'keyword', foreground: '00D4B0' },
+      { token: 'function', foreground: '82AAFF' },
+      { token: 'type', foreground: 'B39DDB' },
+      { token: 'support.class', foreground: 'DFDFD6' },
+      { token: 'boolean', foreground: 'FF9728' },
+      { token: 'constant', foreground: 'FF9728' },
+      { token: 'number', foreground: '82B1FF' },
+      { token: 'number.float', foreground: '82B1FF' },
+      { token: 'number.hex', foreground: '82B1FF' },
+      { token: 'string', foreground: '7ECA9C' },
+      { token: 'comment', foreground: '5A8FA8' },
+      { token: 'comment.doc', foreground: '5A8FA8' },
+      { token: 'annotation', foreground: 'FFCB6B' },
+      { token: 'constant.other.reference.link', foreground: '8892B0', fontStyle: 'italic' },
+      { token: 'operator', foreground: 'A0A8B8' },
+      { token: 'delimiter', foreground: 'A0A8B8' },
+      { token: 'namespace', foreground: 'DFDFD6' },
+      { token: 'enum', foreground: 'B39DDB' },
+      { token: 'struct', foreground: 'B39DDB' },
+      { token: 'typeParameter', foreground: 'B39DDB' },
+      { token: 'parameter', foreground: 'DFDFD6' },
+      { token: 'variable', foreground: 'DFDFD6' },
+      { token: 'property', foreground: 'FFCB6B' },
+      { token: 'enumMember', foreground: 'FF9728' },
+      { token: 'method', foreground: '82AAFF' },
+      { token: 'variable.readonly', foreground: 'FF9728' },
+    ],
+    colors: {
+      'editor.background': '#13182A',
+      'editor.foreground': '#DFDFD6',
+      'editor.lineHighlightBackground': '#1A2035',
+      'editor.lineHighlightBorder': '#00000000',
+      'editorLineNumber.foreground': '#4A5272',
+      'editorLineNumber.activeForeground': '#8892B0',
+      'editorCursor.foreground': '#00F0C4',
+      'editor.selectionBackground': '#2D4A6A',
+      'editor.inactiveSelectionBackground': '#1E3050',
+    },
+  })
   monaco.editor.defineTheme(NAVI_LIGHT_THEME, {
     base: 'vs',
     inherit: true,

@@ -1100,6 +1100,7 @@ function onTimeframeChange(tf: import('../composables/use-wasm').SecurityTimefra
 }
 
 let resizeObserver: ResizeObserver | null = null
+let themeObserver: MutationObserver | null = null
 
 function resizeCanvas() {
   const container = chartContainer.value
@@ -1590,7 +1591,7 @@ onMounted(async () => {
     // Dev hook for ad-hoc DevTools inspection.
     ;(window as unknown as { __navi: unknown }).__navi = engine.value
     // Sync initial theme before first render
-    setChartTheme(false)
+    setChartTheme(document.documentElement.classList.contains('dark'))
 
     // Start pollEvent loop — replaces set_chart_event_callback.
     chartEventRaf = requestAnimationFrame(pollChartEvents)
@@ -1623,6 +1624,12 @@ onMounted(async () => {
     if (chartContainer.value) {
       resizeObserver.observe(chartContainer.value)
     }
+
+    // Watch html.dark class changes and sync chart theme
+    themeObserver = new MutationObserver(() => {
+      setChartTheme(document.documentElement.classList.contains('dark'))
+    })
+    themeObserver.observe(document.documentElement, { attributeFilter: ['class'] })
 
     // Initial resize
     resizeCanvas()
@@ -1676,6 +1683,7 @@ onUnmounted(() => {
   if (scrollAnimRaf) cancelAnimationFrame(scrollAnimRaf)
   if (chartEventRaf) cancelAnimationFrame(chartEventRaf)
   if (resizeObserver) resizeObserver.disconnect()
+  if (themeObserver) themeObserver.disconnect()
   flushPersistedChartState()
   engine.value?.chart.free()
   engine.value?.analyzer.free()

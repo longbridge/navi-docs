@@ -127,25 +127,25 @@ html.dark {
   --vp-sidebar-bg-color: #0a0e19;
   --vp-home-hero-name-color: #dfdfd6;
 
-  --background: 0 0% 100%;
-  --foreground: 0 0% 3.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 3.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 3.9%;
-  --primary: 0 0% 9%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 0 0% 96.1%;
-  --secondary-foreground: 0 0% 9%;
-  --muted: 0 0% 96.1%;
-  --muted-foreground: 0 0% 45.1%;
-  --accent: 0 0% 96.1%;
-  --accent-foreground: 0 0% 9%;
-  --destructive: 0 84.2% 60.2%;
+  --background: 222 43% 7%;
+  --foreground: 60 9% 86%;
+  --card: 228 38% 12%;
+  --card-foreground: 60 9% 86%;
+  --popover: 233 10% 14%;
+  --popover-foreground: 60 9% 86%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 222 43% 7%;
+  --secondary: 225 27% 12%;
+  --secondary-foreground: 60 9% 86%;
+  --muted: 228 38% 12%;
+  --muted-foreground: 240 3% 61%;
+  --accent: 225 27% 12%;
+  --accent-foreground: 60 9% 86%;
+  --destructive: 0 100% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 89.8%;
-  --input: 0 0% 89.8%;
-  --ring: 0 0% 3.9%;
+  --border: 223 6% 25%;
+  --input: 223 6% 25%;
+  --ring: 168 100% 47%;
 }
 
 body {

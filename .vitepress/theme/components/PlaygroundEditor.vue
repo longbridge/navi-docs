@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { registerNaviLanguage, NAVI_LANG_ID, NAVI_LIGHT_THEME } from '../monarch'
+import { registerNaviLanguage, NAVI_LANG_ID, NAVI_LIGHT_THEME, NAVI_DARK_THEME } from '../monarch'
 import type { PlaygroundEngine } from '../composables/playground-engine'
 
 const props = defineProps<{
@@ -21,6 +21,11 @@ const container = ref<HTMLDivElement | null>(null)
 const editorRef = shallowRef<import('monaco-editor').editor.IStandaloneCodeEditor | null>(null)
 const monacoRef = shallowRef<typeof import('monaco-editor') | null>(null)
 const disposables: import('monaco-editor').IDisposable[] = []
+let themeObserver: MutationObserver | null = null
+
+function currentNaviTheme() {
+  return document.documentElement.classList.contains('dark') ? NAVI_DARK_THEME : NAVI_LIGHT_THEME
+}
 
 // Track whether we're programmatically setting editor value
 let isSettingValue = false
@@ -77,7 +82,7 @@ onMounted(async () => {
   const editor = monaco.editor.create(container.value, {
     value: props.source,
     language: NAVI_LANG_ID,
-    theme: NAVI_LIGHT_THEME,
+    theme: currentNaviTheme(),
     minimap: { enabled: false },
     wordWrap: 'on',
     fontSize: 13,
@@ -112,6 +117,12 @@ onMounted(async () => {
   // Apply any diagnostics that arrived before Monaco was ready
   applyMarkers()
   flushSourceApplyWaiters()
+
+  // Watch html.dark class changes and sync Monaco theme
+  themeObserver = new MutationObserver(() => {
+    monaco.editor.setTheme(currentNaviTheme())
+  })
+  themeObserver.observe(document.documentElement, { attributeFilter: ['class'] })
 })
 
 // Inject hover line-height override AFTER Monaco's runtime CSS has been loaded.
@@ -123,6 +134,7 @@ document.head.appendChild(hoverStyle)
 
 onUnmounted(() => {
   hoverStyle.remove()
+  themeObserver?.disconnect()
   disposables.forEach(d => d.dispose())
   editorRef.value?.dispose()
   sourceApplyWaiters.splice(0).forEach(({ resolve }) => resolve())
